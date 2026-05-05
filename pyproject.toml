@@ -7,7 +7,7 @@ name = "leapmotor-api"
 dynamic = ["version"]
 description = "Unofficial Python client for the Leapmotor vehicle cloud API"
 readme = "README.md"
-license = "MIT"
+license = "AGPL-3.0-or-later"
 license-files = ["LICENSE"]
 requires-python = ">=3.12"
 authors = [
@@ -17,7 +17,7 @@ keywords = ["leapmotor", "ev", "vehicle", "api", "iot"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",

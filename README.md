@@ -218,9 +218,6 @@ await client.token_refresh()
 
 No configuration is needed — the `refreshToken` is obtained during `login()` and rotated on each refresh call.
 
-## License
-
-MIT
 
 ## Configuration
 
@@ -236,3 +233,7 @@ MIT
 | `base_url` | `str` | `DEFAULT_BASE_URL` | API base URL |
 | `timeout` | `int` | `30` | HTTP timeout in seconds |
 | `device_id` | `str \| None` | `None` | Custom device ID (auto-generated if omitted) |
+
+## License
+
+This project is licensed under the [GNU Affero General Public License v3.0](LICENSE).
