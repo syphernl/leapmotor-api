@@ -1,5 +1,14 @@
 # leapmotor-api
 
+[![PyPI version](https://img.shields.io/pypi/v/leapmotor-api)](https://pypi.org/project/leapmotor-api/)
+[![Python versions](https://img.shields.io/pypi/pyversions/leapmotor-api)](https://pypi.org/project/leapmotor-api/)
+[![License](https://img.shields.io/github/license/markoceri/leapmotor-api)](https://github.com/markoceri/leapmotor-api/blob/main/LICENSE)
+[![Downloads](https://img.shields.io/pypi/dm/leapmotor-api)](https://pypi.org/project/leapmotor-api/)
+[![CI](https://github.com/markoceri/leapmotor-api/actions/workflows/ci.yml/badge.svg)](https://github.com/markoceri/leapmotor-api/actions)
+[![codecov](https://codecov.io/gh/markoceri/leapmotor-api/graph/badge.svg)](https://codecov.io/gh/markoceri/leapmotor-api)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![mypy](https://img.shields.io/badge/type--checked-mypy-blue.svg)](https://mypy-lang.org/)
+
 Unofficial Python client for the Leapmotor vehicle cloud API.
 
 Extracted from the [leapmotor-ha](https://github.com/kerniger/leapmotor-ha) Home Assistant integration
