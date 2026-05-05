@@ -8,6 +8,7 @@
 [![codecov](https://codecov.io/gh/markoceri/leapmotor-api/graph/badge.svg)](https://codecov.io/gh/markoceri/leapmotor-api)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![mypy](https://img.shields.io/badge/type--checked-mypy-blue.svg)](https://mypy-lang.org/)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20me-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/markoceri)
 
 Unofficial Python client for the Leapmotor vehicle cloud API.
 
