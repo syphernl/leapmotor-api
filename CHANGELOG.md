@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-05-05
+
+### Fixed
+- Fixed `Vehicle.seat_layout` and `Vehicle.rudder` fields: convert to `str` in `from_dict()` to handle B10 vehicles returning integer values from the API
+
 ## [0.1.4] - 2026-05-03
 
 ### Fixed
