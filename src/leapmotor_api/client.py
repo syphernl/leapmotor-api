@@ -778,6 +778,11 @@ class LeapmotorApiClient:
                 data=data,
                 cert=self.account_cert,
             )
+            _LOGGER.debug(
+                "Leapmotor remote poll response: HTTP %s %s",
+                response["status_code"],
+                response["body"],
+            )
             last_result = self._parse_api_body(response["status_code"], response["body"], "remote control result")
             if (last_result.get("data")) == 1:
                 return last_result
@@ -865,6 +870,13 @@ class LeapmotorApiClient:
             )
         except requests.RequestException as exc:
             raise LeapmotorApiError(f"HTTP request failed: {exc}") from exc
+
+        _LOGGER.debug(
+            "Leapmotor binary response for %s: HTTP %s (%d bytes)",
+            path,
+            resp.status_code,
+            len(resp.content),
+        )
 
         return {
             "status_code": resp.status_code,
