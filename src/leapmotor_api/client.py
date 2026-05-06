@@ -831,6 +831,13 @@ class LeapmotorApiClient:
         except requests.RequestException as exc:
             raise LeapmotorApiError(f"HTTP request failed: {exc}") from exc
 
+        _LOGGER.debug(
+            "Leapmotor remote response for %s: HTTP %s %s",
+            path,
+            resp.status_code,
+            resp.text,
+        )
+
         return {
             "status_code": resp.status_code,
             "body": resp.text,
