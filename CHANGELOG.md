@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-05-06
+
+### Added
+- Added debug logging to `_post` (logs HTTP status and response body for all API calls), `_post_binary` (logs HTTP status and response size), and `_poll_remote_control_result` (logs each polling iteration) for better troubleshooting
+
 ## [0.1.5] - 2026-05-05
 
 ### Fixed
