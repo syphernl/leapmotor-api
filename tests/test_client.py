@@ -19,6 +19,7 @@ from leapmotor_api.client import (
     _safe_float,
     _safe_int,
     _to_bar,
+    _vehicle_status_car_type_path,
     normalize_vehicle,
 )
 from leapmotor_api.exceptions import (
@@ -98,6 +99,24 @@ class TestClientClose:
         client.close()
         assert not Path(path).exists()
         assert not Path(path2).exists()
+
+
+# ---------------------------------------------------------------------------
+# Car-type path mapping
+# ---------------------------------------------------------------------------
+
+
+class TestVehicleStatusCarTypePath:
+    def test_b10_maps_to_c10(self) -> None:
+        assert _vehicle_status_car_type_path("B10") == "c10"
+        assert _vehicle_status_car_type_path("b10") == "c10"
+
+    def test_c10_unchanged(self) -> None:
+        assert _vehicle_status_car_type_path("C10") == "c10"
+
+    def test_other_types_lowered(self) -> None:
+        assert _vehicle_status_car_type_path("T03") == "t03"
+        assert _vehicle_status_car_type_path("C11") == "c11"
 
 
 # ---------------------------------------------------------------------------

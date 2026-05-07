@@ -71,6 +71,22 @@ _LOGGER = logging.getLogger(__name__)
 
 DEFAULT_TIMEOUT = 30
 
+# ---------------------------------------------------------------------------
+# Car-type path mapping
+# ---------------------------------------------------------------------------
+
+# The international backend reports carType=B10 in the vehicle list,
+# but the status endpoint is shared with C10.
+_CAR_TYPE_PATH_MAP: dict[str, str] = {
+    "b10": "c10",
+}
+
+
+def _vehicle_status_car_type_path(car_type: str) -> str:
+    """Return the backend status path segment for a vehicle model."""
+    normalized = car_type.strip().lower()
+    return _CAR_TYPE_PATH_MAP.get(normalized, normalized)
+
 
 class LeapmotorApiClient:
     """Client for the Leapmotor vehicle cloud API.
@@ -308,7 +324,7 @@ class LeapmotorApiClient:
         return self._retry_on_token_expiry(self._get_vehicle_raw_status, vehicle)
 
     def _get_vehicle_raw_status(self, vehicle: Vehicle) -> dict[str, Any]:
-        car_type_path = vehicle.car_type.lower()
+        car_type_path = _vehicle_status_car_type_path(vehicle.car_type)
         headers = build_signed_headers(
             sign_key=self.sign_key, device_id=self.device_id, vin=vehicle.vin, language=self.language
         )

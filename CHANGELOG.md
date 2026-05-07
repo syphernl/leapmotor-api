@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.7] - 2026-05-07
+
+### Fixed
+- Fixed vehicle status endpoint returning HTTP 404 for B10 vehicles: the international backend reports `carType=B10` in the vehicle list but the status endpoint is shared with C10 (`/status/get/c10`)
+
 ## [0.1.6] - 2026-05-06
 
 ### Added
