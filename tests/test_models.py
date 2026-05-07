@@ -578,6 +578,175 @@ class TestVehicleStatusFromDict:
         vs = VehicleStatus.from_dict(data)
         assert vs.tire_pressure.front_left_kpa == 250
 
+    # -- Signal-based responses (C10/B10) --
+
+    def test_signal_based_battery(self) -> None:
+        """C10/B10 return signal IDs; they should be mapped to named fields."""
+        data: dict[str, Any] = {
+            "signal": {
+                "1204": 65,
+                "1178": 0.1,
+                "1177": 424.9,
+                "1197": 0,
+                "1149": 0,
+                "1200": 45,
+                "3260": 278,
+            },
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.battery.soc == 65
+        assert vs.battery.battery_current == 0.1
+        assert vs.battery.battery_voltage == 424.9
+        assert vs.battery.dc_input_fast_charge == 0
+        assert vs.battery.charge_state is ChargeState.NOT_CONNECTED
+        assert vs.battery.charge_remain_time == 45
+        assert vs.battery.expected_mileage == 278
+
+    def test_signal_based_driving(self) -> None:
+        data: dict[str, Any] = {
+            "signal": {"1319": 0.0, "1318": 3030, "1010": 0},
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.driving.speed == 0.0
+        assert vs.driving.total_mileage == 3030
+        assert vs.driving.gear_status == 0
+
+    def test_signal_based_location(self) -> None:
+        data: dict[str, Any] = {
+            "signal": {"3725": 40.85812, "3724": 14.28319},
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.location.latitude == 40.85812
+        assert vs.location.longitude == 14.28319
+
+    def test_signal_based_doors(self) -> None:
+        data: dict[str, Any] = {
+            "signal": {"1298": 1, "1277": 0, "1278": 0, "1279": 0, "1280": 0, "1281": 0},
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.doors.driver_door_lock_status == 1
+        assert vs.is_locked is True
+        assert vs.doors.lbcm_driver_door_status == 0
+        assert vs.doors.bbcm_back_door_status == 0
+
+    def test_signal_based_tires(self) -> None:
+        data: dict[str, Any] = {
+            "signal": {
+                "2667": 253,
+                "2653": 250,
+                "2646": 255,
+                "2660": 253,
+                "2641": 0,
+                "2648": 0,
+                "2655": 0,
+                "2662": 0,
+            },
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.tires.front_left_kpa == 253
+        assert vs.tires.front_right_kpa == 250
+        assert vs.tires.rear_left_kpa == 255
+        assert vs.tires.rear_right_kpa == 253
+        assert vs.tires.all_ok is True
+
+    def test_signal_based_windows(self) -> None:
+        data: dict[str, Any] = {
+            "signal": {"3727": 0, "3728": 0, "1879": 0, "1880": 0, "1693": 0, "1694": 0},
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.windows.left_front_window_percent == 0
+        assert vs.windows.driver_window_status == 0
+
+    def test_signal_based_climate(self) -> None:
+        data: dict[str, Any] = {
+            "signal": {"1938": 0, "2183": 23.0},
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.climate.ac_switch == 0
+        assert vs.climate.ac_setting == 23.0
+
+    def test_signal_based_ignition(self) -> None:
+        data: dict[str, Any] = {
+            "signal": {"1256": 0, "1258": 0},
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.ignition.bcm_key_position_on1 == 0
+        assert vs.ignition.bcm_key_position_on3 == 0
+
+    def test_signal_based_timestamp(self) -> None:
+        data: dict[str, Any] = {
+            "signal": {"sts": 1778137347360},
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.collect_time is not None
+        assert vs.collect_time.year == 2026
+
+    def test_signal_based_raw_preserves_original(self) -> None:
+        """raw should contain the original status_data, not the merged version."""
+        data: dict[str, Any] = {"signal": {"1204": 65}}
+        vs = VehicleStatus.from_dict(data)
+        assert "signal" in vs.raw
+        assert "soc" not in vs.raw
+
+    def test_signal_based_named_field_priority(self) -> None:
+        """Named fields already present should take priority over signals."""
+        data: dict[str, Any] = {
+            "soc": 90,
+            "signal": {"1204": 65},
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.battery.soc == 90
+
+    def test_signal_based_full_c10_response(self) -> None:
+        """Comprehensive test with a realistic C10 signal-based response."""
+        data: dict[str, Any] = {
+            "privacyGPS": 1,
+            "signal": {
+                "47": 0,
+                "1204": 65,
+                "1178": 0.1,
+                "1177": 424.9,
+                "1197": 0,
+                "1149": 0,
+                "3260": 278,
+                "1319": 0.0,
+                "1318": 3030,
+                "1010": 0,
+                "3725": 40.85812,
+                "3724": 14.28319,
+                "1938": 0,
+                "2183": 23.0,
+                "1298": 1,
+                "1277": 0,
+                "1281": 0,
+                "2667": 253,
+                "2653": 250,
+                "2646": 255,
+                "2660": 253,
+                "1256": 0,
+                "1258": 0,
+                "sts": 1778137347360,
+            },
+            "config": {
+                "3": {
+                    "percent": 100,
+                    "isEnable": 0,
+                    "beginTime": "22:00",
+                    "endTime": "08:00",
+                },
+            },
+            "privacyData": 1,
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.battery.soc == 65
+        assert vs.battery.charge_state is ChargeState.NOT_CONNECTED
+        assert vs.driving.speed == 0.0
+        assert vs.driving.total_mileage == 3030
+        assert vs.location.latitude == 40.85812
+        assert vs.is_locked is True
+        assert vs.tires.front_left_kpa == 253
+        assert vs.collect_time is not None
+
 
 # ---------------------------------------------------------------------------
 # RemoteActionSpec & RemoteActionResult

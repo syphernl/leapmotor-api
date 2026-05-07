@@ -336,25 +336,33 @@ class VehicleStatus:
 
     @classmethod
     def from_dict(cls, status_data: dict[str, Any]) -> VehicleStatus:
-        """Build a ``VehicleStatus`` from the raw API status dict."""
+        """Build a ``VehicleStatus`` from the raw API status dict.
+
+        Handles both T03-style responses (named fields at the top level)
+        and C10/B10-style responses (numeric signal IDs inside a ``signal``
+        sub-dict).
+        """
+        # Merge signal-based fields so the existing field extractors work
+        merged = _merge_signal_to_named(status_data)
+
         # Parse timestamps
         timestamps: dict[str, Any] = {}
         for api_key, field_name in (("collectTime", "collect_time"), ("createTime", "create_time")):
-            raw_ts = status_data.get(api_key)
+            raw_ts = merged.get(api_key)
             if isinstance(raw_ts, str):
                 with contextlib.suppress(ValueError):
                     timestamps[field_name] = datetime.strptime(raw_ts, _DATETIME_FMT)  # noqa: DTZ007
 
         return cls(
-            battery=BatteryStatus.from_dict(status_data),
-            driving=DrivingStatus(**_extract_fields(status_data, _DRIVING_FIELDS)),
-            location=LocationStatus(**_extract_fields(status_data, _LOCATION_FIELDS)),
-            climate=ClimateStatus(**_extract_fields(status_data, _CLIMATE_FIELDS)),
-            doors=DoorStatus(**_extract_fields(status_data, _DOOR_FIELDS)),
-            windows=WindowStatus(**_extract_fields(status_data, _WINDOW_FIELDS)),
-            tires=TirePressure(**_extract_fields(status_data, _TIRE_FIELDS)),
-            connectivity=ConnectivityStatus(**_extract_fields(status_data, _CONNECTIVITY_FIELDS)),
-            ignition=IgnitionStatus(**_extract_fields(status_data, _IGNITION_FIELDS)),
+            battery=BatteryStatus.from_dict(merged),
+            driving=DrivingStatus(**_extract_fields(merged, _DRIVING_FIELDS)),
+            location=LocationStatus(**_extract_fields(merged, _LOCATION_FIELDS)),
+            climate=ClimateStatus(**_extract_fields(merged, _CLIMATE_FIELDS)),
+            doors=DoorStatus(**_extract_fields(merged, _DOOR_FIELDS)),
+            windows=WindowStatus(**_extract_fields(merged, _WINDOW_FIELDS)),
+            tires=TirePressure(**_extract_fields(merged, _TIRE_FIELDS)),
+            connectivity=ConnectivityStatus(**_extract_fields(merged, _CONNECTIVITY_FIELDS)),
+            ignition=IgnitionStatus(**_extract_fields(merged, _IGNITION_FIELDS)),
             raw=status_data,
             **timestamps,
         )
@@ -486,6 +494,91 @@ _IGNITION_FIELDS: dict[str, str] = {
 }
 
 _DATETIME_FMT = "%Y-%m-%d %H:%M:%S"
+
+# ---------------------------------------------------------------------------
+# Signal ID → named API field mapping (C10/B10 → T03-style fields)
+# ---------------------------------------------------------------------------
+# The T03 returns named fields (``soc``, ``speed``, …) directly.  The C10/B10
+# returns numeric signal IDs inside a nested ``signal`` dict.  This mapping
+# converts signal IDs to the named keys that the existing dataclass parsers
+# expect, based on the verified APK signal table.
+
+_SIGNAL_TO_NAMED: dict[str, str] = {
+    # Battery / charging
+    "1204": "soc",
+    "1200": "chargeRemainTime",
+    "1178": "batteryCurrent",
+    "1177": "batteryVoltage",
+    "1197": "dcInputFastCharge",
+    "1149": "chargeState",
+    # Range
+    "3260": "expectedMileage",
+    # Driving
+    "1319": "speed",
+    "1318": "totalMileage",
+    "1010": "gearStatus",
+    # Location
+    "3725": "latitude",
+    "3724": "longitude",
+    # Climate
+    "1938": "acSwitch",
+    "2183": "acSetting",
+    # Windows (position percent)
+    "3727": "leftFrontWindowPercent",
+    "3728": "rightFrontWindowPercent",
+    "1879": "leftRearWindowPercent",
+    "1880": "rightRearWindowPercent",
+    # Windows (open/closed boolean)
+    "1693": "driverWindowStatus",
+    "1694": "rightFrontWindowStatus",
+    "1695": "leftRearWindowStatus",
+    "1696": "rightRearWindowStatus",
+    # Doors
+    "1298": "driverDoorLockStatus",
+    "1277": "lbcmDriverDoorStatus",
+    "1278": "rbcmDriverDoorStatus",
+    "1279": "lbcmLeftRearDoorStatus",
+    "1280": "rbcmRightRearDoorStatus",
+    "1281": "bbcmBackDoorStatus",
+    # Tire pressure
+    "2667": "leftFrontTirePressure",
+    "2653": "rightFrontTirePressure",
+    "2646": "leftRearTirePressure",
+    "2660": "rightRearTirePressure",
+    "2641": "leftFrontTirePressureState",
+    "2648": "rightFrontTirePressureState",
+    "2655": "leftRearTirePressureState",
+    "2662": "rightRearTirePressureState",
+    # Ignition
+    "1256": "bcmKeyPositionOn1",
+    "1258": "bcmKeyPositionOn3",
+}
+
+
+def _merge_signal_to_named(status_data: dict[str, Any]) -> dict[str, Any]:
+    """Convert signal-based C10/B10 responses to named fields for uniform parsing.
+
+    Named fields already present in *status_data* take priority over
+    signal-derived values so T03-style responses pass through unchanged.
+    """
+    signal = status_data.get("signal")
+    if not isinstance(signal, dict):
+        return status_data
+
+    merged = dict(status_data)
+    for signal_id, named_field in _SIGNAL_TO_NAMED.items():
+        if signal_id in signal and named_field not in merged:
+            merged[named_field] = signal[signal_id]
+
+    # Convert signal timestamp (milliseconds) to collectTime string
+    if "sts" in signal and "collectTime" not in merged:
+        sts = signal["sts"]
+        if isinstance(sts, (int, float)):
+            ts = sts / 1000 if sts > 9_999_999_999 else sts
+            with contextlib.suppress(OSError, ValueError, OverflowError):
+                merged["collectTime"] = datetime.fromtimestamp(ts).strftime(_DATETIME_FMT)  # noqa: DTZ006
+
+    return merged
 
 
 def _extract_fields(data: dict[str, Any], mapping: dict[str, str]) -> dict[str, Any]:

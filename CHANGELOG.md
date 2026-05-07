@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- Fixed `VehicleStatus.from_dict()` returning empty/None fields for C10/B10 vehicles: the API returns numeric signal IDs inside a `signal` dict instead of named fields; added signal-to-named-field mapping so all status fields (battery, driving, location, doors, windows, tires, climate, ignition, timestamps) are now correctly parsed for both response formats
+
 ## [0.1.7] - 2026-05-07
 
 ### Fixed
