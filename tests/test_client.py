@@ -385,15 +385,14 @@ class TestAuthHeaders:
     def test_raises_when_not_authenticated(self) -> None:
         client = _make_client()
         with pytest.raises(LeapmotorAuthError, match="Not authenticated"):
-            client._auth_headers(content_type="application/json")
+            client._auth_headers()
         client.close()
 
     def test_returns_headers_when_authenticated(self) -> None:
         client = _make_client()
         client.user_id = "123"
         client.token = "abc"
-        headers = client._auth_headers(content_type="application/json")
-        assert headers["Content-Type"] == "application/json"
+        headers = client._auth_headers()
         assert headers["userId"] == "123"
         assert headers["token"] == "abc"
         client.close()

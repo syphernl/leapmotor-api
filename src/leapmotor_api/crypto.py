@@ -28,9 +28,10 @@ from .const import (
     DEFAULT_LANGUAGE,
     DEFAULT_OPERPWD_AES_IV,
     DEFAULT_OPERPWD_AES_KEY,
-    DEFAULT_P12_ENC_ALG,
+    DEFAULT_POLICY_ID,
     DEFAULT_SOURCE,
 )
+from .models import ApiRequestHeaders
 
 # ---------------------------------------------------------------------------
 # SM4 cipher tables (for PKCS#12 password derivation)
@@ -229,7 +230,7 @@ def build_login_headers(
     username: str,
     password: str,
     language: str = DEFAULT_LANGUAGE,
-) -> dict[str, str]:
+) -> ApiRequestHeaders:
     """Build headers for the login request with SHA256 signature."""
     nonce = str(random.randint(100000, 9999999))  # noqa: S311
     timestamp = str(int(time.time() * 1000))
@@ -244,25 +245,19 @@ def build_login_headers(
             "1",
             nonce,
             password,
-            "20260204",
+            DEFAULT_POLICY_ID,
             DEFAULT_SOURCE,
             timestamp,
             DEFAULT_APP_VERSION,
         ]
     )
-    return {
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "acceptLanguage": language,
-        "channel": DEFAULT_CHANNEL,
-        "deviceType": DEFAULT_DEVICE_TYPE,
-        "X-P12_ENC_ALG": DEFAULT_P12_ENC_ALG,
-        "source": DEFAULT_SOURCE,
-        "version": DEFAULT_APP_VERSION,
-        "nonce": nonce,
-        "deviceId": device_id,
-        "timestamp": timestamp,
-        "sign": hashlib.sha256(sign_input.encode("utf-8")).hexdigest(),
-    }
+    return ApiRequestHeaders(
+        nonce=nonce,
+        device_id=device_id,
+        timestamp=timestamp,
+        sign=hashlib.sha256(sign_input.encode("utf-8")).hexdigest(),
+        accept_language=language,
+    )
 
 
 def build_signed_headers(
@@ -272,7 +267,7 @@ def build_signed_headers(
     vin: str | None = None,
     language: str = DEFAULT_LANGUAGE,
     body_params: dict[str, str] | None = None,
-) -> dict[str, str]:
+) -> ApiRequestHeaders:
     """Build HMAC-SHA256 signed headers for authenticated requests.
 
     If *body_params* is provided, their values are included in the sign input,
@@ -298,18 +293,13 @@ def build_signed_headers(
         sign_fields.update(body_params)
 
     sign_input = "".join(v for _, v in sorted(sign_fields.items()))
-    return {
-        "acceptLanguage": language,
-        "channel": DEFAULT_CHANNEL,
-        "deviceType": DEFAULT_DEVICE_TYPE,
-        "X-P12_ENC_ALG": DEFAULT_P12_ENC_ALG,
-        "source": DEFAULT_SOURCE,
-        "version": DEFAULT_APP_VERSION,
-        "nonce": nonce,
-        "deviceId": device_id,
-        "timestamp": timestamp,
-        "sign": hmac.new(sign_key, sign_input.encode("utf-8"), hashlib.sha256).hexdigest(),
-    }
+    return ApiRequestHeaders(
+        nonce=nonce,
+        device_id=device_id,
+        timestamp=timestamp,
+        sign=hmac.new(sign_key, sign_input.encode("utf-8"), hashlib.sha256).hexdigest(),
+        accept_language=language,
+    )
 
 
 def build_car_picture_headers(
@@ -318,7 +308,7 @@ def build_car_picture_headers(
     device_id: str,
     vin: str,
     language: str = DEFAULT_LANGUAGE,
-) -> dict[str, str]:
+) -> ApiRequestHeaders:
     """Build the signature variant used by vehicle/v1/carpicture/key."""
     nonce = str(random.randint(100000, 9999999))  # noqa: S311
     timestamp = str(int(time.time() * 1000))
@@ -334,18 +324,13 @@ def build_car_picture_headers(
         f"{DEFAULT_APP_VERSION}"
         f"{vin}"
     )
-    return {
-        "acceptLanguage": language,
-        "channel": DEFAULT_CHANNEL,
-        "deviceType": DEFAULT_DEVICE_TYPE,
-        "X-P12_ENC_ALG": DEFAULT_P12_ENC_ALG,
-        "source": DEFAULT_SOURCE,
-        "version": DEFAULT_APP_VERSION,
-        "nonce": nonce,
-        "deviceId": device_id,
-        "timestamp": timestamp,
-        "sign": hmac.new(sign_key, sign_input.encode("utf-8"), hashlib.sha256).hexdigest(),
-    }
+    return ApiRequestHeaders(
+        nonce=nonce,
+        device_id=device_id,
+        timestamp=timestamp,
+        sign=hmac.new(sign_key, sign_input.encode("utf-8"), hashlib.sha256).hexdigest(),
+        accept_language=language,
+    )
 
 
 def build_car_picture_package_headers(
@@ -354,7 +339,7 @@ def build_car_picture_package_headers(
     device_id: str,
     picture_key: str,
     language: str = DEFAULT_LANGUAGE,
-) -> dict[str, str]:
+) -> ApiRequestHeaders:
     """Build the signature variant used by vehicle/v1/carpicture/package."""
     nonce = str(random.randint(100000, 9999999))  # noqa: S311
     timestamp = str(int(time.time() * 1000))
@@ -369,17 +354,14 @@ def build_car_picture_package_headers(
         f"{timestamp}"
         f"{DEFAULT_APP_VERSION}"
     )
-    return {
-        "acceptLanguage": language,
-        "channel": DEFAULT_CHANNEL,
-        "deviceType": DEFAULT_DEVICE_TYPE,
-        "source": DEFAULT_SOURCE,
-        "version": DEFAULT_APP_VERSION,
-        "nonce": nonce,
-        "deviceId": device_id,
-        "timestamp": timestamp,
-        "sign": hmac.new(sign_key, sign_input.encode("utf-8"), hashlib.sha256).hexdigest(),
-    }
+    return ApiRequestHeaders(
+        nonce=nonce,
+        device_id=device_id,
+        timestamp=timestamp,
+        sign=hmac.new(sign_key, sign_input.encode("utf-8"), hashlib.sha256).hexdigest(),
+        accept_language=language,
+        p12_enc_alg=None,
+    )
 
 
 def build_operpwd_verify_headers(
@@ -389,7 +371,7 @@ def build_operpwd_verify_headers(
     vin: str,
     operation_password: str,
     language: str = DEFAULT_LANGUAGE,
-) -> dict[str, str]:
+) -> ApiRequestHeaders:
     """Build headers for operatePassword verify request."""
     nonce = str(random.randint(100000, 9999999))  # noqa: S311
     timestamp = str(int(time.time() * 1000))
@@ -405,18 +387,13 @@ def build_operpwd_verify_headers(
         f"{DEFAULT_APP_VERSION}"
         f"{vin}"
     )
-    return {
-        "acceptLanguage": language,
-        "channel": DEFAULT_CHANNEL,
-        "deviceType": DEFAULT_DEVICE_TYPE,
-        "X-P12_ENC_ALG": DEFAULT_P12_ENC_ALG,
-        "source": DEFAULT_SOURCE,
-        "version": DEFAULT_APP_VERSION,
-        "nonce": nonce,
-        "deviceId": device_id,
-        "timestamp": timestamp,
-        "sign": hmac.new(sign_key, sign_input.encode("utf-8"), hashlib.sha256).hexdigest(),
-    }
+    return ApiRequestHeaders(
+        nonce=nonce,
+        device_id=device_id,
+        timestamp=timestamp,
+        sign=hmac.new(sign_key, sign_input.encode("utf-8"), hashlib.sha256).hexdigest(),
+        accept_language=language,
+    )
 
 
 def build_remote_ctl_write_headers(
@@ -428,7 +405,7 @@ def build_remote_ctl_write_headers(
     cmd_id: str,
     operation_password: str,
     language: str = DEFAULT_LANGUAGE,
-) -> dict[str, str]:
+) -> ApiRequestHeaders:
     """Build headers for the remote control write request."""
     nonce = str(random.randint(100000, 9999999))  # noqa: S311
     timestamp = str(int(time.time() * 1000))
@@ -446,18 +423,13 @@ def build_remote_ctl_write_headers(
         f"{DEFAULT_APP_VERSION}"
         f"{vin}"
     )
-    return {
-        "acceptLanguage": language,
-        "channel": DEFAULT_CHANNEL,
-        "deviceType": DEFAULT_DEVICE_TYPE,
-        "X-P12_ENC_ALG": DEFAULT_P12_ENC_ALG,
-        "source": DEFAULT_SOURCE,
-        "version": DEFAULT_APP_VERSION,
-        "nonce": nonce,
-        "deviceId": device_id,
-        "timestamp": timestamp,
-        "sign": hmac.new(sign_key, sign_input.encode("utf-8"), hashlib.sha256).hexdigest(),
-    }
+    return ApiRequestHeaders(
+        nonce=nonce,
+        device_id=device_id,
+        timestamp=timestamp,
+        sign=hmac.new(sign_key, sign_input.encode("utf-8"), hashlib.sha256).hexdigest(),
+        accept_language=language,
+    )
 
 
 def build_remote_ctl_write_headers_without_pin(
@@ -468,7 +440,7 @@ def build_remote_ctl_write_headers_without_pin(
     cmd_content: str,
     cmd_id: str,
     language: str = DEFAULT_LANGUAGE,
-) -> dict[str, str]:
+) -> ApiRequestHeaders:
     """Build headers for remote control write requests that do not require a PIN."""
     nonce = str(random.randint(100000, 9999999))  # noqa: S311
     timestamp = str(int(time.time() * 1000))
@@ -485,18 +457,13 @@ def build_remote_ctl_write_headers_without_pin(
         f"{DEFAULT_APP_VERSION}"
         f"{vin}"
     )
-    return {
-        "acceptLanguage": language,
-        "channel": DEFAULT_CHANNEL,
-        "deviceType": DEFAULT_DEVICE_TYPE,
-        "X-P12_ENC_ALG": DEFAULT_P12_ENC_ALG,
-        "source": DEFAULT_SOURCE,
-        "version": DEFAULT_APP_VERSION,
-        "nonce": nonce,
-        "deviceId": device_id,
-        "timestamp": timestamp,
-        "sign": hmac.new(sign_key, sign_input.encode("utf-8"), hashlib.sha256).hexdigest(),
-    }
+    return ApiRequestHeaders(
+        nonce=nonce,
+        device_id=device_id,
+        timestamp=timestamp,
+        sign=hmac.new(sign_key, sign_input.encode("utf-8"), hashlib.sha256).hexdigest(),
+        accept_language=language,
+    )
 
 
 def build_remote_ctl_result_headers(
@@ -505,7 +472,7 @@ def build_remote_ctl_result_headers(
     device_id: str,
     remote_ctl_id: str,
     language: str = DEFAULT_LANGUAGE,
-) -> dict[str, str]:
+) -> ApiRequestHeaders:
     """Build headers for the remote control result query."""
     nonce = str(random.randint(100000, 9999999))  # noqa: S311
     timestamp = str(int(time.time() * 1000))
@@ -520,15 +487,10 @@ def build_remote_ctl_result_headers(
         f"{timestamp}"
         f"{DEFAULT_APP_VERSION}"
     )
-    return {
-        "acceptLanguage": language,
-        "channel": DEFAULT_CHANNEL,
-        "deviceType": DEFAULT_DEVICE_TYPE,
-        "X-P12_ENC_ALG": DEFAULT_P12_ENC_ALG,
-        "source": DEFAULT_SOURCE,
-        "version": DEFAULT_APP_VERSION,
-        "nonce": nonce,
-        "deviceId": device_id,
-        "timestamp": timestamp,
-        "sign": hmac.new(sign_key, sign_input.encode("utf-8"), hashlib.sha256).hexdigest(),
-    }
+    return ApiRequestHeaders(
+        nonce=nonce,
+        device_id=device_id,
+        timestamp=timestamp,
+        sign=hmac.new(sign_key, sign_input.encode("utf-8"), hashlib.sha256).hexdigest(),
+        accept_language=language,
+    )

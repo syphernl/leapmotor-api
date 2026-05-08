@@ -8,7 +8,6 @@ from .client import LeapmotorApiClient
 from .const import (
     DEFAULT_BASE_URL,
     DEFAULT_LANGUAGE,
-    REMOTE_ACTION_SPECS,
     REMOTE_CTL_AC_SWITCH,
     REMOTE_CTL_BATTERY_PREHEAT,
     REMOTE_CTL_FIND_CAR,
@@ -34,7 +33,9 @@ from .exceptions import (
     LeapmotorMissingAppCertError,
     LeapmotorPermissionError,
 )
+from .mappings import REMOTE_ACTION_SPECS
 from .models import (
+    ApiRequestHeaders,
     BatteryPreheatValue,
     BatteryStatus,
     ChargeState,
@@ -77,6 +78,7 @@ from .models import (
 
 __all__ = [
     "__version__",
+    "ApiRequestHeaders",
     "BatteryPreheatValue",
     "BatteryStatus",
     "ChargeState",

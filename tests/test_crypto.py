@@ -13,6 +13,7 @@ from leapmotor_api.crypto import (
     derive_sign_key,
     encrypt_operate_password,
 )
+from leapmotor_api.models import ApiRequestHeaders
 
 
 class TestDeriveAccountP12Password:
@@ -140,36 +141,74 @@ class TestDeriveSignKey:
 class TestBuildLoginHeaders:
     """Test login header construction."""
 
-    def test_contains_required_fields(self) -> None:
-        headers = build_login_headers(
+    def test_returns_api_request_headers(self) -> None:
+        result = build_login_headers(
             device_id="test_device",
             username="user@test.com",
             password="secret",
         )
-        assert "sign" in headers
+        assert isinstance(result, ApiRequestHeaders)
+
+    def test_contains_required_fields(self) -> None:
+        result = build_login_headers(
+            device_id="test_device",
+            username="user@test.com",
+            password="secret",
+        )
+        assert result.sign
+        assert result.device_id == "test_device"
+        assert result.source == "leapmotor"
+        assert result.content_type is not None
+
+    def test_to_dict(self) -> None:
+        result = build_login_headers(
+            device_id="test_device",
+            username="user@test.com",
+            password="secret",
+        )
+        headers = result.to_dict()
+        assert isinstance(headers, dict)
         assert headers["deviceId"] == "test_device"
-        assert headers["source"] == "leapmotor"
         assert "Content-Type" in headers
+        assert "X-P12_ENC_ALG" in headers
+        assert "sign" in headers
 
     def test_sign_is_sha256_hex(self) -> None:
-        headers = build_login_headers(
+        result = build_login_headers(
             device_id="dev",
             username="u",
             password="p",
         )
-        assert len(headers["sign"]) == 64  # SHA256 hex
+        assert len(result.sign) == 64  # SHA256 hex
 
 
 class TestBuildSignedHeaders:
     """Test HMAC-signed header construction."""
 
+    def test_returns_api_request_headers(self) -> None:
+        sign_key = derive_sign_key("ikm", "salt", "info")
+        result = build_signed_headers(
+            sign_key=sign_key,
+            device_id="test_device",
+        )
+        assert isinstance(result, ApiRequestHeaders)
+
     def test_contains_required_fields(self) -> None:
+        sign_key = derive_sign_key("ikm", "salt", "info")
+        result = build_signed_headers(
+            sign_key=sign_key,
+            device_id="test_device",
+        )
+        assert result.sign
+        assert result.device_id == "test_device"
+
+    def test_to_dict_has_p12_enc_alg(self) -> None:
         sign_key = derive_sign_key("ikm", "salt", "info")
         headers = build_signed_headers(
             sign_key=sign_key,
             device_id="test_device",
-        )
-        assert "sign" in headers
+        ).to_dict()
+        assert "X-P12_ENC_ALG" in headers
         assert headers["deviceId"] == "test_device"
 
     def test_sign_includes_vin_when_provided(self) -> None:
@@ -178,4 +217,4 @@ class TestBuildSignedHeaders:
         h2 = build_signed_headers(sign_key=sign_key, device_id="dev", vin="VIN123")
         # Different inputs → different signatures (with extremely high probability)
         # Note: nonce/timestamp make them always different, but we test the code path
-        assert h1["sign"] != h2["sign"]
+        assert h1.sign != h2.sign

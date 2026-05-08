@@ -20,8 +20,8 @@ import urllib3
 from .const import (
     DEFAULT_BASE_URL,
     DEFAULT_LANGUAGE,
+    DEFAULT_POLICY_ID,
     KNOWN_ACCOUNT_P12_PASSWORDS,
-    REMOTE_ACTION_SPECS,
     REMOTE_CTL_AC_SWITCH,
     REMOTE_CTL_BATTERY_PREHEAT,
     REMOTE_CTL_FIND_CAR,
@@ -60,6 +60,7 @@ from .exceptions import (
     LeapmotorAuthError,
     LeapmotorMissingAppCertError,
 )
+from .mappings import REMOTE_ACTION_SPECS
 from .models import MessageList, Vehicle, VehicleRight, VehicleStatus
 
 if TYPE_CHECKING:
@@ -198,7 +199,7 @@ class LeapmotorApiClient:
             username=self.username,
             password=self.password,
             language=self.language,
-        )
+        ).to_dict()
         body = self._build_login_form_body()
         response = self._post(
             path="/carownerservice/oversea/acct/v1/login",
@@ -232,8 +233,8 @@ class LeapmotorApiClient:
             device_id=self.device_id,
             language=self.language,
             body_params=body_params,
-        )
-        headers.update(self._auth_headers(content_type="application/x-www-form-urlencoded"))
+        ).to_dict()
+        headers.update(self._auth_headers())
         data = f"refreshToken={quote(self.refresh_token, safe='')}"
         response = self._post(
             path="/carownerservice/oversea/acct/v1/token/refresh",
@@ -276,8 +277,10 @@ class LeapmotorApiClient:
         return self._retry_on_token_expiry(self._get_vehicle_list)
 
     def _get_vehicle_list(self) -> list[Vehicle]:
-        headers = build_signed_headers(sign_key=self.sign_key, device_id=self.device_id, language=self.language)
-        headers.update(self._auth_headers(content_type="application/x-www-form-urlencoded"))
+        headers = build_signed_headers(
+            sign_key=self.sign_key, device_id=self.device_id, language=self.language
+        ).to_dict()
+        headers.update(self._auth_headers())
         response = self._post(
             path="/carownerservice/oversea/vehicle/v1/list",
             headers=headers,
@@ -313,8 +316,8 @@ class LeapmotorApiClient:
         car_type_path = _vehicle_status_car_type_path(vehicle.car_type)
         headers = build_signed_headers(
             sign_key=self.sign_key, device_id=self.device_id, vin=vehicle.vin, language=self.language
-        )
-        headers.update(self._auth_headers(content_type="application/x-www-form-urlencoded"))
+        ).to_dict()
+        headers.update(self._auth_headers())
         response = self._post(
             path=f"/carownerservice/oversea/vehicle/v1/status/get/{car_type_path}",
             headers=headers,
@@ -331,8 +334,8 @@ class LeapmotorApiClient:
     def _get_mileage_energy_detail(self, vehicle: Vehicle) -> dict[str, Any]:
         headers = build_signed_headers(
             sign_key=self.sign_key, device_id=self.device_id, vin=vehicle.vin, language=self.language
-        )
-        headers.update(self._auth_headers(content_type="application/x-www-form-urlencoded"))
+        ).to_dict()
+        headers.update(self._auth_headers())
         response = self._post(
             path="/carownerservice/oversea/drivingRecord/v1/mileage/energy/detail",
             headers=headers,
@@ -349,8 +352,8 @@ class LeapmotorApiClient:
     def _get_car_picture(self, vehicle: Vehicle) -> dict[str, Any]:
         headers = build_car_picture_headers(
             sign_key=self.sign_key, device_id=self.device_id, vin=vehicle.vin, language=self.language
-        )
-        headers.update(self._auth_headers(content_type="application/x-www-form-urlencoded"))
+        ).to_dict()
+        headers.update(self._auth_headers())
         body = f"deviceID={quote(self.device_id, safe='')}&vin={quote(vehicle.vin, safe='')}"
         response = self._post(
             path="/carownerservice/oversea/vehicle/v1/carpicture/key",
@@ -376,8 +379,8 @@ class LeapmotorApiClient:
             device_id=self.device_id,
             language=self.language,
             body_params=body_params,
-        )
-        headers.update(self._auth_headers(content_type="application/x-www-form-urlencoded"))
+        ).to_dict()
+        headers.update(self._auth_headers())
         data = f"pageNo={page_no}&pageSize={page_size}"
         response = self._post(
             path="/carownerservice/oversea/message/v1/list",
@@ -398,8 +401,8 @@ class LeapmotorApiClient:
             sign_key=self.sign_key,
             device_id=self.device_id,
             language=self.language,
-        )
-        headers.update(self._auth_headers(content_type="application/x-www-form-urlencoded"))
+        ).to_dict()
+        headers.update(self._auth_headers())
         response = self._post(
             path="/carownerservice/oversea/message/v1/unread/count",
             headers=headers,
@@ -555,8 +558,8 @@ class LeapmotorApiClient:
             device_id=self.device_id,
             picture_key=picture_key,
             language=self.language,
-        )
-        headers.update(self._auth_headers(content_type="application/x-www-form-urlencoded"))
+        ).to_dict()
+        headers.update(self._auth_headers())
         response = self._post_binary(
             path="/carownerservice/oversea/vehicle/v1/carpicture/package",
             headers=headers,
@@ -642,8 +645,8 @@ class LeapmotorApiClient:
             vin=vin,
             operation_password=operate_password,
             language=self.language,
-        )
-        verify_headers.update(self._auth_headers(content_type="application/x-www-form-urlencoded"))
+        ).to_dict()
+        verify_headers.update(self._auth_headers())
         verify_body = f"operatePassword={quote(operate_password, safe='')}&vin={quote(vin, safe='')}"
         verify_response = self._post(
             path="/carownerservice/oversea/vehicle/v1/operPwd/verify",
@@ -668,8 +671,8 @@ class LeapmotorApiClient:
             cmd_id=cmd_id,
             operation_password=operate_password,
             language=self.language,
-        )
-        headers.update(self._auth_headers(content_type="application/x-www-form-urlencoded"))
+        ).to_dict()
+        headers.update(self._auth_headers())
         body = (
             f"cmdContent={quote(cmd_content, safe='')}"
             f"&vin={quote(vin, safe='')}"
@@ -723,8 +726,8 @@ class LeapmotorApiClient:
             cmd_content=cmd_content,
             cmd_id=cmd_id,
             language=self.language,
-        )
-        headers.update(self._auth_headers(content_type="application/x-www-form-urlencoded"))
+        ).to_dict()
+        headers.update(self._auth_headers())
         body = f"cmdContent={quote(cmd_content, safe='')}&vin={quote(vin, safe='')}&cmdId={quote(cmd_id, safe='')}"
         response = self._post(
             path="/carownerservice/oversea/vehicle/v1/app/remote/ctl",
@@ -747,8 +750,10 @@ class LeapmotorApiClient:
     def _ensure_remote_cert_sync(self) -> None:
         if self.remote_cert_synced:
             return
-        headers = build_signed_headers(sign_key=self.sign_key, device_id=self.device_id, language=self.language)
-        headers.update(self._auth_headers(content_type="application/x-www-form-urlencoded"))
+        headers = build_signed_headers(
+            sign_key=self.sign_key, device_id=self.device_id, language=self.language
+        ).to_dict()
+        headers.update(self._auth_headers())
         response = self._post(
             path="/carownerservice/oversea/vehicle/v1/cert/sync",
             headers=headers,
@@ -777,8 +782,8 @@ class LeapmotorApiClient:
                 device_id=self.device_id,
                 remote_ctl_id=remote_ctl_id,
                 language=self.language,
-            )
-            headers.update(self._auth_headers(content_type="application/x-www-form-urlencoded"))
+            ).to_dict()
+            headers.update(self._auth_headers())
             response = self._post(
                 path="/carownerservice/oversea/vehicle/v1/app/remote/ctl/result/query",
                 headers=headers,
@@ -942,16 +947,15 @@ class LeapmotorApiClient:
         return (
             "isRecoverAcct=0"
             f"&password={quote(self.password, safe='')}"
-            "&policyId=20260204"
+            f"&policyId={DEFAULT_POLICY_ID}"
             "&loginMethod=1"
             f"&email={quote(self.username, safe='')}"
         )
 
-    def _auth_headers(self, *, content_type: str) -> dict[str, str]:
+    def _auth_headers(self) -> dict[str, str]:
         if not self.user_id or not self.token:
             raise LeapmotorAuthError("Not authenticated.")
         return {
-            "Content-Type": content_type,
             "userId": self.user_id,
             "token": self.token,
         }

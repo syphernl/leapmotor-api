@@ -9,6 +9,68 @@ from datetime import datetime
 from enum import IntEnum, StrEnum
 from typing import Any
 
+from .const import (
+    DEFAULT_APP_VERSION,
+    DEFAULT_CHANNEL,
+    DEFAULT_DEVICE_TYPE,
+    DEFAULT_LANGUAGE,
+    DEFAULT_P12_ENC_ALG,
+    DEFAULT_SOURCE,
+)
+
+# ---------------------------------------------------------------------------
+# API request headers model
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True, slots=True)
+class ApiRequestHeaders:
+    """Signed HTTP headers for Leapmotor API requests.
+
+    All ``build_*_headers`` functions in :mod:`crypto` return an instance of
+    this model.  Call :meth:`to_dict` to obtain a mutable ``dict[str, str]``
+    suitable for ``requests`` or ``httpx``.
+
+    Constant protocol fields carry defaults from the module-level constants
+    so callers only need to supply the per-request fields (``nonce``,
+    ``device_id``, ``timestamp``, ``sign``).
+    """
+
+    # -- Per-request fields (required) --
+    nonce: str
+    device_id: str
+    timestamp: str
+    sign: str
+
+    # -- Protocol constants (defaults from module-level constants) --
+    accept_language: str = DEFAULT_LANGUAGE
+    channel: str = DEFAULT_CHANNEL
+    device_type: str = DEFAULT_DEVICE_TYPE
+    source: str = DEFAULT_SOURCE
+    version: str = DEFAULT_APP_VERSION
+    p12_enc_alg: str | None = DEFAULT_P12_ENC_ALG
+    content_type: str | None = "application/x-www-form-urlencoded"
+
+    def to_dict(self) -> dict[str, str]:
+        """Convert to a mutable dict with the original API header names."""
+        headers: dict[str, str] = {
+            "acceptLanguage": self.accept_language,
+            "channel": self.channel,
+            "deviceType": self.device_type,
+            "source": self.source,
+            "version": self.version,
+            "nonce": self.nonce,
+            "deviceId": self.device_id,
+            "timestamp": self.timestamp,
+            "sign": self.sign,
+        }
+        if self.p12_enc_alg is not None:
+            headers["X-P12_ENC_ALG"] = self.p12_enc_alg
+        if self.content_type is not None:
+            headers["Content-Type"] = self.content_type
+        return headers
+
+
 # ---------------------------------------------------------------------------
 # Enums and data classes for structured vehicle status and metadata.
 # ---------------------------------------------------------------------------

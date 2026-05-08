@@ -7,7 +7,16 @@ from typing import Any
 
 import pytest
 
+from leapmotor_api.const import (
+    DEFAULT_APP_VERSION,
+    DEFAULT_CHANNEL,
+    DEFAULT_DEVICE_TYPE,
+    DEFAULT_LANGUAGE,
+    DEFAULT_P12_ENC_ALG,
+    DEFAULT_SOURCE,
+)
 from leapmotor_api.models import (
+    ApiRequestHeaders,
     BatteryStatus,
     ChargeState,
     ClimateCircle,
@@ -35,6 +44,77 @@ from leapmotor_api.models import (
     VehicleRight,
     VehicleStatus,
 )
+
+# ---------------------------------------------------------------------------
+# ApiRequestHeaders
+# ---------------------------------------------------------------------------
+
+
+class TestApiRequestHeaders:
+    def _make_headers(self, **kwargs: Any) -> ApiRequestHeaders:
+        defaults = {
+            "nonce": "123456",
+            "device_id": "dev1",
+            "timestamp": "1700000000000",
+            "sign": "abc123",
+        }
+        defaults.update(kwargs)
+        return ApiRequestHeaders(**defaults)
+
+    def test_frozen(self) -> None:
+        h = self._make_headers()
+        with pytest.raises(AttributeError):
+            h.sign = "new"  # type: ignore[misc]
+
+    def test_defaults_from_constants(self) -> None:
+        h = self._make_headers()
+        assert h.accept_language == DEFAULT_LANGUAGE
+        assert h.channel == DEFAULT_CHANNEL
+        assert h.device_type == DEFAULT_DEVICE_TYPE
+        assert h.source == DEFAULT_SOURCE
+        assert h.version == DEFAULT_APP_VERSION
+        assert h.p12_enc_alg == DEFAULT_P12_ENC_ALG
+
+    def test_to_dict_required_fields(self) -> None:
+        h = self._make_headers()
+        d = h.to_dict()
+        assert d["acceptLanguage"] == DEFAULT_LANGUAGE
+        assert d["channel"] == DEFAULT_CHANNEL
+        assert d["deviceType"] == DEFAULT_DEVICE_TYPE
+        assert d["source"] == DEFAULT_SOURCE
+        assert d["version"] == DEFAULT_APP_VERSION
+        assert d["nonce"] == "123456"
+        assert d["deviceId"] == "dev1"
+        assert d["timestamp"] == "1700000000000"
+        assert d["sign"] == "abc123"
+
+    def test_to_dict_includes_default_p12_enc_alg(self) -> None:
+        h = self._make_headers()
+        d = h.to_dict()
+        assert d["X-P12_ENC_ALG"] == DEFAULT_P12_ENC_ALG
+
+    def test_to_dict_excludes_none_p12_enc_alg(self) -> None:
+        h = self._make_headers(p12_enc_alg=None)
+        d = h.to_dict()
+        assert "X-P12_ENC_ALG" not in d
+
+    def test_to_dict_includes_content_type(self) -> None:
+        h = self._make_headers(content_type="application/json")
+        d = h.to_dict()
+        assert d["Content-Type"] == "application/json"
+
+    def test_override_defaults(self) -> None:
+        h = self._make_headers(channel="custom", source="other", version="9.9.9")
+        assert h.channel == "custom"
+        assert h.source == "other"
+        assert h.version == "9.9.9"
+
+    def test_to_dict_is_mutable(self) -> None:
+        h = self._make_headers()
+        d = h.to_dict()
+        d["userId"] = "42"
+        assert "userId" in d
+
 
 # ---------------------------------------------------------------------------
 # Vehicle
