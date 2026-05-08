@@ -35,3 +35,5 @@ REMOTE_CTL_AC_SWITCH = "ac_switch"
 REMOTE_CTL_QUICK_COOL = "quick_cool"
 REMOTE_CTL_QUICK_HEAT = "quick_heat"
 REMOTE_CTL_WINDSHIELD_DEFROST = "windshield_defrost"
+
+DEFAULT_TIMEOUT = 30

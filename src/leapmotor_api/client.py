@@ -21,6 +21,7 @@ from .const import (
     DEFAULT_BASE_URL,
     DEFAULT_LANGUAGE,
     DEFAULT_POLICY_ID,
+    DEFAULT_TIMEOUT,
     KNOWN_ACCOUNT_P12_PASSWORDS,
     REMOTE_CTL_AC_SWITCH,
     REMOTE_CTL_BATTERY_PREHEAT,
@@ -69,8 +70,6 @@ if TYPE_CHECKING:
 _T = TypeVar("_T")
 
 _LOGGER = logging.getLogger(__name__)
-
-DEFAULT_TIMEOUT = 30
 
 
 def _vehicle_status_car_type_path(car_type: str) -> str:
