@@ -60,7 +60,7 @@ from .exceptions import (
     LeapmotorAuthError,
     LeapmotorMissingAppCertError,
 )
-from .mappings import REMOTE_ACTION_SPECS
+from .mappings import CAR_TYPE_PATH_MAP, REMOTE_ACTION_SPECS
 from .models import MessageList, Vehicle, VehicleRight, VehicleStatus
 
 if TYPE_CHECKING:
@@ -72,21 +72,11 @@ _LOGGER = logging.getLogger(__name__)
 
 DEFAULT_TIMEOUT = 30
 
-# ---------------------------------------------------------------------------
-# Car-type path mapping
-# ---------------------------------------------------------------------------
-
-# The international backend reports carType=B10 in the vehicle list,
-# but the status endpoint is shared with C10.
-_CAR_TYPE_PATH_MAP: dict[str, str] = {
-    "b10": "c10",
-}
-
 
 def _vehicle_status_car_type_path(car_type: str) -> str:
     """Return the backend status path segment for a vehicle model."""
     normalized = car_type.strip().lower()
-    return _CAR_TYPE_PATH_MAP.get(normalized, normalized)
+    return CAR_TYPE_PATH_MAP.get(normalized, normalized)
 
 
 class LeapmotorApiClient:

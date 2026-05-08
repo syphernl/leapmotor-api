@@ -104,3 +104,13 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
         required_right=VehicleRight.WINDSHIELD_DEFROST,
     ),
 }
+
+# ---------------------------------------------------------------------------
+# Car-type path mapping
+# ---------------------------------------------------------------------------
+
+# The international backend reports carType=B10 in the vehicle list,
+# but the status endpoint is shared with C10.
+CAR_TYPE_PATH_MAP: dict[str, str] = {
+    "b10": "c10",
+}
