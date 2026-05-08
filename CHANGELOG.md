@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- Added `VehicleAbility`, `VehicleRight`, and `ModuleRight` IntEnum classes for typed vehicle permissions, replacing raw strings/lists
+- `Vehicle.rights`, `Vehicle.abilities`, and `Vehicle.module_rights` are now typed lists of enum members (parsed from API strings) with empty-list defaults
+- Added `Vehicle.has_ability()`, `Vehicle.has_right()`, and `Vehicle.has_module_right()` convenience methods accepting both enum members and raw ints
+- Unknown permission codes from the API are handled gracefully via `_missing_()` (e.g. ability 61 → `UNKNOWN_61`) instead of raising errors
+- Each enum member has a `.description` property with a human-readable label
+- Added `required_right` field to `RemoteActionSpec` linking each remote command to its required `VehicleRight`
+- Remote commands now log a warning when the vehicle's rights may not include the required permission (soft check — the server remains the authority)
+- Added `LeapmotorPermissionError` exception class for consumers wanting strict permission enforcement
 - Added `SeatComfortStatus` sub-object: driver/passenger seat heating and ventilation levels, steering wheel heating and remaining minutes
 - Added `SecurityStatus` sub-object: vehicle security active, sentry mode, mirror heating (left/right), roof/skylight opening
 - Added new fields to `BatteryStatus`: `precise_soc`, `min_battery_temp`, `battery_thermal_request`, `charge_completed`, `charge_schedule_enabled`, `charge_schedule_start`, `charge_schedule_end`, `charge_schedule_cycles`, `charge_schedule_circulation`
@@ -20,6 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added documentation for api (`docs/api.md`) and vehicles (`docs/vehicles.md`)
 
 ### Changed
+- **Breaking:** `Vehicle.rights` changed from `str | None` to `list[VehicleRight]` (was a comma-separated string like `"110,120,230"`)
+- **Breaking:** `Vehicle.abilities` changed from `list[str] | None` to `list[VehicleAbility]` (was a list of numeric strings like `["1", "10", "36"]`)
+- **Breaking:** `Vehicle.module_rights` changed from `str | None` to `list[ModuleRight]` (was a comma-separated string like `"100,200,300,400"`)
+- `normalize_vehicle()` now serializes permissions as int lists instead of raw strings
 - `DrivingStatus.is_parked` now falls back to `vehicle_state` and `driving_state` signals when `speed` is unavailable (improves C10/B10 reliability)
 
 ## [0.1.7] - 2026-05-07
