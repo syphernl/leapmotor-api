@@ -31,8 +31,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Breaking:** `Vehicle.rights` changed from `str | None` to `list[VehicleRight]` (was a comma-separated string like `"110,120,230"`)
 - **Breaking:** `Vehicle.abilities` changed from `list[str] | None` to `list[VehicleAbility]` (was a list of numeric strings like `["1", "10", "36"]`)
 - **Breaking:** `Vehicle.module_rights` changed from `str | None` to `list[ModuleRight]` (was a comma-separated string like `"100,200,300,400"`)
-- `normalize_vehicle()` now serializes permissions as int lists instead of raw strings
 - `DrivingStatus.is_parked` now falls back to `vehicle_state` and `driving_state` signals when `speed` is unavailable (improves C10/B10 reliability)
+
+### Removed
+- **Breaking:** Removed `fetch_data()` from `LeapmotorApiClient` and `AsyncLeapmotorApiClient` — was a debug-only aggregation method; use `get_vehicle_list()` + `get_vehicle_status()` instead
+- **Breaking:** Removed `normalize_vehicle()` — debug-only flattening helper superseded by typed `VehicleStatus` model with raw data included
+- **Breaking:** Removed `_fetch_authenticated_data()` internal method — debug-only helper no longer needed
 
 ## [0.1.7] - 2026-05-07
 
