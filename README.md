@@ -103,6 +103,35 @@ All fields are `T | None` — they are populated only when the vehicle reports t
 
 For raw API data, use `get_vehicle_raw_status()` or access `status.raw`.
 
+## Vehicle Permissions
+
+The `Vehicle` object exposes the Leapmotor 3-tier permission system as typed enums:
+
+| Field | Type | Description |
+|---|---|---|
+| `vehicle.abilities` | `list[VehicleAbility]` | Hardware feature flags (what the vehicle can do) |
+| `vehicle.rights` | `list[VehicleRight]` | Remote command permissions (what the account can execute) |
+| `vehicle.module_rights` | `list[ModuleRight]` | Macro sharing categories |
+
+```python
+from leapmotor_api import VehicleAbility, VehicleRight
+
+vehicle = vehicles[0]
+
+# Check capabilities
+if vehicle.has_right(VehicleRight.WINDOWS):
+    client.open_windows(vehicle.vin)
+
+if vehicle.has_ability(VehicleAbility.NAVIGATION):
+    client.send_destination(vehicle.vin, ...)
+
+# Inspect permissions
+for right in vehicle.rights:
+    print(f"{right.name} ({right.value}): {right.description}")
+```
+
+Remote commands automatically log a warning when the vehicle may lack the required permission, but still proceed (the server enforces permissions authoritatively).
+
 ## Remote Control
 
 Remote actions require the vehicle PIN (`operation_password`):
