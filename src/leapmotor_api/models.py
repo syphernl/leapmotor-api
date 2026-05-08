@@ -136,15 +136,24 @@ class BatteryStatus:
     """Battery and charging status."""
 
     soc: int | None = None
+    precise_soc: float | None = None
     charge_state: ChargeState | None = None
     charge_remain_time: int | None = None
     charge_soc_setting: int | None = None
     charge_time_setting: str | None = None
+    charge_schedule_enabled: int | None = None
+    charge_schedule_start: str | None = None
+    charge_schedule_end: str | None = None
+    charge_schedule_cycles: str | None = None
+    charge_schedule_circulation: int | None = None
+    charge_completed: int | None = None
     dc_input_fast_charge: int | None = None
     dump_energy: int | None = None
     battery_current: float | None = None
     battery_voltage: float | None = None
     expected_mileage: int | None = None
+    min_battery_temp: int | None = None
+    battery_thermal_request: int | None = None
 
     @property
     def dump_energy_kwh(self) -> float | None:
@@ -202,15 +211,24 @@ class BatteryStatus:
                 charge_state = None
         return cls(
             soc=data.get("soc"),
+            precise_soc=data.get("preciseSoc"),
             charge_state=charge_state,
             charge_remain_time=data.get("chargeRemainTime"),
             charge_soc_setting=data.get("chargesocSetting"),
             charge_time_setting=data.get("chargeTimeSetting"),
+            charge_schedule_enabled=data.get("chargeScheduleEnabled"),
+            charge_schedule_start=data.get("chargeScheduleStart"),
+            charge_schedule_end=data.get("chargeScheduleEnd"),
+            charge_schedule_cycles=data.get("chargeScheduleCycles"),
+            charge_schedule_circulation=data.get("chargeScheduleCirculation"),
+            charge_completed=data.get("chargeCompleted"),
             dc_input_fast_charge=data.get("dcInputFastCharge"),
             dump_energy=data.get("dumpEnergy"),
             battery_current=data.get("batteryCurrent"),
             battery_voltage=data.get("batteryVoltage"),
             expected_mileage=data.get("expectedMileage"),
+            min_battery_temp=data.get("minBatteryTemp"),
+            battery_thermal_request=data.get("batteryThermalRequest"),
         )
 
 
@@ -221,13 +239,25 @@ class DrivingStatus:
     speed: int | None = None
     total_mileage: int | None = None
     gear_status: int | None = None
+    vehicle_state: int | None = None
+    driving_state: int | None = None
+    speed_limit: int | None = None
+    speed_limit_unit: int | None = None
+    speed_limit_active: int | None = None
+    live_remaining_range: int | None = None
+    max_range: int | None = None
+    range_mode: int | None = None
 
     @property
     def is_parked(self) -> bool | None:
         """True if the vehicle is stationary."""
-        if self.speed is None:
-            return None
-        return self.speed == 0
+        if self.speed is not None:
+            return self.speed == 0
+        if self.vehicle_state is not None:
+            return self.vehicle_state in (0, 1, 3)
+        if self.driving_state is not None:
+            return self.driving_state in (1, 2, 4)
+        return None
 
 
 @dataclass(slots=True)
@@ -244,6 +274,8 @@ class ClimateStatus:
 
     ac_switch: bool | None = None
     ac_setting: float | None = None
+    ac_setting_right: float | None = None
+    interior_temp: float | None = None
     ac_air_volume: int | None = None
     ac_air_volume_setting: int | None = None
     ac_wind_direction: int | None = None
@@ -254,6 +286,12 @@ class ClimateStatus:
     min_single_temp: int | None = None
     ptc_state: int | None = None
     ptc_power_setting_value: int | None = None
+    recirculation_mode: int | None = None
+    windshield_defrost: int | None = None
+    rear_window_heating: int | None = None
+    climate_mode: int | None = None
+    rapid_cooling: int | None = None
+    rapid_heating: int | None = None
 
 
 @dataclass(slots=True)
@@ -302,10 +340,34 @@ class ConnectivityStatus:
 
 
 @dataclass(slots=True)
+class SeatComfortStatus:
+    """Seat and comfort features status (C10/B10 only)."""
+
+    driver_seat_heating: int | None = None
+    driver_seat_ventilation: int | None = None
+    passenger_seat_heating: int | None = None
+    passenger_seat_ventilation: int | None = None
+    steering_wheel_heating: int | None = None
+    steering_wheel_heater_minutes: int | None = None
+
+
+@dataclass(slots=True)
+class SecurityStatus:
+    """Vehicle security and exterior status."""
+
+    vehicle_security_active: int | None = None
+    sentry_mode: int | None = None
+    left_mirror_heating: int | None = None
+    right_mirror_heating: int | None = None
+    roof_opening: int | None = None
+
+
+@dataclass(slots=True)
 class IgnitionStatus:
     """Ignition / key position status."""
 
     bcm_key_position_on1: bool | None = None
+    bcm_key_position_on2: bool | None = None
     bcm_key_position_on3: bool | None = None
 
 
@@ -325,6 +387,8 @@ class VehicleStatus:
     windows: WindowStatus = field(default_factory=WindowStatus)
     tires: TirePressure = field(default_factory=TirePressure)
     connectivity: ConnectivityStatus = field(default_factory=ConnectivityStatus)
+    seat_comfort: SeatComfortStatus = field(default_factory=SeatComfortStatus)
+    security: SecurityStatus = field(default_factory=SecurityStatus)
     ignition: IgnitionStatus = field(default_factory=IgnitionStatus)
 
     # -- Timestamps --
@@ -362,6 +426,8 @@ class VehicleStatus:
             windows=WindowStatus(**_extract_fields(merged, _WINDOW_FIELDS)),
             tires=TirePressure(**_extract_fields(merged, _TIRE_FIELDS)),
             connectivity=ConnectivityStatus(**_extract_fields(merged, _CONNECTIVITY_FIELDS)),
+            seat_comfort=SeatComfortStatus(**_extract_fields(merged, _SEAT_COMFORT_FIELDS)),
+            security=SecurityStatus(**_extract_fields(merged, _SECURITY_FIELDS)),
             ignition=IgnitionStatus(**_extract_fields(merged, _IGNITION_FIELDS)),
             raw=status_data,
             **timestamps,
@@ -426,6 +492,14 @@ _DRIVING_FIELDS: dict[str, str] = {
     "speed": "speed",
     "totalMileage": "total_mileage",
     "gearStatus": "gear_status",
+    "vehicleState": "vehicle_state",
+    "drivingState": "driving_state",
+    "speedLimit": "speed_limit",
+    "speedLimitUnit": "speed_limit_unit",
+    "speedLimitActive": "speed_limit_active",
+    "liveRemainingRange": "live_remaining_range",
+    "maxRange": "max_range",
+    "rangeMode": "range_mode",
 }
 
 _LOCATION_FIELDS: dict[str, str] = {
@@ -436,6 +510,8 @@ _LOCATION_FIELDS: dict[str, str] = {
 _CLIMATE_FIELDS: dict[str, str] = {
     "acSwitch": "ac_switch",
     "acSetting": "ac_setting",
+    "acSettingRight": "ac_setting_right",
+    "interiorTemp": "interior_temp",
     "acAirVolume": "ac_air_volume",
     "acAirVolumeSetting": "ac_air_volume_setting",
     "acWindDirection": "ac_wind_direction",
@@ -446,6 +522,12 @@ _CLIMATE_FIELDS: dict[str, str] = {
     "minSingleTemp": "min_single_temp",
     "ptcState": "ptc_state",
     "ptcPowerSettingValue": "ptc_power_setting_value",
+    "recirculationMode": "recirculation_mode",
+    "windshieldDefrost": "windshield_defrost",
+    "rearWindowHeating": "rear_window_heating",
+    "climateMode": "climate_mode",
+    "rapidCooling": "rapid_cooling",
+    "rapidHeating": "rapid_heating",
 }
 
 _DOOR_FIELDS: dict[str, str] = {
@@ -490,7 +572,25 @@ _CONNECTIVITY_FIELDS: dict[str, str] = {
 
 _IGNITION_FIELDS: dict[str, str] = {
     "bcmKeyPositionOn1": "bcm_key_position_on1",
+    "bcmKeyPositionOn2": "bcm_key_position_on2",
     "bcmKeyPositionOn3": "bcm_key_position_on3",
+}
+
+_SEAT_COMFORT_FIELDS: dict[str, str] = {
+    "driverSeatHeating": "driver_seat_heating",
+    "driverSeatVentilation": "driver_seat_ventilation",
+    "passengerSeatHeating": "passenger_seat_heating",
+    "passengerSeatVentilation": "passenger_seat_ventilation",
+    "steeringWheelHeating": "steering_wheel_heating",
+    "steeringWheelHeaterMinutes": "steering_wheel_heater_minutes",
+}
+
+_SECURITY_FIELDS: dict[str, str] = {
+    "vehicleSecurityActive": "vehicle_security_active",
+    "sentryMode": "sentry_mode",
+    "leftMirrorHeating": "left_mirror_heating",
+    "rightMirrorHeating": "right_mirror_heating",
+    "roofOpening": "roof_opening",
 }
 
 _DATETIME_FMT = "%Y-%m-%d %H:%M:%S"
@@ -506,23 +606,43 @@ _DATETIME_FMT = "%Y-%m-%d %H:%M:%S"
 _SIGNAL_TO_NAMED: dict[str, str] = {
     # Battery / charging
     "1204": "soc",
+    "100003": "preciseSoc",
     "1200": "chargeRemainTime",
     "1178": "batteryCurrent",
     "1177": "batteryVoltage",
     "1197": "dcInputFastCharge",
     "1149": "chargeState",
+    "1182": "minBatteryTemp",
+    "1186": "batteryThermalRequest",
+    "3736": "chargeCompleted",
     # Range
     "3260": "expectedMileage",
+    "2188": "liveRemainingRange",
+    "3257": "maxRange",
+    "3262": "rangeMode",
     # Driving
     "1319": "speed",
     "1318": "totalMileage",
     "1010": "gearStatus",
+    "1944": "vehicleState",
+    "1941": "drivingState",
+    "6048": "speedLimit",
+    "6047": "speedLimitUnit",
+    "12054": "speedLimitActive",
     # Location
     "3725": "latitude",
     "3724": "longitude",
     # Climate
     "1938": "acSwitch",
     "2183": "acSetting",
+    "2184": "acSettingRight",
+    "1349": "interiorTemp",
+    "1943": "recirculationMode",
+    "1945": "windshieldDefrost",
+    "1946": "rearWindowHeating",
+    "3713": "climateMode",
+    "2669": "rapidCooling",
+    "2681": "rapidHeating",
     # Windows (position percent)
     "3727": "leftFrontWindowPercent",
     "3728": "rightFrontWindowPercent",
@@ -551,7 +671,21 @@ _SIGNAL_TO_NAMED: dict[str, str] = {
     "2662": "rightRearTirePressureState",
     # Ignition
     "1256": "bcmKeyPositionOn1",
+    "1257": "bcmKeyPositionOn2",
     "1258": "bcmKeyPositionOn3",
+    # Seat comfort
+    "2100": "driverSeatHeating",
+    "2101": "driverSeatVentilation",
+    "2118": "passengerSeatHeating",
+    "2119": "passengerSeatVentilation",
+    "1816": "steeringWheelHeating",
+    "1624": "steeringWheelHeaterMinutes",
+    # Security / exterior
+    "1255": "vehicleSecurityActive",
+    "3636": "sentryMode",
+    "49": "leftMirrorHeating",
+    "50": "rightMirrorHeating",
+    "1724": "roofOpening",
 }
 
 
@@ -570,6 +704,12 @@ def _merge_signal_to_named(status_data: dict[str, Any]) -> dict[str, Any]:
         if signal_id in signal and named_field not in merged:
             merged[named_field] = signal[signal_id]
 
+    # GPS fallback: use alternative coordinates if primary are missing
+    if "latitude" not in merged and "2190" in signal:
+        merged["latitude"] = signal["2190"]
+    if "longitude" not in merged and "2191" in signal:
+        merged["longitude"] = signal["2191"]
+
     # Convert signal timestamp (milliseconds) to collectTime string
     if "sts" in signal and "collectTime" not in merged:
         sts = signal["sts"]
@@ -577,6 +717,24 @@ def _merge_signal_to_named(status_data: dict[str, Any]) -> dict[str, Any]:
             ts = sts / 1000 if sts > 9_999_999_999 else sts
             with contextlib.suppress(OSError, ValueError, OverflowError):
                 merged["collectTime"] = datetime.fromtimestamp(ts).strftime(_DATETIME_FMT)  # noqa: DTZ006
+
+    # Map config.3 (charge plan) to named fields for BatteryStatus
+    config = status_data.get("config")
+    if isinstance(config, dict):
+        charge_plan = config.get("3")
+        if isinstance(charge_plan, dict):
+            if "chargesocSetting" not in merged and "percent" in charge_plan:
+                merged["chargesocSetting"] = charge_plan["percent"]
+            if "chargeScheduleEnabled" not in merged and "isEnable" in charge_plan:
+                merged["chargeScheduleEnabled"] = charge_plan["isEnable"]
+            if "chargeScheduleStart" not in merged and "beginTime" in charge_plan:
+                merged["chargeScheduleStart"] = charge_plan["beginTime"]
+            if "chargeScheduleEnd" not in merged and "endTime" in charge_plan:
+                merged["chargeScheduleEnd"] = charge_plan["endTime"]
+            if "chargeScheduleCycles" not in merged and "cycles" in charge_plan:
+                merged["chargeScheduleCycles"] = charge_plan["cycles"]
+            if "chargeScheduleCirculation" not in merged and "circulation" in charge_plan:
+                merged["chargeScheduleCirculation"] = charge_plan["circulation"]
 
     return merged
 
