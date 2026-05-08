@@ -244,6 +244,11 @@ No configuration is needed — the `refreshToken` is obtained during `login()` a
 | `timeout` | `int` | `30` | HTTP timeout in seconds |
 | `device_id` | `str \| None` | `None` | Custom device ID (auto-generated if omitted) |
 
+## Documentation
+
+- [API Reference](docs/api.md) — endpoints, cryptography and remote commands
+- [Vehicle Model Differences](docs/vehicles.md) — API response format and signal IDs across vehicle models
+
 ## License
 
 This project is licensed under the [GNU Affero General Public License v3.0](LICENSE).
