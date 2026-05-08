@@ -7,8 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Fixed
-- Fixed `VehicleStatus.from_dict()` returning empty/None fields for C10/B10 vehicles: the API returns numeric signal IDs inside a `signal` dict instead of named fields; added signal-to-named-field mapping so all status fields (battery, driving, location, doors, windows, tires, climate, ignition, timestamps) are now correctly parsed for both response formats
+### Added
+- Added `SeatComfortStatus` sub-object: driver/passenger seat heating and ventilation levels, steering wheel heating and remaining minutes
+- Added `SecurityStatus` sub-object: vehicle security active, sentry mode, mirror heating (left/right), roof/skylight opening
+- Added new fields to `BatteryStatus`: `precise_soc`, `min_battery_temp`, `battery_thermal_request`, `charge_completed`, `charge_schedule_enabled`, `charge_schedule_start`, `charge_schedule_end`, `charge_schedule_cycles`, `charge_schedule_circulation`
+- Added new fields to `DrivingStatus`: `vehicle_state`, `driving_state`, `speed_limit`, `speed_limit_unit`, `speed_limit_active`, `live_remaining_range`, `max_range`, `range_mode`
+- Added new fields to `ClimateStatus`: `ac_setting_right`, `interior_temp`, `recirculation_mode`, `windshield_defrost`, `rear_window_heating`, `climate_mode`, `rapid_cooling`, `rapid_heating`
+- Added `bcm_key_position_on2` to `IgnitionStatus`
+- Added `config.3` charge plan mapping for C10/B10: charge limit and scheduling fields are now populated from the `config` section
+- Added GPS fallback using alternative coordinates (signals `2190`/`2191`) when primary GPS signals are absent
+- Added 30+ new signal IDs to `_SIGNAL_TO_NAMED` covering all new fields
+- Added documentation for api (`docs/api.md`) and vehicles (`docs/vehicles.md`)
+
+### Changed
+- `DrivingStatus.is_parked` now falls back to `vehicle_state` and `driving_state` signals when `speed` is unavailable (improves C10/B10 reliability)
 
 ## [0.1.7] - 2026-05-07
 
