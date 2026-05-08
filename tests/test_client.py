@@ -20,14 +20,13 @@ from leapmotor_api.client import (
     _safe_int,
     _to_bar,
     _vehicle_status_car_type_path,
-    normalize_vehicle,
 )
 from leapmotor_api.exceptions import (
     LeapmotorApiError,
     LeapmotorAuthError,
     LeapmotorMissingAppCertError,
 )
-from leapmotor_api.models import MessageList, Vehicle, VehicleAbility
+from leapmotor_api.models import MessageList, Vehicle
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -81,7 +80,7 @@ class TestClientInit:
     def test_missing_cert_raises(self) -> None:
         client = _make_client(app_cert_path="/nonexistent/cert.pem")
         with pytest.raises(LeapmotorMissingAppCertError):
-            client.fetch_data()
+            client.login()
         client.close()
 
 
@@ -117,80 +116,6 @@ class TestVehicleStatusCarTypePath:
     def test_other_types_lowered(self) -> None:
         assert _vehicle_status_car_type_path("T03") == "t03"
         assert _vehicle_status_car_type_path("C11") == "c11"
-
-
-# ---------------------------------------------------------------------------
-# Normalize vehicle
-# ---------------------------------------------------------------------------
-
-
-class TestNormalizeVehicle:
-    def _vehicle(self) -> Vehicle:
-        return Vehicle(
-            vin="WLMTEST123",
-            car_type="C10",
-            email="test@test.com",
-            plate_number=None,
-            car_id="42",
-            user_nickname="Owner",
-            vehicle_nickname="MyCar",
-            is_shared=False,
-            year=2024,
-        )
-
-    def test_basic_structure(self) -> None:
-        status_json: dict[str, Any] = {
-            "data": {
-                "signal": {"1204": 85, "3260": 300, "47": 0},
-                "config": {},
-            }
-        }
-        result = normalize_vehicle(self._vehicle(), status_json, "user1")
-        assert result["vehicle"]["vin"] == "WLMTEST123"
-        assert result["vehicle"]["vehicle_nickname"] == "MyCar"
-        assert result["vehicle"]["user_nickname"] == "Owner"
-        assert result["status"]["battery_percent"] == 85
-        assert result["status"]["remaining_range_km"] == 300
-        assert result["status"]["is_locked"] is True
-
-    def test_unlocked(self) -> None:
-        status_json: dict[str, Any] = {"data": {"signal": {"47": 1}, "config": {}}}
-        result = normalize_vehicle(self._vehicle(), status_json, "user1")
-        assert result["status"]["is_locked"] is False
-
-    def test_lock_status_none(self) -> None:
-        status_json: dict[str, Any] = {"data": {"signal": {}, "config": {}}}
-        result = normalize_vehicle(self._vehicle(), status_json, "user1")
-        assert result["status"]["is_locked"] is None
-
-    def test_with_mileage(self) -> None:
-        status_json: dict[str, Any] = {"data": {"signal": {}, "config": {}}}
-        mileage_json = {"data": {"totalmileage": 15000, "deliveryDays": 365}}
-        result = normalize_vehicle(
-            self._vehicle(),
-            status_json,
-            "user1",
-            mileage_json=mileage_json,
-        )
-        assert result["history"]["total_mileage_km"] == 15000
-        assert result["history"]["delivery_days"] == 365
-
-    def test_with_picture(self) -> None:
-        status_json: dict[str, Any] = {"data": {"signal": {}, "config": {}}}
-        picture_json = {"data": {"shareBindUrl": "https://example.com/pic.jpg", "key": "k"}}
-        result = normalize_vehicle(
-            self._vehicle(),
-            status_json,
-            "user1",
-            picture_json=picture_json,
-        )
-        assert result["media"]["car_picture_status"] == "available"
-        assert result["media"]["car_picture_url"] == "https://example.com/pic.jpg"
-
-    def test_empty_data(self) -> None:
-        result = normalize_vehicle(self._vehicle(), {}, "user1")
-        assert result["status"]["battery_percent"] is None
-        assert result["location"]["latitude"] is None
 
 
 # ---------------------------------------------------------------------------
@@ -313,130 +238,6 @@ class TestChargingPowerKw:
 
     def test_empty_signal_returns_none(self) -> None:
         assert _charging_power_kw({}) is None
-
-
-# ---------------------------------------------------------------------------
-# Normalize vehicle — additional edge cases
-# ---------------------------------------------------------------------------
-
-
-class TestNormalizeVehicleExtended:
-    def _vehicle(self) -> Vehicle:
-        return Vehicle(
-            vin="WLMTEST123",
-            car_type="C10",
-            email="test@test.com",
-            plate_number=None,
-            car_id="42",
-            user_nickname="Owner",
-            vehicle_nickname="MyCar",
-            is_shared=False,
-            year=2024,
-        )
-
-    def test_charging_info(self) -> None:
-        status_json: dict[str, Any] = {
-            "data": {
-                "signal": {"1178": 10.0, "1177": 400.0, "1200": 60, "1204": 50},
-                "config": {
-                    "3": {
-                        "percent": 80,
-                        "isEnable": 1,
-                        "beginTime": "22:00",
-                        "endTime": "06:00",
-                        "cycles": "1,2,3,4,5,6,7",
-                        "circulation": 1,
-                        "updateTime": "2024-01-01 00:00:00",
-                    }
-                },
-            }
-        }
-        result = normalize_vehicle(self._vehicle(), status_json, "user1")
-        assert result["charging"]["is_charging"] is True
-        assert result["charging"]["charge_limit_percent"] == 80
-        assert result["charging"]["remaining_charge_minutes"] == 60
-        assert result["charging"]["charging_power_kw"] == 4.0
-        assert result["charging"]["charging_current_a"] == 10.0
-        assert result["charging"]["charging_voltage_v"] == 400.0
-        assert result["charging"]["charging_planned_enabled"] == 1
-        assert result["charging"]["charging_planned_start"] == "22:00"
-        assert result["charging"]["charging_planned_end"] == "06:00"
-
-    def test_diagnostics_tire_pressure(self) -> None:
-        status_json: dict[str, Any] = {
-            "data": {
-                "signal": {
-                    "2667": 250,
-                    "2653": 255,
-                    "2646": 260,
-                    "2660": 245,
-                },
-                "config": {},
-            }
-        }
-        result = normalize_vehicle(self._vehicle(), status_json, "user1")
-        assert result["diagnostics"]["tire_pressure_front_left_bar"] == 2.5
-        assert result["diagnostics"]["tire_pressure_front_right_bar"] == 2.55
-        assert result["diagnostics"]["tire_pressure_rear_left_bar"] == 2.6
-        assert result["diagnostics"]["tire_pressure_rear_right_bar"] == 2.45
-
-    def test_location_fallback_coordinates(self) -> None:
-        """Should fall back to signal 2190/2191 if 3725/3724 not present."""
-        status_json: dict[str, Any] = {
-            "data": {
-                "signal": {"2190": 45.123, "2191": 7.456},
-                "config": {},
-            }
-        }
-        result = normalize_vehicle(self._vehicle(), status_json, "user1")
-        assert result["location"]["latitude"] == 45.123
-        assert result["location"]["longitude"] == 7.456
-
-    def test_location_primary_coordinates(self) -> None:
-        """Primary coordinates (3725/3724) take precedence."""
-        status_json: dict[str, Any] = {
-            "data": {
-                "signal": {"3725": 46.0, "3724": 8.0, "2190": 45.0, "2191": 7.0},
-                "config": {},
-            }
-        }
-        result = normalize_vehicle(self._vehicle(), status_json, "user1")
-        assert result["location"]["latitude"] == 46.0
-        assert result["location"]["longitude"] == 8.0
-
-    def test_vehicle_abilities_empty(self) -> None:
-        v = Vehicle(
-            vin="VIN1",
-            car_type="C10",
-            email=None,
-            plate_number=None,
-            car_id="1",
-            user_nickname="N",
-            vehicle_nickname="N",
-            is_shared=False,
-        )
-        result = normalize_vehicle(v, {}, "user1")
-        assert result["vehicle"]["abilities"] == []
-
-    def test_vehicle_abilities_populated(self) -> None:
-        v = Vehicle(
-            vin="VIN1",
-            car_type="C10",
-            email=None,
-            plate_number=None,
-            car_id="1",
-            user_nickname="N",
-            vehicle_nickname="N",
-            is_shared=False,
-            abilities=[VehicleAbility.BASE, VehicleAbility.LOCK_UNLOCK],
-        )
-        result = normalize_vehicle(v, {}, "user1")
-        assert result["vehicle"]["abilities"] == [1, 10]
-
-    def test_raw_updated_at_present(self) -> None:
-        result = normalize_vehicle(self._vehicle(), {}, "user1")
-        assert "raw_updated_at" in result
-        assert isinstance(result["raw_updated_at"], float)
 
 
 # ---------------------------------------------------------------------------

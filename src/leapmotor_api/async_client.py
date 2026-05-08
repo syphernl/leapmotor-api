@@ -38,9 +38,6 @@ class AsyncLeapmotorApiClient:
     async def token_refresh(self) -> None:
         await asyncio.to_thread(self._client.token_refresh)
 
-    async def fetch_data(self) -> dict[str, Any]:
-        return await asyncio.to_thread(self._client.fetch_data)
-
     async def get_vehicle_list(self) -> list[Vehicle]:
         return await asyncio.to_thread(self._client.get_vehicle_list)
 

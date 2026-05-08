@@ -270,20 +270,6 @@ class LeapmotorApiClient:
                 self.login()
             return func(*args, **kwargs)
 
-    def fetch_data(self) -> dict[str, Any]:
-        """Authenticate if needed and fetch all read-only vehicle data."""
-        if not self.token:
-            self._ensure_static_cert_files()
-            self.login()
-
-        try:
-            return self._fetch_authenticated_data()
-        except LeapmotorApiError:
-            self._clear_auth()
-            self._ensure_static_cert_files()
-            self.login()
-            return self._fetch_authenticated_data()
-
     def get_vehicle_list(self) -> list[Vehicle]:
         """Fetch the account vehicle list."""
         self._ensure_token()
@@ -584,26 +570,6 @@ class LeapmotorApiClient:
     # ------------------------------------------------------------------
     # Private — Data fetching
     # ------------------------------------------------------------------
-
-    def _fetch_authenticated_data(self) -> dict[str, Any]:
-        vehicles = self.get_vehicle_list()
-        result: dict[str, Any] = {
-            "user_id": self.user_id,
-            "vehicles": {},
-            "account_p12_password_source": self.account_p12_password_source,
-        }
-        for vehicle in vehicles:
-            status = self.get_vehicle_raw_status(vehicle)
-            mileage = self._fetch_optional_read("mileage energy detail", self.get_mileage_energy_detail, vehicle)
-            picture = self._fetch_optional_read("car picture", self.get_car_picture, vehicle)
-            result["vehicles"][vehicle.vin] = normalize_vehicle(
-                vehicle,
-                status,
-                self.user_id,
-                mileage_json=mileage,
-                picture_json=picture,
-            )
-        return result
 
     def _fetch_optional_read(self, label: str, fetcher: Any, vehicle: Vehicle) -> dict[str, Any] | None:
         try:
@@ -1027,111 +993,6 @@ class LeapmotorApiClient:
 # ---------------------------------------------------------------------------
 # Data normalization (pure functions, no side effects)
 # ---------------------------------------------------------------------------
-
-
-def normalize_vehicle(
-    vehicle: Vehicle,
-    status_json: dict[str, Any],
-    user_id: str | None,
-    *,
-    mileage_json: dict[str, Any] | None = None,
-    picture_json: dict[str, Any] | None = None,
-) -> dict[str, Any]:
-    """Normalize Leapmotor status payload into a structured dict."""
-    status_data = status_json.get("data") or {}
-    signal = status_data.get("signal") or {}
-    config = status_data.get("config") or {}
-    charge_plan = config.get("3") or {}
-    mileage_data = (mileage_json or {}).get("data") or {}
-    picture_data = (picture_json or {}).get("data") or {}
-    vehicle_state = _derive_vehicle_state(signal)
-
-    return {
-        "vehicle": {
-            "vin": vehicle.vin,
-            "user_id": user_id,
-            "car_id": vehicle.car_id,
-            "car_type": vehicle.car_type,
-            "vehicle_nickname": vehicle.vehicle_nickname,
-            "user_nickname": vehicle.user_nickname,
-            "is_shared": vehicle.is_shared,
-            "year": vehicle.year,
-            "rights": [r.value for r in vehicle.rights],
-            "abilities": [a.value for a in vehicle.abilities],
-            "module_rights": [m.value for m in vehicle.module_rights],
-        },
-        "status": {
-            "battery_percent": signal.get("1204"),
-            "remaining_range_km": signal.get("3260"),
-            "odometer_km": signal.get("1318"),
-            "is_locked": _safe_int(signal.get("47")) == 0 if signal.get("47") is not None else None,
-            "raw_lock_status_code": signal.get("47"),
-            "is_parked": vehicle_state == "parked" if vehicle_state is not None else None,
-            "vehicle_state": vehicle_state,
-            "vehicle_state_source": "raw_signal",
-            "raw_charge_status_code": signal.get("1939"),
-            "raw_drive_status_code": signal.get("1941"),
-            "raw_vehicle_state_code": signal.get("1944"),
-            "raw_parked_status_code": signal.get("1298"),
-            "interior_temp_c": signal.get("1349"),
-            "climate_set_temp_left_c": signal.get("2183"),
-            "climate_set_temp_right_c": signal.get("2184"),
-            "last_vehicle_timestamp": signal.get("sts"),
-        },
-        "location": {
-            "latitude": signal.get("3725", signal.get("2190")),
-            "longitude": signal.get("3724", signal.get("2191")),
-            "privacy_gps": status_data.get("privacyGPS"),
-            "privacy_data": status_data.get("privacyData"),
-            "last_vehicle_timestamp": signal.get("sts"),
-        },
-        "charging": {
-            "is_charging": _is_charging(signal),
-            "charge_limit_percent": charge_plan.get("percent"),
-            "remaining_charge_minutes": _safe_int(signal.get("1200")),
-            "charging_power_kw": _charging_power_kw(signal),
-            "charging_current_a": _safe_float(signal.get("1178")),
-            "charging_voltage_v": _safe_float(signal.get("1177")),
-            "charging_planned_enabled": charge_plan.get("isEnable"),
-            "charging_planned_start": charge_plan.get("beginTime"),
-            "charging_planned_end": charge_plan.get("endTime"),
-            "charging_planned_cycles": charge_plan.get("cycles"),
-            "charging_planned_circulation": charge_plan.get("circulation"),
-            "charging_plan_updated_at": charge_plan.get("updateTime"),
-        },
-        "history": {
-            "total_mileage_km": mileage_data.get("totalmileage"),
-            "total_mileage_mi": _safe_float(mileage_data.get("totalmileageMile")),
-            "delivery_days": mileage_data.get("deliveryDays"),
-        },
-        "media": {
-            "car_picture_status": "available" if picture_data.get("key") else "unavailable",
-            "car_picture_url": picture_data.get("shareBindUrl"),
-            "car_picture_key": picture_data.get("key"),
-            "car_picture_whole": picture_data.get("whole"),
-            "car_picture_key_present": bool(picture_data.get("key")),
-            "car_picture_whole_present": bool(picture_data.get("whole")),
-        },
-        "diagnostics": {
-            "tire_pressure_front_left_bar": _to_bar(signal.get("2667")),
-            "tire_pressure_front_right_bar": _to_bar(signal.get("2653")),
-            "tire_pressure_rear_left_bar": _to_bar(signal.get("2646")),
-            "tire_pressure_rear_right_bar": _to_bar(signal.get("2660")),
-            "raw_signal_1256": signal.get("1256"),
-            "raw_signal_1257": signal.get("1257"),
-            "raw_signal_1258": signal.get("1258"),
-            "raw_signal_1277": signal.get("1277"),
-            "raw_signal_1278": signal.get("1278"),
-            "raw_signal_1279": signal.get("1279"),
-            "raw_signal_1280": signal.get("1280"),
-            "raw_signal_1281": signal.get("1281"),
-            "raw_signal_1693": signal.get("1693"),
-            "raw_signal_1694": signal.get("1694"),
-            "raw_signal_1695": signal.get("1695"),
-            "raw_signal_1696": signal.get("1696"),
-        },
-        "raw_updated_at": time.time(),
-    }
 
 
 def _safe_int(raw: Any) -> int | None:

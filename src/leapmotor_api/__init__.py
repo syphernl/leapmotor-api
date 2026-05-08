@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __version__ = "0.1.7"
 
-from .client import LeapmotorApiClient, normalize_vehicle
+from .client import LeapmotorApiClient
 from .const import (
     DEFAULT_BASE_URL,
     DEFAULT_LANGUAGE,
@@ -141,5 +141,4 @@ __all__ = [
     "VehicleStatus",
     "WindowStatus",
     "WindowsValue",
-    "normalize_vehicle",
 ]

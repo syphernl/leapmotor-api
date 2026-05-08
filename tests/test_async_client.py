@@ -77,18 +77,6 @@ class TestAsyncClientLogin:
         sync.close()
 
 
-class TestAsyncClientFetchData:
-    def test_fetch_data_delegates(self) -> None:
-        sync = _make_sync_client()
-        async_client = AsyncLeapmotorApiClient(sync)
-        expected = {"user_id": "1", "vehicles": {}}
-        with patch.object(sync, "fetch_data", return_value=expected) as mock:
-            result = asyncio.run(async_client.fetch_data())
-            mock.assert_called_once()
-            assert result == expected
-        sync.close()
-
-
 class TestAsyncClientVehicleList:
     def test_get_vehicle_list_delegates(self) -> None:
         sync = _make_sync_client()
