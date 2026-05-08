@@ -13,12 +13,6 @@ import pytest
 
 from leapmotor_api.client import (
     LeapmotorApiClient,
-    _charging_power_kw,
-    _derive_vehicle_state,
-    _is_charging,
-    _safe_float,
-    _safe_int,
-    _to_bar,
     _vehicle_status_car_type_path,
 )
 from leapmotor_api.exceptions import (
@@ -27,6 +21,14 @@ from leapmotor_api.exceptions import (
     LeapmotorMissingAppCertError,
 )
 from leapmotor_api.models import MessageList, Vehicle
+from leapmotor_api.utils import (
+    _charging_power_kw,
+    _derive_vehicle_state,
+    _is_charging,
+    _safe_float,
+    _safe_int,
+    _to_bar,
+)
 
 # ---------------------------------------------------------------------------
 # Helpers
