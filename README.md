@@ -128,6 +128,9 @@ client.battery_preheat("WLM...")
 client.set_charge_limit("WLM...", charge_limit_percent=80)
 ```
 
+> [!TIP]
+> Consider creating a **shared/secondary account** in the Leapmotor app and sharing the vehicle with it. This avoids conflicts with your primary account sessions (e.g. being logged out from the phone app or **temporary account locks** on Leapmotor's servers).
+
 ## Configuration
 
 | Parameter | Type | Default | Description |
