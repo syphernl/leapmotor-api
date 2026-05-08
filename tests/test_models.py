@@ -10,11 +10,23 @@ import pytest
 from leapmotor_api.models import (
     BatteryStatus,
     ChargeState,
+    ClimateCircle,
+    ClimateMode,
+    ClimateOperate,
+    ClimatePosition,
+    ClimateWindshield,
     DoorStatus,
     DrivingStatus,
     Message,
     MessageList,
     ModuleRight,
+    RemoteActionCtlBatteryPreheat,
+    RemoteActionCtlClimate,
+    RemoteActionCtlFindCar,
+    RemoteActionCtlLock,
+    RemoteActionCtlSunshade,
+    RemoteActionCtlTrunk,
+    RemoteActionCtlWindows,
     RemoteActionResult,
     RemoteActionSpec,
     TirePressure,
@@ -871,6 +883,531 @@ class TestVehicleStatusFromDict:
         assert vs.is_locked is True
         assert vs.tires.front_left_kpa == 253
         assert vs.collect_time is not None
+
+    # -- New battery fields via from_dict --
+
+    def test_battery_new_fields_from_dict(self) -> None:
+        data: dict[str, Any] = {
+            "preciseSoc": 64.8,
+            "minBatteryTemp": 22,
+            "batteryThermalRequest": 0,
+            "chargeCompleted": 1,
+            "chargeScheduleEnabled": 1,
+            "chargeScheduleStart": "22:00",
+            "chargeScheduleEnd": "06:00",
+            "chargeScheduleCycles": "1,2,3,4,5,6,7",
+            "chargeScheduleCirculation": 1,
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.battery.precise_soc == 64.8
+        assert vs.battery.min_battery_temp == 22
+        assert vs.battery.battery_thermal_request == 0
+        assert vs.battery.charge_completed == 1
+        assert vs.battery.charge_schedule_enabled == 1
+        assert vs.battery.charge_schedule_start == "22:00"
+        assert vs.battery.charge_schedule_end == "06:00"
+        assert vs.battery.charge_schedule_cycles == "1,2,3,4,5,6,7"
+        assert vs.battery.charge_schedule_circulation == 1
+
+    # -- New battery signals --
+
+    def test_signal_battery_new_fields(self) -> None:
+        data: dict[str, Any] = {
+            "signal": {
+                "100003": 64.8,
+                "1182": 22,
+                "1186": 0,
+                "3736": 1,
+            },
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.battery.precise_soc == 64.8
+        assert vs.battery.min_battery_temp == 22
+        assert vs.battery.battery_thermal_request == 0
+        assert vs.battery.charge_completed == 1
+
+    # -- config.3 charge plan mapping --
+
+    def test_config3_charge_plan_fields(self) -> None:
+        data: dict[str, Any] = {
+            "signal": {"1204": 80},
+            "config": {
+                "3": {
+                    "percent": 90,
+                    "isEnable": 1,
+                    "beginTime": "23:00",
+                    "endTime": "07:00",
+                    "cycles": "1,2,3,4,5",
+                    "circulation": 0,
+                },
+            },
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.battery.charge_soc_setting == 90
+        assert vs.battery.charge_schedule_enabled == 1
+        assert vs.battery.charge_schedule_start == "23:00"
+        assert vs.battery.charge_schedule_end == "07:00"
+        assert vs.battery.charge_schedule_cycles == "1,2,3,4,5"
+        assert vs.battery.charge_schedule_circulation == 0
+
+    # -- New driving fields --
+
+    def test_driving_new_fields(self) -> None:
+        data: dict[str, Any] = {
+            "vehicleState": 2,
+            "drivingState": 3,
+            "speedLimit": 130,
+            "speedLimitUnit": 0,
+            "speedLimitActive": 1,
+            "liveRemainingRange": 250,
+            "maxRange": 400,
+            "rangeMode": 1,
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.driving.vehicle_state == 2
+        assert vs.driving.driving_state == 3
+        assert vs.driving.speed_limit == 130
+        assert vs.driving.speed_limit_unit == 0
+        assert vs.driving.speed_limit_active == 1
+        assert vs.driving.live_remaining_range == 250
+        assert vs.driving.max_range == 400
+        assert vs.driving.range_mode == 1
+
+    def test_signal_driving_new_fields(self) -> None:
+        data: dict[str, Any] = {
+            "signal": {
+                "1944": 2,
+                "1941": 3,
+                "6048": 120,
+                "6047": 1,
+                "12054": 0,
+                "2188": 200,
+                "3257": 350,
+                "3262": 0,
+            },
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.driving.vehicle_state == 2
+        assert vs.driving.driving_state == 3
+        assert vs.driving.speed_limit == 120
+        assert vs.driving.speed_limit_unit == 1
+        assert vs.driving.speed_limit_active == 0
+        assert vs.driving.live_remaining_range == 200
+        assert vs.driving.max_range == 350
+        assert vs.driving.range_mode == 0
+
+    # -- New climate fields --
+
+    def test_climate_new_fields(self) -> None:
+        data: dict[str, Any] = {
+            "acSettingRight": 21.5,
+            "interiorTemp": 25.0,
+            "recirculationMode": 1,
+            "windshieldDefrost": 0,
+            "rearWindowHeating": 1,
+            "climateMode": 2,
+            "rapidCooling": 0,
+            "rapidHeating": 1,
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.climate.ac_setting_right == 21.5
+        assert vs.climate.interior_temp == 25.0
+        assert vs.climate.recirculation_mode == 1
+        assert vs.climate.windshield_defrost == 0
+        assert vs.climate.rear_window_heating == 1
+        assert vs.climate.climate_mode == 2
+        assert vs.climate.rapid_cooling == 0
+        assert vs.climate.rapid_heating == 1
+
+    def test_signal_climate_new_fields(self) -> None:
+        data: dict[str, Any] = {
+            "signal": {
+                "2184": 22.0,
+                "1349": 26.5,
+                "1943": 0,
+                "1945": 1,
+                "1946": 0,
+                "3713": 1,
+                "2669": 1,
+                "2681": 0,
+            },
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.climate.ac_setting_right == 22.0
+        assert vs.climate.interior_temp == 26.5
+        assert vs.climate.recirculation_mode == 0
+        assert vs.climate.windshield_defrost == 1
+        assert vs.climate.rear_window_heating == 0
+        assert vs.climate.climate_mode == 1
+        assert vs.climate.rapid_cooling == 1
+        assert vs.climate.rapid_heating == 0
+
+    # -- Ignition bcm_key_position_on2 --
+
+    def test_ignition_on2_field(self) -> None:
+        data: dict[str, Any] = {"bcmKeyPositionOn2": True}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.ignition.bcm_key_position_on2 is True
+
+    def test_signal_ignition_on2(self) -> None:
+        data: dict[str, Any] = {"signal": {"1257": 1}}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.ignition.bcm_key_position_on2 == 1
+
+    # -- SeatComfortStatus --
+
+    def test_seat_comfort_fields(self) -> None:
+        data: dict[str, Any] = {
+            "driverSeatHeating": 3,
+            "driverSeatVentilation": 2,
+            "passengerSeatHeating": 1,
+            "passengerSeatVentilation": 0,
+            "steeringWheelHeating": 1,
+            "steeringWheelHeaterMinutes": 15,
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.seat_comfort.driver_seat_heating == 3
+        assert vs.seat_comfort.driver_seat_ventilation == 2
+        assert vs.seat_comfort.passenger_seat_heating == 1
+        assert vs.seat_comfort.passenger_seat_ventilation == 0
+        assert vs.seat_comfort.steering_wheel_heating == 1
+        assert vs.seat_comfort.steering_wheel_heater_minutes == 15
+
+    def test_signal_seat_comfort(self) -> None:
+        data: dict[str, Any] = {
+            "signal": {
+                "2100": 2,
+                "2101": 1,
+                "2118": 3,
+                "2119": 0,
+                "1816": 1,
+                "1624": 10,
+            },
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.seat_comfort.driver_seat_heating == 2
+        assert vs.seat_comfort.driver_seat_ventilation == 1
+        assert vs.seat_comfort.passenger_seat_heating == 3
+        assert vs.seat_comfort.passenger_seat_ventilation == 0
+        assert vs.seat_comfort.steering_wheel_heating == 1
+        assert vs.seat_comfort.steering_wheel_heater_minutes == 10
+
+    def test_seat_comfort_defaults(self) -> None:
+        vs = VehicleStatus.from_dict({})
+        assert vs.seat_comfort.driver_seat_heating is None
+        assert vs.seat_comfort.steering_wheel_heater_minutes is None
+
+    # -- SecurityStatus --
+
+    def test_security_fields(self) -> None:
+        data: dict[str, Any] = {
+            "vehicleSecurityActive": 1,
+            "sentryMode": 0,
+            "leftMirrorHeating": 1,
+            "rightMirrorHeating": 1,
+            "roofOpening": 50,
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.security.vehicle_security_active == 1
+        assert vs.security.sentry_mode == 0
+        assert vs.security.left_mirror_heating == 1
+        assert vs.security.right_mirror_heating == 1
+        assert vs.security.roof_opening == 50
+
+    def test_signal_security(self) -> None:
+        data: dict[str, Any] = {
+            "signal": {
+                "1255": 1,
+                "3636": 1,
+                "49": 0,
+                "50": 0,
+                "1724": 0,
+            },
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.security.vehicle_security_active == 1
+        assert vs.security.sentry_mode == 1
+        assert vs.security.left_mirror_heating == 0
+        assert vs.security.right_mirror_heating == 0
+        assert vs.security.roof_opening == 0
+
+    def test_security_defaults(self) -> None:
+        vs = VehicleStatus.from_dict({})
+        assert vs.security.vehicle_security_active is None
+        assert vs.security.sentry_mode is None
+
+    # -- GPS fallback signals --
+
+    def test_gps_fallback_signals(self) -> None:
+        """Should use alternative coordinates (2190/2191) when primary are absent."""
+        data: dict[str, Any] = {
+            "signal": {"2190": 45.123, "2191": 7.456},
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.location.latitude == 45.123
+        assert vs.location.longitude == 7.456
+
+    def test_gps_primary_over_fallback(self) -> None:
+        """Primary GPS (3725/3724) takes precedence over fallback (2190/2191)."""
+        data: dict[str, Any] = {
+            "signal": {"3725": 46.0, "3724": 8.0, "2190": 45.0, "2191": 7.0},
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.location.latitude == 46.0
+        assert vs.location.longitude == 8.0
+
+    # -- VehicleStatus.is_plugged --
+
+    def test_is_plugged_true(self) -> None:
+        """Plugged in but not actively charging."""
+        data: dict[str, Any] = {
+            "chargeState": 1,
+            "speed": 0,
+            "chargeRemainTime": 0,
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.is_plugged is True
+        assert vs.is_charging is False
+
+    def test_is_plugged_false_not_connected(self) -> None:
+        data: dict[str, Any] = {"chargeState": 0, "speed": 0}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.is_plugged is False
+
+    def test_is_plugged_false_while_charging(self) -> None:
+        data: dict[str, Any] = {
+            "chargeState": 1,
+            "speed": 0,
+            "batteryCurrent": -10.0,
+            "batteryVoltage": 400.0,
+            "chargeRemainTime": 60,
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.is_plugged is False
+        assert vs.is_charging is True
+
+
+# ---------------------------------------------------------------------------
+# DrivingStatus.is_parked fallbacks
+# ---------------------------------------------------------------------------
+
+
+class TestDrivingStatusIsParkedFallbacks:
+    def test_vehicle_state_parked(self) -> None:
+        assert DrivingStatus(vehicle_state=0).is_parked is True
+        assert DrivingStatus(vehicle_state=1).is_parked is True
+        assert DrivingStatus(vehicle_state=3).is_parked is True
+
+    def test_vehicle_state_driving(self) -> None:
+        assert DrivingStatus(vehicle_state=2).is_parked is False
+        assert DrivingStatus(vehicle_state=4).is_parked is False
+        assert DrivingStatus(vehicle_state=5).is_parked is False
+
+    def test_driving_state_parked(self) -> None:
+        assert DrivingStatus(driving_state=1).is_parked is True
+        assert DrivingStatus(driving_state=2).is_parked is True
+        assert DrivingStatus(driving_state=4).is_parked is True
+
+    def test_driving_state_driving(self) -> None:
+        assert DrivingStatus(driving_state=3).is_parked is False
+        assert DrivingStatus(driving_state=5).is_parked is False
+
+    def test_speed_takes_priority(self) -> None:
+        """Speed always takes priority over vehicle_state/driving_state."""
+        assert DrivingStatus(speed=0, vehicle_state=2).is_parked is True
+        assert DrivingStatus(speed=50, vehicle_state=0).is_parked is False
+
+
+# ---------------------------------------------------------------------------
+# Vehicle.from_dict — additional fields
+# ---------------------------------------------------------------------------
+
+
+class TestVehicleFromDictAdditional:
+    def test_seat_layout_and_rudder(self) -> None:
+        data: dict[str, Any] = {
+            "vin": "V",
+            "carType": "C10",
+            "carId": 1,
+            "seatLayout": 5,
+            "rudder": 1,
+        }
+        v = Vehicle.from_dict(data, is_shared=False)
+        assert v.seat_layout == "5"
+        assert v.rudder == "1"
+
+    def test_seat_layout_string(self) -> None:
+        data: dict[str, Any] = {
+            "vin": "V",
+            "carType": "T03",
+            "carId": 1,
+            "seatLayout": "5",
+            "rudder": "left",
+        }
+        v = Vehicle.from_dict(data, is_shared=False)
+        assert v.seat_layout == "5"
+        assert v.rudder == "left"
+
+    def test_shared_fields(self) -> None:
+        data: dict[str, Any] = {
+            "vin": "V",
+            "carType": "C10",
+            "carId": 1,
+            "shareTime": 1700000000,
+            "expireTime": 1700100000,
+            "durationType": 2,
+        }
+        v = Vehicle.from_dict(data, is_shared=True)
+        assert v.share_time == 1700000000
+        assert v.expire_time == 1700100000
+        assert v.duration_type == 2
+
+    def test_allocation_code(self) -> None:
+        data: dict[str, Any] = {
+            "vin": "V",
+            "carType": "C10",
+            "carId": 1,
+            "allocationCode": "ABC123",
+        }
+        v = Vehicle.from_dict(data, is_shared=False)
+        assert v.allocation_code == "ABC123"
+
+
+# ---------------------------------------------------------------------------
+# RemoteActionCtl subclasses
+# ---------------------------------------------------------------------------
+
+
+class TestRemoteActionCtlLock:
+    def test_lock(self) -> None:
+        action = RemoteActionCtlLock(value="lock")
+        assert action.cmd_id == "110"
+        assert action.cmd_content == '{"value":"lock"}'
+
+    def test_unlock(self) -> None:
+        action = RemoteActionCtlLock(value="unlock")
+        assert action.cmd_content == '{"value":"unlock"}'
+
+
+class TestRemoteActionCtlTrunk:
+    def test_default(self) -> None:
+        action = RemoteActionCtlTrunk()
+        assert action.cmd_id == "130"
+        assert action.cmd_content == '{"value":"true"}'
+
+
+class TestRemoteActionCtlFindCar:
+    def test_default(self) -> None:
+        action = RemoteActionCtlFindCar()
+        assert action.cmd_id == "120"
+        assert action.cmd_content == '{"value":"true"}'
+
+
+class TestRemoteActionCtlSunshade:
+    def test_open(self) -> None:
+        action = RemoteActionCtlSunshade(value="10")
+        assert action.cmd_id == "240"
+        assert action.cmd_content == '{"value":"10"}'
+
+    def test_close(self) -> None:
+        action = RemoteActionCtlSunshade(value="0")
+        assert action.cmd_content == '{"value":"0"}'
+
+    def test_invalid_value_raises(self) -> None:
+        with pytest.raises(ValueError, match="0-10"):
+            RemoteActionCtlSunshade(value="11")
+
+    def test_invalid_negative_raises(self) -> None:
+        with pytest.raises(ValueError, match="0-10"):
+            RemoteActionCtlSunshade(value="-1")
+
+
+class TestRemoteActionCtlBatteryPreheat:
+    def test_on(self) -> None:
+        action = RemoteActionCtlBatteryPreheat(value="ptcon")
+        assert action.cmd_id == "160"
+        assert action.cmd_content == '{"value":"ptcon"}'
+
+    def test_off(self) -> None:
+        action = RemoteActionCtlBatteryPreheat(value="ptcoff")
+        assert action.cmd_content == '{"value":"ptcoff"}'
+
+
+class TestRemoteActionCtlWindows:
+    def test_open(self) -> None:
+        action = RemoteActionCtlWindows(value="100")
+        assert action.cmd_id == "230"
+        assert action.cmd_content == '{"value":"100"}'
+
+    def test_close(self) -> None:
+        action = RemoteActionCtlWindows(value="0")
+        assert action.cmd_content == '{"value":"0"}'
+
+    def test_invalid_value_raises(self) -> None:
+        with pytest.raises(ValueError, match="0-100"):
+            RemoteActionCtlWindows(value="101")
+
+
+class TestRemoteActionCtlClimate:
+    def test_default(self) -> None:
+        action = RemoteActionCtlClimate()
+        assert action.cmd_id == "170"
+        import json
+
+        content = json.loads(action.cmd_content)
+        assert content["circle"] == "out"
+        assert content["mode"] == "nohotcold"
+        assert content["operate"] == "manual"
+        assert content["position"] == "all"
+        assert content["temperature"] == "24"
+        assert content["windlevel"] == "4"
+        assert content["wshld"] == "1"
+
+    def test_custom_values(self) -> None:
+        action = RemoteActionCtlClimate(
+            circle="in",
+            mode="cold",
+            operate="auto",
+            temperature="20",
+            windlevel="6",
+            wshld="2",
+        )
+        import json
+
+        content = json.loads(action.cmd_content)
+        assert content["circle"] == "in"
+        assert content["mode"] == "cold"
+        assert content["operate"] == "auto"
+        assert content["temperature"] == "20"
+        assert content["windlevel"] == "6"
+        assert content["wshld"] == "2"
+
+
+# ---------------------------------------------------------------------------
+# StrEnum value classes
+# ---------------------------------------------------------------------------
+
+
+class TestEnumValues:
+    def test_climate_circle(self) -> None:
+        assert ClimateCircle.IN == "in"
+        assert ClimateCircle.OUT == "out"
+
+    def test_climate_mode(self) -> None:
+        assert ClimateMode.COLD == "cold"
+        assert ClimateMode.HOT == "hot"
+        assert ClimateMode.NO_HOT_COLD == "nohotcold"
+
+    def test_climate_operate(self) -> None:
+        assert ClimateOperate.MANUAL == "manual"
+        assert ClimateOperate.AUTO == "auto"
+
+    def test_climate_position(self) -> None:
+        assert ClimatePosition.ALL == "all"
+
+    def test_climate_windshield(self) -> None:
+        assert ClimateWindshield.NORMAL == "1"
+        assert ClimateWindshield.DEFROST == "2"
 
 
 # ---------------------------------------------------------------------------
