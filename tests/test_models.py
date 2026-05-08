@@ -14,10 +14,13 @@ from leapmotor_api.models import (
     DrivingStatus,
     Message,
     MessageList,
+    ModuleRight,
     RemoteActionResult,
     RemoteActionSpec,
     TirePressure,
     Vehicle,
+    VehicleAbility,
+    VehicleRight,
     VehicleStatus,
 )
 
@@ -60,9 +63,9 @@ class TestVehicle:
             vehicle_nickname=None,
         )
         assert v.year is None
-        assert v.rights is None
-        assert v.abilities is None
-        assert v.module_rights is None
+        assert v.rights == []
+        assert v.abilities == []
+        assert v.module_rights == []
         assert v.mobile_number is None
         assert v.out_color is None
 
@@ -91,7 +94,9 @@ class TestVehicle:
             "mobileNumber": "+391234567890",
             "outColor": "white",
             "year": 2024,
-            "abilities": ["remote", "charge"],
+            "abilities": ["1", "10", "36"],
+            "rightList": "110,120,230",
+            "moduleRights": "100,200",
         }
         v = Vehicle.from_dict(data, is_shared=False)
         assert v.vin == "WLMTEST123456"
@@ -105,7 +110,9 @@ class TestVehicle:
         assert v.out_color == "white"
         assert v.is_shared is False
         assert v.year == 2024
-        assert v.abilities == ["remote", "charge"]
+        assert v.abilities == [VehicleAbility.BASE, VehicleAbility.LOCK_UNLOCK, VehicleAbility.WINDOWS_T03]
+        assert v.rights == [VehicleRight.LOCK, VehicleRight.FIND_CAR, VehicleRight.WINDOWS]
+        assert v.module_rights == [ModuleRight.BASIC, ModuleRight.VEHICLE_CONTROL]
         assert v.raw == data
 
     def test_from_dict_shared(self) -> None:
@@ -114,6 +121,124 @@ class TestVehicle:
         assert v.is_shared is True
         assert v.email is None
         assert v.plate_number is None
+        assert v.rights == []
+        assert v.abilities == []
+        assert v.module_rights == []
+
+    def test_from_dict_real_t03_permissions(self) -> None:
+        """Parse real T03 permission data."""
+        data: dict[str, Any] = {
+            "vin": "VIN_T03",
+            "carType": "T03",
+            "carId": 99,
+            "rightList": "190,180,170,171,160,161,130,460,120,340,230,220,110",
+            "moduleRights": "100,200,300,400",
+            "abilities": [
+                "1",
+                "2",
+                "3",
+                "5",
+                "7",
+                "10",
+                "11",
+                "14",
+                "15",
+                "17",
+                "18",
+                "20",
+                "30",
+                "31",
+                "34",
+                "35",
+                "36",
+                "52",
+                "61",
+            ],
+        }
+        v = Vehicle.from_dict(data, is_shared=False)
+        assert VehicleRight.LOCK in v.rights
+        assert VehicleRight.CLIMATE in v.rights
+        assert VehicleRight.WINDOWS in v.rights
+        assert len(v.rights) == 13
+        assert ModuleRight.BASIC in v.module_rights
+        assert len(v.module_rights) == 4
+        assert VehicleAbility.BASE in v.abilities
+        assert VehicleAbility.NAVIGATION in v.abilities
+        # Ability 61 is unknown but should parse without error
+        unknown_61 = [a for a in v.abilities if a.value == 61]
+        assert len(unknown_61) == 1
+        assert unknown_61[0].name == "UNKNOWN_61"
+
+    def test_unknown_right_code(self) -> None:
+        """Unknown right codes create pseudo-members."""
+        data: dict[str, Any] = {"vin": "V", "carType": "X", "carId": 1, "rightList": "110,999"}
+        v = Vehicle.from_dict(data, is_shared=False)
+        assert len(v.rights) == 2
+        assert v.rights[0] == VehicleRight.LOCK
+        assert v.rights[1].value == 999
+        assert v.rights[1].name == "UNKNOWN_999"
+
+    def test_has_ability(self) -> None:
+        v = Vehicle(
+            vin="V",
+            car_type="T",
+            email=None,
+            plate_number=None,
+            car_id=None,
+            user_nickname=None,
+            vehicle_nickname=None,
+            abilities=[VehicleAbility.BASE, VehicleAbility.GPS],
+        )
+        assert v.has_ability(VehicleAbility.BASE) is True
+        assert v.has_ability(1) is True
+        assert v.has_ability(VehicleAbility.NAVIGATION) is False
+        assert v.has_ability(52) is False
+
+    def test_has_right(self) -> None:
+        v = Vehicle(
+            vin="V",
+            car_type="T",
+            email=None,
+            plate_number=None,
+            car_id=None,
+            user_nickname=None,
+            vehicle_nickname=None,
+            rights=[VehicleRight.LOCK, VehicleRight.WINDOWS],
+        )
+        assert v.has_right(VehicleRight.LOCK) is True
+        assert v.has_right(110) is True
+        assert v.has_right(VehicleRight.TRUNK) is False
+
+    def test_has_module_right(self) -> None:
+        v = Vehicle(
+            vin="V",
+            car_type="T",
+            email=None,
+            plate_number=None,
+            car_id=None,
+            user_nickname=None,
+            vehicle_nickname=None,
+            module_rights=[ModuleRight.BASIC],
+        )
+        assert v.has_module_right(ModuleRight.BASIC) is True
+        assert v.has_module_right(100) is True
+        assert v.has_module_right(ModuleRight.VEHICLE_CONTROL) is False
+
+    def test_enum_descriptions(self) -> None:
+        assert VehicleRight.LOCK.description == "Lock / Unlock doors"
+        assert VehicleAbility.BASE.description == "Vehicle base / remote state"
+        assert ModuleRight.BASIC.description == "Basic authorisation (lock/unlock)"
+        # Unknown codes get a fallback description
+        unknown = VehicleRight(999)
+        assert "Unknown" in unknown.description
+
+    def test_non_numeric_abilities_skipped(self) -> None:
+        """Non-numeric ability strings are silently skipped."""
+        data: dict[str, Any] = {"vin": "V", "carType": "X", "carId": 1, "abilities": ["1", "bad", "10"]}
+        v = Vehicle.from_dict(data, is_shared=False)
+        assert len(v.abilities) == 2
+        assert v.abilities[0] == VehicleAbility.BASE
+        assert v.abilities[1] == VehicleAbility.LOCK_UNLOCK
 
 
 # ---------------------------------------------------------------------------

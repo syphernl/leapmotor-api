@@ -65,9 +65,9 @@ def main() -> None:
 
             print("-" * 60)
             print("Other:")
-            print(f"  Rights: {vehicle.rights}")
-            print(f"  Abilities: {', '.join(vehicle.abilities) if vehicle.abilities else 'None'}")
-            print(f"  Module rights: {vehicle.module_rights}")
+            print(f"  Rights: {', '.join(f'{r.name}({r.value})' for r in vehicle.rights) or 'None'}")
+            print(f"  Abilities: {', '.join(f'{a.name}({a.value})' for a in vehicle.abilities) or 'None'}")
+            print(f"  Module rights: {', '.join(f'{m.name}({m.value})' for m in vehicle.module_rights) or 'None'}")
 
             print("=" * 60)
 

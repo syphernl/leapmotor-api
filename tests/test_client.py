@@ -27,7 +27,7 @@ from leapmotor_api.exceptions import (
     LeapmotorAuthError,
     LeapmotorMissingAppCertError,
 )
-from leapmotor_api.models import MessageList, Vehicle
+from leapmotor_api.models import MessageList, Vehicle, VehicleAbility
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -414,7 +414,6 @@ class TestNormalizeVehicleExtended:
             user_nickname="N",
             vehicle_nickname="N",
             is_shared=False,
-            abilities=None,
         )
         result = normalize_vehicle(v, {}, "user1")
         assert result["vehicle"]["abilities"] == []
@@ -429,10 +428,10 @@ class TestNormalizeVehicleExtended:
             user_nickname="N",
             vehicle_nickname="N",
             is_shared=False,
-            abilities=["remote", "charge"],
+            abilities=[VehicleAbility.BASE, VehicleAbility.LOCK_UNLOCK],
         )
         result = normalize_vehicle(v, {}, "user1")
-        assert result["vehicle"]["abilities"] == ["remote", "charge"]
+        assert result["vehicle"]["abilities"] == [1, 10]
 
     def test_raw_updated_at_present(self) -> None:
         result = normalize_vehicle(self._vehicle(), {}, "user1")

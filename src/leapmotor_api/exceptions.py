@@ -17,3 +17,7 @@ class LeapmotorAccountCertError(LeapmotorAuthError):
 
 class LeapmotorMissingAppCertError(LeapmotorAuthError):
     """Local app certificate material is missing."""
+
+
+class LeapmotorPermissionError(LeapmotorApiError):
+    """Vehicle does not have the required permission for the requested action."""

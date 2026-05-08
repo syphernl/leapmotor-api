@@ -60,7 +60,7 @@ from .exceptions import (
     LeapmotorAuthError,
     LeapmotorMissingAppCertError,
 )
-from .models import MessageList, Vehicle, VehicleStatus
+from .models import MessageList, Vehicle, VehicleRight, VehicleStatus
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -488,6 +488,14 @@ class LeapmotorApiClient:
     def set_charge_limit(self, vin: str, charge_limit_percent: int) -> dict[str, Any]:
         """Set the charge limit while preserving the current charging plan values."""
         vehicle = self._find_vehicle_by_vin(vin)
+        if not vehicle.has_right(VehicleRight.CHARGE_LIMIT):
+            _LOGGER.warning(
+                "Vehicle %s may lack permission for 'set_charge_limit' (requires right %s=%d). "
+                "Proceeding anyway — the server will enforce permissions.",
+                vin,
+                VehicleRight.CHARGE_LIMIT.name,
+                VehicleRight.CHARGE_LIMIT.value,
+            )
         status_json = self.get_vehicle_raw_status(vehicle)
         charge_plan = ((status_json.get("data") or {}).get("config") or {}).get("3") or {}
 
@@ -528,6 +536,14 @@ class LeapmotorApiClient:
     ) -> dict[str, Any]:
         """Send a navigation destination to the vehicle (does not require PIN)."""
         vehicle = self._find_vehicle_by_vin(vin)
+        if not vehicle.has_right(VehicleRight.SEND_DESTINATION):
+            _LOGGER.warning(
+                "Vehicle %s may lack permission for 'send_destination' (requires right %s=%d). "
+                "Proceeding anyway — the server will enforce permissions.",
+                vin,
+                VehicleRight.SEND_DESTINATION.name,
+                VehicleRight.SEND_DESTINATION.value,
+            )
         cmd_content = json.dumps(
             {
                 "address": address,
@@ -613,6 +629,15 @@ class LeapmotorApiClient:
 
         vehicle = self._find_vehicle_by_vin(vin)
         spec = REMOTE_ACTION_SPECS[action]
+        if spec.required_right is not None and not vehicle.has_right(spec.required_right):
+            _LOGGER.warning(
+                "Vehicle %s may lack permission for '%s' (requires right %s=%d). "
+                "Proceeding anyway — the server will enforce permissions.",
+                vin,
+                action,
+                spec.required_right.name,
+                spec.required_right.value,
+            )
         return self._remote_control_raw(
             vin=vehicle.vin,
             cmd_id=spec.cmd_id,
@@ -1031,9 +1056,9 @@ def normalize_vehicle(
             "user_nickname": vehicle.user_nickname,
             "is_shared": vehicle.is_shared,
             "year": vehicle.year,
-            "rights": vehicle.rights,
-            "abilities": vehicle.abilities or [],
-            "module_rights": vehicle.module_rights,
+            "rights": [r.value for r in vehicle.rights],
+            "abilities": [a.value for a in vehicle.abilities],
+            "module_rights": [m.value for m in vehicle.module_rights],
         },
         "status": {
             "battery_percent": signal.get("1204"),

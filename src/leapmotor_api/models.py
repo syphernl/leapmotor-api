@@ -22,6 +22,179 @@ class ChargeState(IntEnum):
     DC_CONNECTED = 2  # ???
 
 
+class ModuleRight(IntEnum):
+    """Macro-category permission codes for vehicle sharing."""
+
+    BASIC = 100
+    VEHICLE_CONTROL = 200
+    VEHICLE_POSITIONING = 300
+    MILEAGE_ENERGY = 400
+
+    @classmethod
+    def _missing_(cls, value: object) -> ModuleRight | None:
+        if not isinstance(value, int):
+            return None
+        member = int.__new__(cls, value)
+        member._name_ = f"UNKNOWN_{value}"
+        member._value_ = value
+        return member
+
+    @property
+    def description(self) -> str:
+        return _MODULE_RIGHT_DESCRIPTIONS.get(self.value, f"Unknown module right ({self.value})")
+
+
+_MODULE_RIGHT_DESCRIPTIONS: dict[int, str] = {
+    100: "Basic authorisation (lock/unlock)",
+    200: "Vehicle control (climate, charge, quick control)",
+    300: "Vehicle positioning (GPS)",
+    400: "Mileage & energy consumption",
+}
+
+
+class VehicleRight(IntEnum):
+    """Remote command permission codes (rightList)."""
+
+    LOCK = 110
+    FIND_CAR = 120
+    TRUNK = 130
+    SUNROOF = 160
+    SUNSHADE = 161
+    CLIMATE = 170
+    QUICK_CLIMATE = 171
+    SEND_DESTINATION = 180
+    BATTERY_PREHEAT = 190
+    SENTRY_MODE = 220
+    WINDOWS = 230
+    CHARGE_LIMIT = 340
+    WINDSHIELD_DEFROST = 460
+    SPEED_LIMIT = 510
+
+    @classmethod
+    def _missing_(cls, value: object) -> VehicleRight | None:
+        if not isinstance(value, int):
+            return None
+        member = int.__new__(cls, value)
+        member._name_ = f"UNKNOWN_{value}"
+        member._value_ = value
+        return member
+
+    @property
+    def description(self) -> str:
+        return _VEHICLE_RIGHT_DESCRIPTIONS.get(self.value, f"Unknown right ({self.value})")
+
+
+_VEHICLE_RIGHT_DESCRIPTIONS: dict[int, str] = {
+    110: "Lock / Unlock doors",
+    120: "Find car (horn + lights)",
+    130: "Trunk open/close",
+    160: "Sunroof",
+    161: "Sunshade",
+    170: "Climate / AC on-off",
+    171: "Quick cool / Quick heat",
+    180: "Send destination (navigation)",
+    190: "Battery preheating",
+    220: "Sentry mode",
+    230: "Windows",
+    340: "Charge limit",
+    460: "Windshield defrost / mirror heating",
+    510: "Speed limit",
+}
+
+
+class VehicleAbility(IntEnum):
+    """Hardware/firmware feature flag codes (abilities)."""
+
+    BASE = 1
+    STATUS_DATA = 2
+    TRUNK = 3
+    GPS = 5
+    BATTERY_DETAIL = 7
+    LOCK_UNLOCK = 10
+    FIND_CAR = 11
+    WINDOWS_C10 = 12
+    SEAT_HEATING = 14
+    STEERING_WHEEL = 15
+    CLIMATE_ADVANCED = 17
+    WINDSHIELD_DEFROST = 18
+    WINDOWS_T03_ALT = 20
+    TRUNK_SPECIAL = 24
+    GPS_SHARING = 30
+    MILEAGE_ENERGY = 31
+    SPEED_LIMIT = 34
+    CHARGE_LIMIT = 35
+    WINDOWS_T03 = 36
+    PREPARE = 38
+    NAVIGATION = 52
+
+    @classmethod
+    def _missing_(cls, value: object) -> VehicleAbility | None:
+        if not isinstance(value, int):
+            return None
+        member = int.__new__(cls, value)
+        member._name_ = f"UNKNOWN_{value}"
+        member._value_ = value
+        return member
+
+    @property
+    def description(self) -> str:
+        return _VEHICLE_ABILITY_DESCRIPTIONS.get(self.value, f"Unknown ability ({self.value})")
+
+
+_VEHICLE_ABILITY_DESCRIPTIONS: dict[int, str] = {
+    1: "Vehicle base / remote state",
+    2: "Vehicle status data",
+    3: "Trunk control",
+    5: "GPS / positioning",
+    7: "Detailed battery telemetry",
+    10: "Remote lock/unlock",
+    11: "Find car",
+    12: "Windows (C10/B10)",
+    14: "Seat heating/ventilation",
+    15: "Steering wheel heating",
+    17: "Advanced climate (quick cool/heat)",
+    18: "Windshield defrost",
+    20: "Windows (T03 alternate)",
+    24: "Trunk special (C10/B10)",
+    30: "GPS sharing",
+    31: "Mileage & energy data",
+    34: "Speed limit",
+    35: "Charge limit",
+    36: "Windows (T03)",
+    38: "Pre-conditioning (C10/B10)",
+    52: "Navigation / send destination",
+}
+
+
+# ---------------------------------------------------------------------------
+# Helpers for parsing permission strings from the API
+# ---------------------------------------------------------------------------
+
+
+def _parse_csv_enum(raw: str | None, enum_cls: type[IntEnum]) -> list[Any]:
+    """Parse a comma-separated string of ints into a list of *enum_cls* members."""
+    if not raw:
+        return []
+    result = []
+    for part in raw.split(","):
+        part = part.strip()
+        if part:
+            with contextlib.suppress(ValueError):
+                result.append(enum_cls(int(part)))
+    return result
+
+
+def _parse_list_enum(raw: list[str] | None, enum_cls: type[IntEnum]) -> list[Any]:
+    """Parse a list of string ints into a list of *enum_cls* members."""
+    if not raw:
+        return []
+    result = []
+    for item in raw:
+        with contextlib.suppress(ValueError):
+            result.append(enum_cls(int(item)))
+    return result
+
+
 # ---------------------------------------------------------------------------
 # Class models for API data structures
 # ---------------------------------------------------------------------------
@@ -47,9 +220,9 @@ class Vehicle:
     seat_layout: str | None = None
     rudder: str | None = None
     year: int | None = None
-    rights: str | None = None
-    abilities: list[str] | None = None
-    module_rights: str | None = None
+    rights: list[VehicleRight] = field(default_factory=list)
+    abilities: list[VehicleAbility] = field(default_factory=list)
+    module_rights: list[ModuleRight] = field(default_factory=list)
     allocation_code: str | None = None
 
     # -- Raw dict for debug --
@@ -75,12 +248,27 @@ class Vehicle:
             seat_layout=str(data["seatLayout"]) if data.get("seatLayout") is not None else None,
             rudder=str(data["rudder"]) if data.get("rudder") is not None else None,
             year=data.get("year"),
-            rights=data.get("rightList"),
-            abilities=data.get("abilities"),
-            module_rights=data.get("moduleRights"),
+            rights=_parse_csv_enum(data.get("rightList"), VehicleRight),
+            abilities=_parse_list_enum(data.get("abilities"), VehicleAbility),
+            module_rights=_parse_csv_enum(data.get("moduleRights"), ModuleRight),
             allocation_code=data.get("allocationCode"),
             raw=data,
         )
+
+    def has_ability(self, ability: VehicleAbility | int) -> bool:
+        """Check if the vehicle has a specific ability."""
+        code = int(ability)
+        return any(int(a) == code for a in self.abilities)
+
+    def has_right(self, right: VehicleRight | int) -> bool:
+        """Check if the vehicle has a specific right."""
+        code = int(right)
+        return any(int(r) == code for r in self.rights)
+
+    def has_module_right(self, module_right: ModuleRight | int) -> bool:
+        """Check if the vehicle has a specific module right."""
+        code = int(module_right)
+        return any(int(m) == code for m in self.module_rights)
 
 
 @dataclass(frozen=True, slots=True)
@@ -750,6 +938,7 @@ class RemoteActionSpec:
 
     cmd_id: str
     cmd_content: str
+    required_right: VehicleRight | None = None
 
 
 # ---------------------------------------------------------------------------
