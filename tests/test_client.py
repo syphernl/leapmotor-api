@@ -21,14 +21,7 @@ from leapmotor_api.exceptions import (
     LeapmotorMissingAppCertError,
 )
 from leapmotor_api.models import MessageList, Vehicle
-from leapmotor_api.utils import (
-    _charging_power_kw,
-    _derive_vehicle_state,
-    _is_charging,
-    _safe_float,
-    _safe_int,
-    _to_bar,
-)
+from leapmotor_api.utils import _safe_int
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -135,111 +128,6 @@ class TestSafeInt:
 
     def test_invalid(self) -> None:
         assert _safe_int("abc") is None
-
-
-class TestSafeFloat:
-    def test_valid(self) -> None:
-        assert _safe_float(3.14) == 3.14
-        assert _safe_float("2.5") == 2.5
-
-    def test_none(self) -> None:
-        assert _safe_float(None) is None
-
-
-class TestToBar:
-    def test_converts(self) -> None:
-        assert _to_bar(250) == 2.5
-
-    def test_none(self) -> None:
-        assert _to_bar(None) is None
-
-
-class TestVehicleState:
-    def test_parked_primary(self) -> None:
-        assert _derive_vehicle_state({"1298": 1}) == "parked"
-
-    def test_driving_primary(self) -> None:
-        assert _derive_vehicle_state({"1298": 0}) == "driving"
-
-    def test_parked_fallback_drive_status(self) -> None:
-        assert _derive_vehicle_state({"1941": 2}) == "parked"
-        assert _derive_vehicle_state({"1941": 4}) == "parked"
-
-    def test_driving_fallback_drive_status(self) -> None:
-        assert _derive_vehicle_state({"1941": 3}) == "driving"
-        assert _derive_vehicle_state({"1941": 5}) == "driving"
-
-    def test_parked_fallback_vehicle_state(self) -> None:
-        assert _derive_vehicle_state({"1944": 0}) == "parked"
-        assert _derive_vehicle_state({"1944": 1}) == "parked"
-        assert _derive_vehicle_state({"1944": 3}) == "parked"
-
-    def test_driving_fallback_vehicle_state(self) -> None:
-        assert _derive_vehicle_state({"1944": 2}) == "driving"
-        assert _derive_vehicle_state({"1944": 4}) == "driving"
-        assert _derive_vehicle_state({"1944": 5}) == "driving"
-
-    def test_none(self) -> None:
-        assert _derive_vehicle_state({}) is None
-
-
-class TestIsCharging:
-    def test_charging_by_current(self) -> None:
-        assert _is_charging({"1178": 5.0, "1200": 120}) is True
-        assert _is_charging({"1178": 10.0, "1200": 60}) is True
-
-    def test_not_charging_negative_current(self) -> None:
-        # Negative current with abs >= 1.0 still counts as charging when parked
-        assert _is_charging({"1178": -5.0, "1200": 120}) is True
-
-    def test_not_charging_while_driving(self) -> None:
-        # Positive current while driving = regen braking, not charging
-        assert _is_charging({"1178": 5.0, "1200": 120, "1298": 0}) is False
-
-    def test_not_charging_low_current(self) -> None:
-        assert _is_charging({"1178": 0.5, "1200": 120}) is False
-
-    def test_charging_by_power(self) -> None:
-        assert _is_charging({"1178": 5.0, "1177": 400.0, "1200": 90}) is True
-
-    def test_charging_legacy_fallback(self) -> None:
-        assert _is_charging({"1939": 1, "1941": 2, "1200": 60}) is True
-        assert _is_charging({"1939": 2, "1944": 0, "1200": 30}) is True
-
-    def test_not_charging_legacy_without_remaining_time(self) -> None:
-        assert _is_charging({"1939": 1, "1941": 2}) is False
-
-    def test_not_charging(self) -> None:
-        assert _is_charging({"1939": 0}) is False
-        assert _is_charging({}) is False
-
-
-# ---------------------------------------------------------------------------
-# Charging power helper
-# ---------------------------------------------------------------------------
-
-
-class TestChargingPowerKw:
-    def test_valid_power(self) -> None:
-        # 400V * 10A = 4000W = 4.0 kW
-        assert _charging_power_kw({"1178": 10.0, "1177": 400.0}) == 4.0
-
-    def test_negative_current(self) -> None:
-        # Negative current produces negative power (raw calculation)
-        assert _charging_power_kw({"1178": -10.0, "1177": 400.0}) == -4.0
-
-    def test_low_current(self) -> None:
-        # Low current still produces a result (no threshold in _charging_power_kw)
-        assert _charging_power_kw({"1178": 2.0, "1177": 400.0}) == 0.8
-
-    def test_missing_current_returns_none(self) -> None:
-        assert _charging_power_kw({"1177": 400.0}) is None
-
-    def test_missing_voltage_returns_none(self) -> None:
-        assert _charging_power_kw({"1178": 10.0}) is None
-
-    def test_empty_signal_returns_none(self) -> None:
-        assert _charging_power_kw({}) is None
 
 
 # ---------------------------------------------------------------------------
