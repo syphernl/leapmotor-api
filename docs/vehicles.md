@@ -301,16 +301,17 @@ with the T03 format.
 ### Charge Plan (config.3)
 
 The C10/B10 charge plan is stored in `config.3` (not in `signal`). The library
-automatically maps these to `BatteryStatus` fields:
+automatically maps these to `ChargePlan` fields (via `battery.charge_plan`):
 
-| config.3 key | Named Field | Description |
+| config.3 key | ChargePlan field | Description |
 |---|---|---|
-| `percent` | `chargesocSetting` | Charge SOC limit (%) |
-| `isEnable` | `chargeScheduleEnabled` | Schedule enabled: 0=No, 1=Yes |
-| `beginTime` | `chargeScheduleStart` | Schedule start time (e.g. `"22:00"`) |
-| `endTime` | `chargeScheduleEnd` | Schedule end time (e.g. `"08:00"`) |
-| `cycles` | `chargeScheduleCycles` | Active days (e.g. `"1,1,1,1,1,1,1"`) |
-| `circulation` | `chargeScheduleCirculation` | Recurrence flag |
+| `percent` | `soc_setting` | Charge SOC limit (%) |
+| `isEnable` | `enabled` | Schedule enabled: 0=No, 1=Yes |
+| `beginTime` | `start` | Schedule start time (e.g. `"22:00"`) |
+| `endTime` | `end` | Schedule end time (e.g. `"08:00"`) |
+| `cycles` | `cycles` | Active days (e.g. `"1,1,1,1,1,1,1"`) |
+| `circulation` | `circulation` | Recurrence flag |
+| `recharge` | `recharge` | Recharge flag |
 
 ---
 

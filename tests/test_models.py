@@ -519,8 +519,8 @@ class TestBatteryStatus:
         assert bs.soc == 85
         assert bs.charge_state is ChargeState.AC_CONNECTED
         assert bs.charge_remain_time == 120
-        assert bs.charge_soc_setting == 80
-        assert bs.charge_time_setting == "08:00"
+        assert bs.charge_plan.soc_setting == 80
+        assert bs.charge_plan.time_setting == "08:00"
         assert bs.dc_input_fast_charge == 1
         assert bs.dump_energy == 50000
         assert bs.battery_current == -15.5
@@ -606,7 +606,7 @@ class TestVehicleStatusFromDict:
         assert vs.battery.soc == 85
         assert vs.battery.charge_state is ChargeState.AC_CONNECTED
         assert vs.battery.charge_remain_time == 120
-        assert vs.battery.charge_soc_setting == 80
+        assert vs.battery.charge_plan.soc_setting == 80
         assert vs.battery.dump_energy == 50000
         assert vs.battery.battery_current == -15.5
         assert vs.battery.battery_voltage == 400.0
@@ -983,11 +983,11 @@ class TestVehicleStatusFromDict:
         assert vs.battery.min_battery_temp == 22
         assert vs.battery.battery_thermal_request == 0
         assert vs.battery.charge_completed == 1
-        assert vs.battery.charge_schedule_enabled == 1
-        assert vs.battery.charge_schedule_start == "22:00"
-        assert vs.battery.charge_schedule_end == "06:00"
-        assert vs.battery.charge_schedule_cycles == "1,2,3,4,5,6,7"
-        assert vs.battery.charge_schedule_circulation == 1
+        assert vs.battery.charge_plan.enabled == 1
+        assert vs.battery.charge_plan.start == "22:00"
+        assert vs.battery.charge_plan.end == "06:00"
+        assert vs.battery.charge_plan.cycles == "1,2,3,4,5,6,7"
+        assert vs.battery.charge_plan.circulation == 1
 
     # -- New battery signals --
 
@@ -1023,12 +1023,12 @@ class TestVehicleStatusFromDict:
             },
         }
         vs = VehicleStatus.from_dict(data)
-        assert vs.battery.charge_soc_setting == 90
-        assert vs.battery.charge_schedule_enabled == 1
-        assert vs.battery.charge_schedule_start == "23:00"
-        assert vs.battery.charge_schedule_end == "07:00"
-        assert vs.battery.charge_schedule_cycles == "1,2,3,4,5"
-        assert vs.battery.charge_schedule_circulation == 0
+        assert vs.battery.charge_plan.soc_setting == 90
+        assert vs.battery.charge_plan.enabled == 1
+        assert vs.battery.charge_plan.start == "23:00"
+        assert vs.battery.charge_plan.end == "07:00"
+        assert vs.battery.charge_plan.cycles == "1,2,3,4,5"
+        assert vs.battery.charge_plan.circulation == 0
 
     # -- New driving fields --
 

@@ -85,7 +85,7 @@ await client.close()
 
 | Sub-object | Key fields |
 |---|---|
-| `status.battery` | `soc`, `expected_mileage`, `charge_state`, `is_charging`, `charging_power_kw`, `battery_power`, `dump_energy_kwh` |
+| `status.battery` | `soc`, `expected_mileage`, `charge_state`, `is_charging`, `charging_power_kw`, `battery_power`, `dump_energy_kwh`, `charge_plan.*` |
 | `status.driving` | `speed`, `total_mileage`, `gear_status`, `is_parked` |
 | `status.location` | `latitude`, `longitude` |
 | `status.climate` | `ac_switch`, `ac_setting`, `outdoor_temp`, `interior_temp` |

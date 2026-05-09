@@ -65,7 +65,7 @@ from .exceptions import (
 from .mappings import CAR_TYPE_PATH_MAP, REMOTE_ACTION_SPECS
 from .models import (
     MessageList,
-    RemoteActionCtlChargeLimit,
+    RemoteActionCtlChargePlan,
     Vehicle,
     VehicleRight,
     VehicleStatus,
@@ -474,19 +474,19 @@ class LeapmotorApiClient:
         """Set the charge limit while preserving the current charging plan values."""
         vehicle = self._find_vehicle_by_vin(vin)
         status = self.get_vehicle_status(vehicle)
-        battery = status.battery
+        plan = status.battery.charge_plan
 
-        if not battery.charge_schedule_start or not battery.charge_schedule_end or not battery.charge_schedule_cycles:
+        if not plan.start or not plan.end or not plan.cycles:
             raise LeapmotorApiError("Current charging plan is incomplete, cannot safely update charge limit.")
 
-        charge_spec = RemoteActionCtlChargeLimit(
-            charge_enable=1 if battery.charge_schedule_enabled else 0,
+        charge_spec = RemoteActionCtlChargePlan(
+            charge_enable=1 if plan.enabled else 0,
             chargesoc=int(charge_limit_percent),
-            circulation=battery.charge_schedule_circulation or 0,
-            cycles=battery.charge_schedule_cycles,
-            endtime=battery.charge_schedule_end,
-            recharge=battery.charge_schedule_recharge or 0,
-            starttime=battery.charge_schedule_start,
+            circulation=plan.circulation or 0,
+            cycles=plan.cycles,
+            endtime=plan.end,
+            recharge=plan.recharge or 0,
+            starttime=plan.start,
         )
         return self._remote_control(
             vin=vin,

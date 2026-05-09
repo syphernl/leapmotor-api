@@ -42,7 +42,7 @@ used by the `leapmotor-api` library.
   - [Battery Preheat (cmd_id=160)](#battery-preheat-cmd_id160)
   - [Climate (cmd_id=170)](#climate-cmd_id170)
   - [Send Destination (cmd_id=180)](#send-destination-cmd_id180)
-  - [Set Charge Limit (cmd_id=190)](#set-charge-limit-cmd_id190)
+  - [Set Charge Plan (cmd_id=190)](#set-charge-plan-cmd_id190)
   - [Windows (cmd_id=230)](#windows-cmd_id230)
   - [Sunshade (cmd_id=240)](#sunshade-cmd_id240)
 
@@ -465,7 +465,7 @@ Requires PIN.
 
 Does **not** require PIN. Uses the flow without `operatePassword`.
 
-### Set Charge Limit (cmd_id=190)
+### Set Charge Plan (cmd_id=190)
 
 | Field | Description |
 |---|---|

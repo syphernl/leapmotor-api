@@ -35,7 +35,7 @@ from .models import (
     ClimateWindshield,
     LockValue,
     RemoteActionCtlBatteryPreheat,
-    RemoteActionCtlChargeLimit,
+    RemoteActionCtlChargePlan,
     RemoteActionCtlClimate,
     RemoteActionCtlFindCar,
     RemoteActionCtlLock,
@@ -105,7 +105,7 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
         wshld=ClimateWindshield.DEFROST,
         required_right=VehicleRight.WINDSHIELD_DEFROST,
     ),
-    REMOTE_CTL_CHARGE_LIMIT: RemoteActionCtlChargeLimit(required_right=VehicleRight.CHARGE_LIMIT),
+    REMOTE_CTL_CHARGE_LIMIT: RemoteActionCtlChargePlan(required_right=VehicleRight.CHARGE_LIMIT),
 }
 
 # ---------------------------------------------------------------------------

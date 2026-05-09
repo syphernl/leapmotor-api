@@ -382,6 +382,34 @@ class TirePressure:
 
 
 @dataclass(slots=True)
+class ChargePlan:
+    """Charge plan / schedule settings (from ``config.3`` on C10/B10)."""
+
+    soc_setting: int | None = None
+    time_setting: str | None = None
+    enabled: int | None = None
+    start: str | None = None
+    end: str | None = None
+    cycles: str | None = None
+    circulation: int | None = None
+    recharge: int | None = None
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> ChargePlan:
+        """Build a ChargePlan from the merged API dict."""
+        return cls(
+            soc_setting=data.get("chargesocSetting"),
+            time_setting=data.get("chargeTimeSetting"),
+            enabled=data.get("chargeScheduleEnabled"),
+            start=data.get("chargeScheduleStart"),
+            end=data.get("chargeScheduleEnd"),
+            cycles=data.get("chargeScheduleCycles"),
+            circulation=data.get("chargeScheduleCirculation"),
+            recharge=data.get("chargeScheduleRecharge"),
+        )
+
+
+@dataclass(slots=True)
 class BatteryStatus:
     """Battery and charging status."""
 
@@ -389,14 +417,7 @@ class BatteryStatus:
     precise_soc: float | None = None
     charge_state: ChargeState | None = None
     charge_remain_time: int | None = None
-    charge_soc_setting: int | None = None
-    charge_time_setting: str | None = None
-    charge_schedule_enabled: int | None = None
-    charge_schedule_start: str | None = None
-    charge_schedule_end: str | None = None
-    charge_schedule_cycles: str | None = None
-    charge_schedule_circulation: int | None = None
-    charge_schedule_recharge: int | None = None
+    charge_plan: ChargePlan = field(default_factory=ChargePlan)
     charge_completed: int | None = None
     dc_input_fast_charge: int | None = None
     dump_energy: int | None = None
@@ -465,14 +486,7 @@ class BatteryStatus:
             precise_soc=data.get("preciseSoc"),
             charge_state=charge_state,
             charge_remain_time=data.get("chargeRemainTime"),
-            charge_soc_setting=data.get("chargesocSetting"),
-            charge_time_setting=data.get("chargeTimeSetting"),
-            charge_schedule_enabled=data.get("chargeScheduleEnabled"),
-            charge_schedule_start=data.get("chargeScheduleStart"),
-            charge_schedule_end=data.get("chargeScheduleEnd"),
-            charge_schedule_cycles=data.get("chargeScheduleCycles"),
-            charge_schedule_circulation=data.get("chargeScheduleCirculation"),
-            charge_schedule_recharge=data.get("chargeScheduleRecharge"),
+            charge_plan=ChargePlan.from_dict(data),
             charge_completed=data.get("chargeCompleted"),
             dc_input_fast_charge=data.get("dcInputFastCharge"),
             dump_energy=data.get("dumpEnergy"),
@@ -1197,8 +1211,8 @@ class RemoteActionCtlClimate(RemoteActionSpec):
 
 
 @dataclass(slots=True)
-class RemoteActionCtlChargeLimit(RemoteActionSpec):
-    """Charge limit / schedule command (cmd_id=190)."""
+class RemoteActionCtlChargePlan(RemoteActionSpec):
+    """Charge plan / schedule command (cmd_id=190)."""
 
     charge_enable: int = 0
     chargesoc: int = 80
