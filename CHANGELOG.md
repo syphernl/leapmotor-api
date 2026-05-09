@@ -29,7 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added documentation for api (`docs/api.md`) and vehicles (`docs/vehicles.md`)
 - Added `RemoteActionCtlChargePlan` typed dataclass for charge plan/schedule commands (`cmd_id=190`) with fields: `charge_enable`, `chargesoc`, `circulation`, `cycles`, `endtime`, `recharge`, `starttime`
 - Added `REMOTE_CTL_CHARGE_LIMIT` constant and corresponding entry in `REMOTE_ACTION_SPECS`
-- Added `send_destination` command (`cmd_id=180`) for sending navigation destinations to the vehicle without PIN
+- Added `RemoteActionCtlSendDestination` typed dataclass for navigation destination commands (`cmd_id=180`) with fields: `address`, `address_name`, `latitude`, `longitude`
+- Added `REMOTE_CTL_SEND_DESTINATION` constant and corresponding entry in `REMOTE_ACTION_SPECS`
+- Added `requires_pin` field to `RemoteActionSpec` (default `True`); pin-less commands like `send_destination` set it to `False`
 - Added typed energy consumption models: `WeeklyConsumption`, `ConsumptionRank`, `ConsumptionWeeklyRank`, and `ConsumptionLastWeekBreakdown` (with `total_ec` computed property)
 - Added `get_consumption_weekly_rank()` and `get_consumption_last_week_breakdown()` methods for retrieving energy consumption statistics from the cloud
 
@@ -40,6 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - `DrivingStatus.is_parked` now falls back to `vehicle_state` and `driving_state` signals when `speed` is unavailable (improves C10/B10 reliability)
 - `set_charge_limit` now reads charging plan data from the typed `VehicleStatus.battery.charge_plan` sub-object instead of navigating raw API dicts
 - `set_charge_limit` now delegates to `_remote_control()` for consistent token/PIN/permission checks instead of calling `_remote_control_raw()` directly
+- `send_destination` now uses `RemoteActionCtlSendDestination` and delegates to `_remote_control()` for consistent permission checks instead of inline JSON and `_remote_control_without_pin_raw()`
+- `_remote_control()` now routes pin-less commands (where `spec.requires_pin` is `False`) to `_remote_control_without_pin_raw()` automatically
 - **Breaking:** `BatteryStatus` charge schedule fields (`charge_soc_setting`, `charge_time_setting`, `charge_schedule_enabled`, `charge_schedule_start`, `charge_schedule_end`, `charge_schedule_cycles`, `charge_schedule_circulation`, `charge_schedule_recharge`) moved into `BatteryStatus.charge_plan` (`ChargePlan` sub-object) — e.g. `battery.charge_schedule_start` → `battery.charge_plan.start`
 - **Breaking:** `RemoteActionCtlChargeLimit` renamed to `RemoteActionCtlChargePlan`
 - All crypto header builders (`build_consumption_weekly_rank_headers`, `build_consumption_last_week_headers`) now return `ApiRequestHeaders` instead of raw `dict[str, str]`
