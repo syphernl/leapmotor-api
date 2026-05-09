@@ -30,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `RemoteActionCtlChargePlan` typed dataclass for charge plan/schedule commands (`cmd_id=190`) with fields: `charge_enable`, `chargesoc`, `circulation`, `cycles`, `endtime`, `recharge`, `starttime`
 - Added `REMOTE_CTL_CHARGE_LIMIT` constant and corresponding entry in `REMOTE_ACTION_SPECS`
 - Added `send_destination` command (`cmd_id=180`) for sending navigation destinations to the vehicle without PIN
+- Added typed energy consumption models: `WeeklyConsumption`, `ConsumptionRank`, `ConsumptionWeeklyRank`, and `ConsumptionLastWeekBreakdown` (with `total_ec` computed property)
+- Added `get_consumption_weekly_rank()` and `get_consumption_last_week_breakdown()` methods for retrieving energy consumption statistics from the cloud
 
 ### Changed
 - **Breaking:** `Vehicle.rights` changed from `str | None` to `list[VehicleRight]` (was a comma-separated string like `"110,120,230"`)
