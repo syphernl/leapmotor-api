@@ -21,7 +21,6 @@ from leapmotor_api.exceptions import (
     LeapmotorMissingAppCertError,
 )
 from leapmotor_api.models import MessageList, Vehicle
-from leapmotor_api.utils import _safe_int
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -111,23 +110,6 @@ class TestVehicleStatusCarTypePath:
     def test_other_types_lowered(self) -> None:
         assert _vehicle_status_car_type_path("T03") == "t03"
         assert _vehicle_status_car_type_path("C11") == "c11"
-
-
-# ---------------------------------------------------------------------------
-# Helper functions
-# ---------------------------------------------------------------------------
-
-
-class TestSafeInt:
-    def test_valid(self) -> None:
-        assert _safe_int(42) == 42
-        assert _safe_int("123") == 123
-
-    def test_none(self) -> None:
-        assert _safe_int(None) is None
-
-    def test_invalid(self) -> None:
-        assert _safe_int("abc") is None
 
 
 # ---------------------------------------------------------------------------

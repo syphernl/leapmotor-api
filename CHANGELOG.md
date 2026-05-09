@@ -18,20 +18,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `LeapmotorPermissionError` exception class for consumers wanting strict permission enforcement
 - Added `SeatComfortStatus` sub-object: driver/passenger seat heating and ventilation levels, steering wheel heating and remaining minutes
 - Added `SecurityStatus` sub-object: vehicle security active, sentry mode, mirror heating (left/right), roof/skylight opening
-- Added new fields to `BatteryStatus`: `precise_soc`, `min_battery_temp`, `battery_thermal_request`, `charge_completed`, `charge_schedule_enabled`, `charge_schedule_start`, `charge_schedule_end`, `charge_schedule_cycles`, `charge_schedule_circulation`
+- Added new fields to `BatteryStatus`: `precise_soc`, `min_battery_temp`, `battery_thermal_request`, `charge_completed`, `charge_schedule_enabled`, `charge_schedule_start`, `charge_schedule_end`, `charge_schedule_cycles`, `charge_schedule_circulation`, `charge_schedule_recharge`
 - Added new fields to `DrivingStatus`: `vehicle_state`, `driving_state`, `speed_limit`, `speed_limit_unit`, `speed_limit_active`, `live_remaining_range`, `max_range`, `range_mode`
 - Added new fields to `ClimateStatus`: `ac_setting_right`, `interior_temp`, `recirculation_mode`, `windshield_defrost`, `rear_window_heating`, `climate_mode`, `rapid_cooling`, `rapid_heating`
 - Added `bcm_key_position_on2` to `IgnitionStatus`
-- Added `config.3` charge plan mapping for C10/B10: charge limit and scheduling fields are now populated from the `config` section
+- Added `config.3` charge plan mapping for C10/B10: charge limit and scheduling fields are now populated from the `config` section (including `recharge`)
 - Added GPS fallback using alternative coordinates (signals `2190`/`2191`) when primary GPS signals are absent
 - Added 30+ new signal IDs to `_SIGNAL_TO_NAMED` covering all new fields
 - Added documentation for api (`docs/api.md`) and vehicles (`docs/vehicles.md`)
+- Added `RemoteActionCtlChargeLimit` typed dataclass for charge limit/schedule commands (`cmd_id=190`) with fields: `charge_enable`, `chargesoc`, `circulation`, `cycles`, `endtime`, `recharge`, `starttime`
+- Added `REMOTE_CTL_CHARGE_LIMIT` constant and corresponding entry in `REMOTE_ACTION_SPECS`
+- Added `send_destination` command (`cmd_id=180`) for sending navigation destinations to the vehicle without PIN
 
 ### Changed
 - **Breaking:** `Vehicle.rights` changed from `str | None` to `list[VehicleRight]` (was a comma-separated string like `"110,120,230"`)
 - **Breaking:** `Vehicle.abilities` changed from `list[str] | None` to `list[VehicleAbility]` (was a list of numeric strings like `["1", "10", "36"]`)
 - **Breaking:** `Vehicle.module_rights` changed from `str | None` to `list[ModuleRight]` (was a comma-separated string like `"100,200,300,400"`)
 - `DrivingStatus.is_parked` now falls back to `vehicle_state` and `driving_state` signals when `speed` is unavailable (improves C10/B10 reliability)
+- `set_charge_limit` now reads charging plan data from the typed `VehicleStatus.battery` model instead of navigating raw API dicts
+- `set_charge_limit` now delegates to `_remote_control()` for consistent token/PIN/permission checks instead of calling `_remote_control_raw()` directly
+- All crypto header builders (`build_consumption_weekly_rank_headers`, `build_consumption_last_week_headers`) now return `ApiRequestHeaders` instead of raw `dict[str, str]`
 
 ### Removed
 - **Breaking:** Removed `fetch_data()` from `LeapmotorApiClient` and `AsyncLeapmotorApiClient` — was a debug-only aggregation method; use `get_vehicle_list()` + `get_vehicle_status()` instead

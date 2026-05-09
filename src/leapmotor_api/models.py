@@ -396,6 +396,7 @@ class BatteryStatus:
     charge_schedule_end: str | None = None
     charge_schedule_cycles: str | None = None
     charge_schedule_circulation: int | None = None
+    charge_schedule_recharge: int | None = None
     charge_completed: int | None = None
     dc_input_fast_charge: int | None = None
     dump_energy: int | None = None
@@ -471,6 +472,7 @@ class BatteryStatus:
             charge_schedule_end=data.get("chargeScheduleEnd"),
             charge_schedule_cycles=data.get("chargeScheduleCycles"),
             charge_schedule_circulation=data.get("chargeScheduleCirculation"),
+            charge_schedule_recharge=data.get("chargeScheduleRecharge"),
             charge_completed=data.get("chargeCompleted"),
             dc_input_fast_charge=data.get("dcInputFastCharge"),
             dump_energy=data.get("dumpEnergy"),
@@ -985,6 +987,8 @@ def _merge_signal_to_named(status_data: dict[str, Any]) -> dict[str, Any]:
                 merged["chargeScheduleCycles"] = charge_plan["cycles"]
             if "chargeScheduleCirculation" not in merged and "circulation" in charge_plan:
                 merged["chargeScheduleCirculation"] = charge_plan["circulation"]
+            if "chargeScheduleRecharge" not in merged and "recharge" in charge_plan:
+                merged["chargeScheduleRecharge"] = charge_plan["recharge"]
 
     return merged
 
@@ -1187,6 +1191,35 @@ class RemoteActionCtlClimate(RemoteActionSpec):
                 "temperature": self.temperature,
                 "windlevel": self.windlevel,
                 "wshld": self.wshld,
+            },
+            separators=(",", ":"),
+        )
+
+
+@dataclass(slots=True)
+class RemoteActionCtlChargeLimit(RemoteActionSpec):
+    """Charge limit / schedule command (cmd_id=190)."""
+
+    charge_enable: int = 0
+    chargesoc: int = 80
+    circulation: int = 0
+    cycles: str = ""
+    endtime: str = ""
+    recharge: int = 0
+    starttime: str = ""
+    cmd_id: str = field(default="190", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps(
+            {
+                "chargeEnable": self.charge_enable,
+                "chargesoc": self.chargesoc,
+                "circulation": self.circulation,
+                "cycles": self.cycles,
+                "endtime": self.endtime,
+                "recharge": self.recharge,
+                "starttime": self.starttime,
             },
             separators=(",", ":"),
         )

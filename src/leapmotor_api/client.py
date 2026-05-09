@@ -25,6 +25,7 @@ from .const import (
     KNOWN_ACCOUNT_P12_PASSWORDS,
     REMOTE_CTL_AC_SWITCH,
     REMOTE_CTL_BATTERY_PREHEAT,
+    REMOTE_CTL_CHARGE_LIMIT,
     REMOTE_CTL_FIND_CAR,
     REMOTE_CTL_LOCK,
     REMOTE_CTL_QUICK_COOL,
@@ -62,8 +63,13 @@ from .exceptions import (
     LeapmotorMissingAppCertError,
 )
 from .mappings import CAR_TYPE_PATH_MAP, REMOTE_ACTION_SPECS
-from .models import MessageList, Vehicle, VehicleRight, VehicleStatus
-from .utils import _safe_int
+from .models import (
+    MessageList,
+    RemoteActionCtlChargeLimit,
+    Vehicle,
+    VehicleRight,
+    VehicleStatus,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -467,41 +473,25 @@ class LeapmotorApiClient:
     def set_charge_limit(self, vin: str, charge_limit_percent: int) -> dict[str, Any]:
         """Set the charge limit while preserving the current charging plan values."""
         vehicle = self._find_vehicle_by_vin(vin)
-        if not vehicle.has_right(VehicleRight.CHARGE_LIMIT):
-            _LOGGER.warning(
-                "Vehicle %s may lack permission for 'set_charge_limit' (requires right %s=%d). "
-                "Proceeding anyway — the server will enforce permissions.",
-                vin,
-                VehicleRight.CHARGE_LIMIT.name,
-                VehicleRight.CHARGE_LIMIT.value,
-            )
-        status_json = self.get_vehicle_raw_status(vehicle)
-        charge_plan = ((status_json.get("data") or {}).get("config") or {}).get("3") or {}
+        status = self.get_vehicle_status(vehicle)
+        battery = status.battery
 
-        start_time = charge_plan.get("beginTime")
-        end_time = charge_plan.get("endTime")
-        cycles = charge_plan.get("cycles")
-        if not start_time or not end_time or not cycles:
+        if not battery.charge_schedule_start or not battery.charge_schedule_end or not battery.charge_schedule_cycles:
             raise LeapmotorApiError("Current charging plan is incomplete, cannot safely update charge limit.")
 
-        cmd_content = json.dumps(
-            {
-                "chargeEnable": 1 if _safe_int(charge_plan.get("isEnable")) else 0,
-                "chargesoc": int(charge_limit_percent),
-                "circulation": _safe_int(charge_plan.get("circulation")) or 0,
-                "cycles": str(cycles),
-                "endtime": str(end_time),
-                "recharge": _safe_int(charge_plan.get("recharge")) or 0,
-                "starttime": str(start_time),
-            },
-            separators=(",", ":"),
+        charge_spec = RemoteActionCtlChargeLimit(
+            charge_enable=1 if battery.charge_schedule_enabled else 0,
+            chargesoc=int(charge_limit_percent),
+            circulation=battery.charge_schedule_circulation or 0,
+            cycles=battery.charge_schedule_cycles,
+            endtime=battery.charge_schedule_end,
+            recharge=battery.charge_schedule_recharge or 0,
+            starttime=battery.charge_schedule_start,
         )
-        return self._remote_control_raw(
+        return self._remote_control(
             vin=vin,
-            cmd_id="190",
-            cmd_content=cmd_content,
-            action_label="set_charge_limit",
-            vehicle=vehicle,
+            action=REMOTE_CTL_CHARGE_LIMIT,
+            cmd_content=charge_spec.cmd_content,
         )
 
     def send_destination(
