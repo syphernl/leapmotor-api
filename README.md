@@ -103,6 +103,21 @@ All fields are `T | None` — they are populated only when the vehicle reports t
 
 For raw API data, use `get_vehicle_raw_status()` or access `status.raw`.
 
+## Energy Consumption Statistics
+
+```python
+# Last week energy breakdown (driving, A/C, other)
+breakdown = client.get_consumption_last_week_breakdown(vehicle)
+print(f"Driver: {breakdown.driver_ec} kWh, AC: {breakdown.ac_ec} kWh, Other: {breakdown.other_ec} kWh")
+print(f"Total: {breakdown.total_ec} kWh")
+
+# Six-week consumption history and ranking
+weekly_rank = client.get_consumption_weekly_rank(vehicle)
+print(f"Rank: {weekly_rank.rank.rank}, Avg: {weekly_rank.rank.hundred_km_ec} kWh/100km")
+for week in weekly_rank.weekly:
+    print(f"  {week.week_start} ~ {week.week_end}: {week.hundred_km_ec} kWh/100km")
+```
+
 ## Vehicle Permissions
 
 The `Vehicle` object exposes the Leapmotor 3-tier permission system as typed enums:
