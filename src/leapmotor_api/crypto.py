@@ -494,3 +494,67 @@ def build_remote_ctl_result_headers(
         sign=hmac.new(sign_key, sign_input.encode("utf-8"), hashlib.sha256).hexdigest(),
         accept_language=language,
     )
+
+
+def build_consumption_weekly_rank_headers(
+    *,
+    sign_key: bytes,
+    device_id: str,
+    carvin: str,
+    language: str = DEFAULT_LANGUAGE,
+) -> ApiRequestHeaders:
+    """Build headers for getLastNweeks100kmECAndRank (custom field order)."""
+    nonce = str(random.randint(100000, 9999999))  # noqa: S311
+    timestamp = str(int(time.time() * 1000))
+    sign_input = (
+        f"{language}"
+        f"{carvin}"
+        f"{DEFAULT_CHANNEL}"
+        f"{device_id}"
+        f"{DEFAULT_DEVICE_TYPE}"
+        f"{nonce}"
+        f"{DEFAULT_SOURCE}"
+        f"{timestamp}"
+        f"{DEFAULT_APP_VERSION}"
+    )
+    return ApiRequestHeaders(
+        nonce=nonce,
+        device_id=device_id,
+        timestamp=timestamp,
+        sign=hmac.new(sign_key, sign_input.encode("utf-8"), hashlib.sha256).hexdigest(),
+        accept_language=language,
+    )
+
+
+def build_consumption_last_week_headers(
+    *,
+    sign_key: bytes,
+    device_id: str,
+    carvin: str,
+    begintime: str,
+    endtime: str,
+    language: str = DEFAULT_LANGUAGE,
+) -> ApiRequestHeaders:
+    """Build headers for getLastweekEC (custom field order)."""
+    nonce = str(random.randint(100000, 9999999))  # noqa: S311
+    timestamp = str(int(time.time() * 1000))
+    sign_input = (
+        f"{language}"
+        f"{begintime}"
+        f"{carvin}"
+        f"{DEFAULT_CHANNEL}"
+        f"{device_id}"
+        f"{DEFAULT_DEVICE_TYPE}"
+        f"{endtime}"
+        f"{nonce}"
+        f"{DEFAULT_SOURCE}"
+        f"{timestamp}"
+        f"{DEFAULT_APP_VERSION}"
+    )
+    return ApiRequestHeaders(
+        nonce=nonce,
+        device_id=device_id,
+        timestamp=timestamp,
+        sign=hmac.new(sign_key, sign_input.encode("utf-8"), hashlib.sha256).hexdigest(),
+        accept_language=language,
+    )

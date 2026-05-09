@@ -44,6 +44,8 @@ from .const import (
 from .crypto import (
     build_car_picture_headers,
     build_car_picture_package_headers,
+    build_consumption_last_week_headers,
+    build_consumption_weekly_rank_headers,
     build_login_headers,
     build_operpwd_verify_headers,
     build_remote_ctl_result_headers,
@@ -64,12 +66,15 @@ from .exceptions import (
 )
 from .mappings import CAR_TYPE_PATH_MAP, REMOTE_ACTION_SPECS
 from .models import (
+    ConsumptionLastWeekBreakdown,
+    ConsumptionWeeklyRank,
     MessageList,
     RemoteActionCtlChargePlan,
     Vehicle,
     VehicleRight,
     VehicleStatus,
 )
+from .utils import previous_week_window_seconds
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -549,6 +554,51 @@ class LeapmotorApiClient:
         if response["status_code"] != 200:
             raise LeapmotorApiError(f"car picture package failed with HTTP {response['status_code']}")
         return bytes(response["body"])
+
+    def get_consumption_weekly_rank(self, vehicle: Vehicle) -> ConsumptionWeeklyRank:
+        """Fetch six-week energy consumption and ranking data."""
+        self._ensure_token()
+        return self._retry_on_token_expiry(self._get_consumption_weekly_rank, vehicle)
+
+    def _get_consumption_weekly_rank(self, vehicle: Vehicle) -> ConsumptionWeeklyRank:
+        headers = build_consumption_weekly_rank_headers(
+            sign_key=self.sign_key, device_id=self.device_id, carvin=vehicle.vin, language=self.language
+        ).to_dict()
+        headers.update(self._auth_headers())
+        response = self._post(
+            path="/carownerservice/oversea/drivingRecord/v1/getLastNweeks100kmECAndRank",
+            headers=headers,
+            data=f"carvin={quote(vehicle.vin, safe='')}",
+            cert=self.account_cert,
+        )
+        body = self._parse_api_body(response["status_code"], response["body"], "consumption weekly rank")
+        return ConsumptionWeeklyRank.from_dict(body.get("data") or {})
+
+    def get_consumption_last_week_breakdown(self, vehicle: Vehicle) -> ConsumptionLastWeekBreakdown:
+        """Fetch last-week energy split by driving, A/C, and other."""
+        self._ensure_token()
+        return self._retry_on_token_expiry(self._get_consumption_last_week_breakdown, vehicle)
+
+    def _get_consumption_last_week_breakdown(self, vehicle: Vehicle) -> ConsumptionLastWeekBreakdown:
+        begintime, endtime = previous_week_window_seconds()
+        headers = build_consumption_last_week_headers(
+            sign_key=self.sign_key,
+            device_id=self.device_id,
+            carvin=vehicle.vin,
+            begintime=str(begintime),
+            endtime=str(endtime),
+            language=self.language,
+        ).to_dict()
+        headers.update(self._auth_headers())
+        body = f"endtime={endtime}&begintime={begintime}&carvin={quote(vehicle.vin, safe='')}"
+        response = self._post(
+            path="/carownerservice/oversea/drivingRecord/v1/getLastweekEC",
+            headers=headers,
+            data=body,
+            cert=self.account_cert,
+        )
+        result = self._parse_api_body(response["status_code"], response["body"], "consumption last week breakdown")
+        return ConsumptionLastWeekBreakdown.from_dict(result.get("data") or {})
 
     # ------------------------------------------------------------------
     # Private — Data fetching

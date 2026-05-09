@@ -1250,6 +1250,96 @@ class RemoteActionResult:
 
 
 # ---------------------------------------------------------------------------
+# Energy consumption models
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True, slots=True)
+class WeeklyConsumption:
+    """One week of energy consumption data."""
+
+    week_start: str
+    week_end: str
+    hundred_km_ec: float
+    hundred_mi_kwh_ec: float
+    week_start_ms: int | None = None
+    week_end_ms: int | None = None
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> WeeklyConsumption:
+        """Build from a raw API dict."""
+        return cls(
+            week_start=data.get("weekStart", ""),
+            week_end=data.get("weekEnd", ""),
+            hundred_km_ec=float(data.get("hundredKmEC", 0)),
+            hundred_mi_kwh_ec=float(data.get("hundredMiKwhEC", 0)),
+            week_start_ms=data.get("xWeekStart"),
+            week_end_ms=data.get("xWeekEnd"),
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class ConsumptionRank:
+    """Current consumption rank compared to other drivers."""
+
+    result: int
+    rank: str
+    hundred_km_ec: float
+    hundred_mi_kwh_ec: float
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> ConsumptionRank:
+        """Build from a raw API dict."""
+        return cls(
+            result=int(data.get("result", 0)),
+            rank=data.get("rank", ""),
+            hundred_km_ec=float(data.get("hundredKmEC", 0)),
+            hundred_mi_kwh_ec=float(data.get("hundredMiKwhEC", 0)),
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class ConsumptionWeeklyRank:
+    """Six-week energy consumption history with ranking."""
+
+    rank: ConsumptionRank
+    weekly: list[WeeklyConsumption]
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> ConsumptionWeeklyRank:
+        """Build from the API response ``data`` field."""
+        rank_data = data.get("rankResult") or {}
+        weekly_data = data.get("weeklyEC") or []
+        return cls(
+            rank=ConsumptionRank.from_dict(rank_data),
+            weekly=[WeeklyConsumption.from_dict(w) for w in weekly_data],
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class ConsumptionLastWeekBreakdown:
+    """Last-week energy breakdown by category (kWh)."""
+
+    driver_ec: float
+    ac_ec: float
+    other_ec: float
+
+    @property
+    def total_ec(self) -> float:
+        """Total energy consumption (kWh)."""
+        return round(self.driver_ec + self.ac_ec + self.other_ec, 2)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> ConsumptionLastWeekBreakdown:
+        """Build from the API response ``data`` field."""
+        return cls(
+            driver_ec=float(data.get("driverEC", 0)),
+            ac_ec=float(data.get("acEC", 0)),
+            other_ec=float(data.get("otherEC", 0)),
+        )
+
+
+# ---------------------------------------------------------------------------
 # Message models
 # ---------------------------------------------------------------------------
 

@@ -144,6 +144,26 @@ def main() -> None:
             print(f"    Latitude:               {vs.location.latitude}")
             print(f"    Longitude:              {vs.location.longitude}")
 
+            print("\n  [Tires]")
+            print(f"    Front left pressure:    {vs.tires.front_left_kpa} kPa")
+            print(f"    Front right pressure:   {vs.tires.front_right_kpa} kPa")
+            print(f"    Rear left pressure:     {vs.tires.rear_left_kpa} kPa")
+            print(f"    Rear right pressure:    {vs.tires.rear_right_kpa} kPa")
+
+            print("\n  [Statistics]")
+            breakdown = client.get_consumption_last_week_breakdown(vehicle)
+            print(f"    Driver EC:              {breakdown.driver_ec} kWh")
+            print(f"    AC EC:                  {breakdown.ac_ec} kWh")
+            print(f"    Other EC:               {breakdown.other_ec} kWh")
+            print(f"    Total EC:               {breakdown.total_ec} kWh")
+
+            weekly_rank = client.get_consumption_weekly_rank(vehicle)
+            print(f"    Rank:                   {weekly_rank.rank.rank}")
+            print(f"    Avg consumption:        {weekly_rank.rank.hundred_km_ec} kWh/100km")
+            print(f"    Avg consumption (mi):   {weekly_rank.rank.hundred_mi_kwh_ec} kWh/100mi")
+            for wc in weekly_rank.weekly:
+                print(f"    Week {wc.week_start} ~ {wc.week_end}: {wc.hundred_km_ec} kWh/100km")
+
             print()
 
         # --- Messages ---

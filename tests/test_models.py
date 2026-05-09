@@ -24,6 +24,9 @@ from leapmotor_api.models import (
     ClimateOperate,
     ClimatePosition,
     ClimateWindshield,
+    ConsumptionLastWeekBreakdown,
+    ConsumptionRank,
+    ConsumptionWeeklyRank,
     DoorStatus,
     DrivingStatus,
     Message,
@@ -43,6 +46,7 @@ from leapmotor_api.models import (
     VehicleAbility,
     VehicleRight,
     VehicleStatus,
+    WeeklyConsumption,
 )
 
 # ---------------------------------------------------------------------------
@@ -1351,6 +1355,111 @@ class TestVehicleFromDictAdditional:
         }
         v = Vehicle.from_dict(data, is_shared=False)
         assert v.allocation_code == "ABC123"
+
+
+# ---------------------------------------------------------------------------
+# Energy consumption models
+# ---------------------------------------------------------------------------
+
+
+class TestWeeklyConsumption:
+    def test_from_dict(self) -> None:
+        data: dict[str, Any] = {
+            "weekStart": "2026-03-23",
+            "weekEnd": "2026-03-29",
+            "hundredKmEC": 20.4,
+            "hundredMiKwhEC": "3",
+            "xWeekStart": 1774224000000,
+            "xWeekEnd": 1774828799000,
+        }
+        wc = WeeklyConsumption.from_dict(data)
+        assert wc.week_start == "2026-03-23"
+        assert wc.week_end == "2026-03-29"
+        assert wc.hundred_km_ec == 20.4
+        assert wc.hundred_mi_kwh_ec == 3.0
+        assert wc.week_start_ms == 1774224000000
+        assert wc.week_end_ms == 1774828799000
+
+    def test_from_dict_empty(self) -> None:
+        wc = WeeklyConsumption.from_dict({})
+        assert wc.week_start == ""
+        assert wc.hundred_km_ec == 0.0
+        assert wc.week_start_ms is None
+
+
+class TestConsumptionRank:
+    def test_from_dict(self) -> None:
+        data: dict[str, Any] = {
+            "result": 0,
+            "rank": "0%",
+            "hundredKmEC": 17.6,
+            "hundredMiKwhEC": "3.5",
+        }
+        cr = ConsumptionRank.from_dict(data)
+        assert cr.result == 0
+        assert cr.rank == "0%"
+        assert cr.hundred_km_ec == 17.6
+        assert cr.hundred_mi_kwh_ec == 3.5
+
+    def test_from_dict_empty(self) -> None:
+        cr = ConsumptionRank.from_dict({})
+        assert cr.result == 0
+        assert cr.rank == ""
+        assert cr.hundred_km_ec == 0.0
+
+
+class TestConsumptionWeeklyRank:
+    def test_from_dict(self) -> None:
+        data: dict[str, Any] = {
+            "rankResult": {"result": 0, "rank": "0%", "hundredKmEC": 17.6, "hundredMiKwhEC": "3.5"},
+            "weeklyEC": [
+                {
+                    "weekStart": "2026-03-23",
+                    "weekEnd": "2026-03-29",
+                    "hundredKmEC": 20.4,
+                    "hundredMiKwhEC": "3",
+                    "xWeekStart": 1774224000000,
+                    "xWeekEnd": 1774828799000,
+                },
+                {
+                    "weekStart": "2026-03-30",
+                    "weekEnd": "2026-04-05",
+                    "hundredKmEC": 16.3,
+                    "hundredMiKwhEC": "3.8",
+                    "xWeekStart": 1774828800000,
+                    "xWeekEnd": 1775433599000,
+                },
+            ],
+        }
+        cwr = ConsumptionWeeklyRank.from_dict(data)
+        assert cwr.rank.hundred_km_ec == 17.6
+        assert cwr.rank.rank == "0%"
+        assert len(cwr.weekly) == 2
+        assert cwr.weekly[0].week_start == "2026-03-23"
+        assert cwr.weekly[0].hundred_km_ec == 20.4
+        assert cwr.weekly[1].hundred_km_ec == 16.3
+
+    def test_from_dict_empty(self) -> None:
+        cwr = ConsumptionWeeklyRank.from_dict({})
+        assert cwr.rank.result == 0
+        assert cwr.weekly == []
+
+
+class TestConsumptionLastWeekBreakdown:
+    def test_from_dict(self) -> None:
+        data: dict[str, Any] = {"driverEC": "68.2", "acEC": "0.7", "otherEC": "1.5"}
+        breakdown = ConsumptionLastWeekBreakdown.from_dict(data)
+        assert breakdown.driver_ec == 68.2
+        assert breakdown.ac_ec == 0.7
+        assert breakdown.other_ec == 1.5
+        assert breakdown.total_ec == 70.4
+
+    def test_from_dict_empty(self) -> None:
+        breakdown = ConsumptionLastWeekBreakdown.from_dict({})
+        assert breakdown.driver_ec == 0.0
+        assert breakdown.ac_ec == 0.0
+        assert breakdown.other_ec == 0.0
+        assert breakdown.total_ec == 0.0
 
 
 # ---------------------------------------------------------------------------
