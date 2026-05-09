@@ -30,6 +30,7 @@ from .const import (
     REMOTE_CTL_LOCK,
     REMOTE_CTL_QUICK_COOL,
     REMOTE_CTL_QUICK_HEAT,
+    REMOTE_CTL_SEND_DESTINATION,
     REMOTE_CTL_SUNSHADE,
     REMOTE_CTL_SUNSHADE_CLOSE,
     REMOTE_CTL_SUNSHADE_OPEN,
@@ -70,8 +71,8 @@ from .models import (
     ConsumptionWeeklyRank,
     MessageList,
     RemoteActionCtlChargePlan,
+    RemoteActionCtlSendDestination,
     Vehicle,
-    VehicleRight,
     VehicleStatus,
 )
 from .utils import previous_week_window_seconds
@@ -509,31 +510,16 @@ class LeapmotorApiClient:
         longitude: float,
     ) -> dict[str, Any]:
         """Send a navigation destination to the vehicle (does not require PIN)."""
-        vehicle = self._find_vehicle_by_vin(vin)
-        if not vehicle.has_right(VehicleRight.SEND_DESTINATION):
-            _LOGGER.warning(
-                "Vehicle %s may lack permission for 'send_destination' (requires right %s=%d). "
-                "Proceeding anyway — the server will enforce permissions.",
-                vin,
-                VehicleRight.SEND_DESTINATION.name,
-                VehicleRight.SEND_DESTINATION.value,
-            )
-        cmd_content = json.dumps(
-            {
-                "address": address,
-                "addressname": address_name,
-                "latitude": str(latitude),
-                "linenum": "0",
-                "longitude": str(longitude),
-            },
-            ensure_ascii=False,
-            separators=(",", ":"),
+        dest_spec = RemoteActionCtlSendDestination(
+            address=address,
+            address_name=address_name,
+            latitude=latitude,
+            longitude=longitude,
         )
-        return self._remote_control_without_pin_raw(
-            vin=vehicle.vin,
-            cmd_id="180",
-            cmd_content=cmd_content,
-            action_label="send_destination",
+        return self._remote_control(
+            vin=vin,
+            action=REMOTE_CTL_SEND_DESTINATION,
+            cmd_content=dest_spec.cmd_content,
         )
 
     def download_car_picture_package(self, *, picture_key: str) -> bytes:
@@ -619,15 +605,17 @@ class LeapmotorApiClient:
     def _remote_control(self, *, vin: str, action: str, cmd_content: str | None = None) -> dict[str, Any]:
         if not self.token:
             self.login()
-        if not self.operation_password:
-            raise LeapmotorAuthError(
-                "No vehicle PIN configured. Read-only data works without a PIN, but remote-control actions require it."
-            )
         if action not in REMOTE_ACTION_SPECS:
             raise LeapmotorApiError(f"Remote action not configured: {action}")
 
-        vehicle = self._find_vehicle_by_vin(vin)
         spec = REMOTE_ACTION_SPECS[action]
+
+        if spec.requires_pin and not self.operation_password:
+            raise LeapmotorAuthError(
+                "No vehicle PIN configured. Read-only data works without a PIN, but remote-control actions require it."
+            )
+
+        vehicle = self._find_vehicle_by_vin(vin)
         if spec.required_right is not None and not vehicle.has_right(spec.required_right):
             _LOGGER.warning(
                 "Vehicle %s may lack permission for '%s' (requires right %s=%d). "
@@ -637,10 +625,25 @@ class LeapmotorApiClient:
                 spec.required_right.name,
                 spec.required_right.value,
             )
+
+        resolved_content = cmd_content if cmd_content is not None else spec.cmd_content
+
+        if not spec.requires_pin:
+            return self._remote_control_without_pin_raw(
+                vin=vehicle.vin,
+                cmd_id=spec.cmd_id,
+                cmd_content=resolved_content,
+                action_label=action,
+            )
+
+        if not self.operation_password:
+            raise LeapmotorAuthError(
+                "No vehicle PIN configured. Read-only data works without a PIN, but remote-control actions require it."
+            )
         return self._remote_control_raw(
             vin=vehicle.vin,
             cmd_id=spec.cmd_id,
-            cmd_content=cmd_content if cmd_content is not None else spec.cmd_content,
+            cmd_content=resolved_content,
             action_label=action,
             vehicle=vehicle,
         )

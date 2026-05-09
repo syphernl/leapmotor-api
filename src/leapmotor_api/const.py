@@ -36,5 +36,6 @@ REMOTE_CTL_QUICK_COOL = "quick_cool"
 REMOTE_CTL_QUICK_HEAT = "quick_heat"
 REMOTE_CTL_WINDSHIELD_DEFROST = "windshield_defrost"
 REMOTE_CTL_CHARGE_LIMIT = "set_charge_limit"
+REMOTE_CTL_SEND_DESTINATION = "send_destination"
 
 DEFAULT_TIMEOUT = 30

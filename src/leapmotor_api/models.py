@@ -1019,6 +1019,7 @@ class RemoteActionSpec:
     cmd_id: str
     cmd_content: str
     required_right: VehicleRight | None = None
+    requires_pin: bool = True
 
 
 # ---------------------------------------------------------------------------
@@ -1235,6 +1236,32 @@ class RemoteActionCtlChargePlan(RemoteActionSpec):
                 "recharge": self.recharge,
                 "starttime": self.starttime,
             },
+            separators=(",", ":"),
+        )
+
+
+@dataclass(slots=True)
+class RemoteActionCtlSendDestination(RemoteActionSpec):
+    """Send navigation destination command (cmd_id=180)."""
+
+    address: str = ""
+    address_name: str = ""
+    latitude: float = 0.0
+    longitude: float = 0.0
+    cmd_id: str = field(default="180", init=False)
+    cmd_content: str = field(default="", init=False)
+    requires_pin: bool = field(default=False, init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps(
+            {
+                "address": self.address,
+                "addressname": self.address_name,
+                "latitude": str(self.latitude),
+                "linenum": "0",
+                "longitude": str(self.longitude),
+            },
+            ensure_ascii=False,
             separators=(",", ":"),
         )
 

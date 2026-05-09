@@ -14,6 +14,7 @@ from .const import (
     REMOTE_CTL_LOCK,
     REMOTE_CTL_QUICK_COOL,
     REMOTE_CTL_QUICK_HEAT,
+    REMOTE_CTL_SEND_DESTINATION,
     REMOTE_CTL_SUNSHADE,
     REMOTE_CTL_SUNSHADE_CLOSE,
     REMOTE_CTL_SUNSHADE_OPEN,
@@ -39,6 +40,7 @@ from .models import (
     RemoteActionCtlClimate,
     RemoteActionCtlFindCar,
     RemoteActionCtlLock,
+    RemoteActionCtlSendDestination,
     RemoteActionCtlSunshade,
     RemoteActionCtlTrunk,
     RemoteActionCtlWindows,
@@ -106,6 +108,7 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
         required_right=VehicleRight.WINDSHIELD_DEFROST,
     ),
     REMOTE_CTL_CHARGE_LIMIT: RemoteActionCtlChargePlan(required_right=VehicleRight.CHARGE_LIMIT),
+    REMOTE_CTL_SEND_DESTINATION: RemoteActionCtlSendDestination(required_right=VehicleRight.SEND_DESTINATION),
 }
 
 # ---------------------------------------------------------------------------
