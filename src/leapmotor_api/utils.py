@@ -1,4 +1,4 @@
-"""Utily functions for leapmotor api."""
+"""Utility functions for leapmotor api."""
 
 from datetime import UTC, datetime, timedelta, timezone
 
