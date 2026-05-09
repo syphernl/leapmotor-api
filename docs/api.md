@@ -26,6 +26,8 @@ used by the `leapmotor-api` library.
   - [Vehicle List](#vehicle-list)
   - [Vehicle Status](#vehicle-status)
   - [Mileage and Energy](#mileage-and-energy)
+  - [Weekly Energy Consumption and Ranking](#weekly-energy-consumption-and-ranking)
+  - [Last Week Energy Breakdown](#last-week-energy-breakdown)
   - [Vehicle Image](#vehicle-image)
   - [Image Package Download](#image-package-download)
   - [Message List](#message-list)
@@ -285,6 +287,52 @@ The response format varies by model — see [docs/vehicles.md](vehicles.md).
 | `totalmileage` | Total mileage (km) |
 | `totalmileageMile` | Total mileage (miles) |
 | `deliveryDays` | Days since delivery |
+
+### Weekly Energy Consumption and Ranking
+
+| | |
+|---|---|
+| **Path** | `POST /carownerservice/oversea/drivingRecord/v1/getLastNweeks100kmECAndRank` |
+| **Body** | `carvin={VIN}` |
+| **Signature** | HMAC-SHA256 (with `carvin` in body_params) |
+
+**Response (data):**
+
+| Field | Description |
+|---|---|
+| `rankResult.result` | Rank result code (0 = OK) |
+| `rankResult.rank` | Percentile rank (e.g. `"0%"`) |
+| `rankResult.hundredKmEC` | Average consumption (kWh/100 km) |
+| `rankResult.hundredMiKwhEC` | Average consumption (kWh/100 mi) |
+| `weeklyEC[].weekStart` | Week start date (`YYYY-MM-DD`) |
+| `weeklyEC[].weekEnd` | Week end date (`YYYY-MM-DD`) |
+| `weeklyEC[].hundredKmEC` | Consumption that week (kWh/100 km) |
+| `weeklyEC[].hundredMiKwhEC` | Consumption that week (kWh/100 mi) |
+| `weeklyEC[].xWeekStart` | Week start timestamp (ms) |
+| `weeklyEC[].xWeekEnd` | Week end timestamp (ms) |
+
+**Typed model:** `ConsumptionWeeklyRank` (contains `ConsumptionRank` + `list[WeeklyConsumption]`)
+
+### Last Week Energy Breakdown
+
+| | |
+|---|---|
+| **Path** | `POST /carownerservice/oversea/drivingRecord/v1/getLastweekEC` |
+| **Body** | `endtime={epoch_s}&begintime={epoch_s}&carvin={VIN}` |
+| **Signature** | HMAC-SHA256 (with `endtime`, `begintime`, `carvin` in body_params) |
+
+The `begintime` / `endtime` parameters are Unix epoch seconds delimiting
+the previous calendar week (Monday 00:00 → Sunday 23:59:59 UTC).
+
+**Response (data):**
+
+| Field | Description |
+|---|---|
+| `driverEC` | Driving energy consumption (kWh, string) |
+| `acEC` | Air conditioning energy consumption (kWh, string) |
+| `otherEC` | Other systems energy consumption (kWh, string) |
+
+**Typed model:** `ConsumptionLastWeekBreakdown` (with `total_ec` computed property)
 
 ### Vehicle Image
 
