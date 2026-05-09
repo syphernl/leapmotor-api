@@ -59,6 +59,9 @@ class AsyncLeapmotorApiClient:
     async def unlock_vehicle(self, vin: str) -> dict[str, Any]:
         return await asyncio.to_thread(self._client.unlock_vehicle, vin)
 
+    async def unlock_charger(self, vin: str) -> dict[str, Any]:
+        return await asyncio.to_thread(self._client.unlock_charger, vin)
+
     async def open_trunk(self, vin: str) -> dict[str, Any]:
         return await asyncio.to_thread(self._client.open_trunk, vin)
 

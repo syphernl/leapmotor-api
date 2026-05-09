@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `requires_pin` field to `RemoteActionSpec` (default `True`); pin-less commands like `send_destination` set it to `False`
 - Added typed energy consumption models: `WeeklyConsumption`, `ConsumptionRank`, `ConsumptionWeeklyRank`, and `ConsumptionLastWeekBreakdown` (with `total_ec` computed property)
 - Added `get_consumption_weekly_rank()` and `get_consumption_last_week_breakdown()` methods for retrieving energy consumption statistics from the cloud
+- Added `unlock_charger()` remote command (`cmd_id=192`) for unlocking the charging connector before unplugging, with `RemoteActionCtlUnlockCharger` dataclass, `REMOTE_CTL_UNLOCK_CHARGER` constant, `VehicleRight.UNLOCK_CHARGER` (192), and `ChargerOperation` enum
 
 ### Changed
 - **Breaking:** `Vehicle.rights` changed from `str | None` to `list[VehicleRight]` (was a comma-separated string like `"110,120,230"`)

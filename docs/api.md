@@ -45,6 +45,7 @@ used by the `leapmotor-api` library.
   - [Climate (cmd_id=170)](#climate-cmd_id170)
   - [Send Destination (cmd_id=180)](#send-destination-cmd_id180)
   - [Set Charge Plan (cmd_id=190)](#set-charge-plan-cmd_id190)
+  - [Unlock Charger (cmd_id=192)](#unlock-charger-cmd_id192)
   - [Windows (cmd_id=230)](#windows-cmd_id230)
   - [Sunshade (cmd_id=240)](#sunshade-cmd_id240)
 
@@ -527,6 +528,14 @@ Does **not** require PIN. Uses the flow without `operatePassword`.
 
 Requires PIN. The command preserves the current charging schedule,
 updating only the SOC limit.
+
+### Unlock Charger (cmd_id=192)
+
+| Action | cmd_content |
+|---|---|
+| Unlock | `{"operation":"unlock"}` |
+
+Requires PIN. Unlocks the charging connector before unplugging.
 
 ### Windows (cmd_id=230)
 

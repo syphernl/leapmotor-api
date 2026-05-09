@@ -22,6 +22,7 @@ from .const import (
     REMOTE_CTL_TRUNK_CLOSE,
     REMOTE_CTL_TRUNK_OPEN,
     REMOTE_CTL_UNLOCK,
+    REMOTE_CTL_UNLOCK_CHARGER,
     REMOTE_CTL_WINDOWS,
     REMOTE_CTL_WINDOWS_CLOSE,
     REMOTE_CTL_WINDOWS_OPEN,
@@ -43,6 +44,7 @@ from .models import (
     RemoteActionCtlSendDestination,
     RemoteActionCtlSunshade,
     RemoteActionCtlTrunk,
+    RemoteActionCtlUnlockCharger,
     RemoteActionCtlWindows,
     RemoteActionSpec,
     SunshadeValue,
@@ -54,6 +56,7 @@ from .models import (
 REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
     REMOTE_CTL_UNLOCK: RemoteActionCtlLock(value=LockValue.UNLOCK, required_right=VehicleRight.LOCK),
     REMOTE_CTL_LOCK: RemoteActionCtlLock(value=LockValue.LOCK, required_right=VehicleRight.LOCK),
+    REMOTE_CTL_UNLOCK_CHARGER: RemoteActionCtlUnlockCharger(required_right=VehicleRight.UNLOCK_CHARGER),
     REMOTE_CTL_TRUNK: RemoteActionCtlTrunk(value=ToggleValue.TRUE, required_right=VehicleRight.TRUNK),
     REMOTE_CTL_TRUNK_OPEN: RemoteActionCtlTrunk(value=ToggleValue.TRUE, required_right=VehicleRight.TRUNK),
     REMOTE_CTL_TRUNK_CLOSE: RemoteActionCtlTrunk(value=ToggleValue.FALSE, required_right=VehicleRight.TRUNK),

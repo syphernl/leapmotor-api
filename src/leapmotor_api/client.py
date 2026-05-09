@@ -37,6 +37,7 @@ from .const import (
     REMOTE_CTL_TRUNK,
     REMOTE_CTL_TRUNK_CLOSE,
     REMOTE_CTL_UNLOCK,
+    REMOTE_CTL_UNLOCK_CHARGER,
     REMOTE_CTL_WINDOWS,
     REMOTE_CTL_WINDOWS_CLOSE,
     REMOTE_CTL_WINDOWS_OPEN,
@@ -423,6 +424,10 @@ class LeapmotorApiClient:
 
     def unlock_vehicle(self, vin: str) -> dict[str, Any]:
         return self._remote_control(vin=vin, action=REMOTE_CTL_UNLOCK)
+
+    def unlock_charger(self, vin: str) -> dict[str, Any]:
+        """Unlock the charging connector before unplugging."""
+        return self._remote_control(vin=vin, action=REMOTE_CTL_UNLOCK_CHARGER)
 
     def open_trunk(self, vin: str) -> dict[str, Any]:
         return self._remote_control(vin=vin, action=REMOTE_CTL_TRUNK)

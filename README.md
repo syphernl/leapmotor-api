@@ -170,6 +170,7 @@ client.open_sunshade("WLM...")
 client.close_sunshade("WLM...")
 client.battery_preheat("WLM...")
 client.set_charge_limit("WLM...", charge_limit_percent=80)
+client.unlock_charger("WLM...")
 ```
 
 > [!TIP]

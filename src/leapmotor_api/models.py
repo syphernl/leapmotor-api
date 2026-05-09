@@ -126,6 +126,7 @@ class VehicleRight(IntEnum):
     QUICK_CLIMATE = 171
     SEND_DESTINATION = 180
     BATTERY_PREHEAT = 190
+    UNLOCK_CHARGER = 192
     SENTRY_MODE = 220
     WINDOWS = 230
     CHARGE_LIMIT = 340
@@ -156,6 +157,7 @@ _VEHICLE_RIGHT_DESCRIPTIONS: dict[int, str] = {
     171: "Quick cool / Quick heat",
     180: "Send destination (navigation)",
     190: "Battery preheating",
+    192: "Unlock charger connector",
     220: "Sentry mode",
     230: "Windows",
     340: "Charge limit",
@@ -1097,6 +1099,12 @@ class ClimateWindshield(StrEnum):
     DEFROST = "2"
 
 
+class ChargerOperation(StrEnum):
+    """Values for charger unlock command."""
+
+    UNLOCK = "unlock"
+
+
 # ---------------------------------------------------------------------------
 # Typed remote-control action subclasses
 # ---------------------------------------------------------------------------
@@ -1238,6 +1246,18 @@ class RemoteActionCtlChargePlan(RemoteActionSpec):
             },
             separators=(",", ":"),
         )
+
+
+@dataclass(slots=True)
+class RemoteActionCtlUnlockCharger(RemoteActionSpec):
+    """Unlock charger connector command (cmd_id=192)."""
+
+    operation: str = ChargerOperation.UNLOCK
+    cmd_id: str = field(default="192", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps({"operation": self.operation}, separators=(",", ":"))
 
 
 @dataclass(slots=True)
