@@ -18,6 +18,7 @@ from leapmotor_api.const import (
 from leapmotor_api.models import (
     ApiRequestHeaders,
     BatteryStatus,
+    BoolStatus,
     ChargeState,
     ClimateCircle,
     ClimateMode,
@@ -478,26 +479,58 @@ class TestBatteryStatus:
         assert bs.discharging_power_kw is None
 
     def test_is_charging_true(self) -> None:
-        """is_charging is True when charging_power_kw is available and charge_remain_time is set."""
-        bs = BatteryStatus(battery_voltage=400.0, battery_current=-10.0, charge_remain_time=60)
+        """is_charging is True when charging_power_kw is available and charge_state is CHARGING."""
+        bs = BatteryStatus(battery_voltage=400.0, battery_current=-10.0, charge_state=ChargeState.CHARGING)
         assert bs.is_charging is True
 
-    def test_is_charging_false_remain_time_zero(self) -> None:
-        """charge_remain_time=0 means not actually charging (vehicle off)."""
-        bs = BatteryStatus(battery_voltage=400.0, battery_current=-10.0, charge_remain_time=0)
+    def test_is_charging_false_not_charging_state(self) -> None:
+        """charge_state is NOT_CHARGING even though power is flowing."""
+        bs = BatteryStatus(battery_voltage=400.0, battery_current=-10.0, charge_state=ChargeState.NOT_CHARGING)
         assert bs.is_charging is False
 
-    def test_is_charging_false_no_remain_time(self) -> None:
+    def test_is_charging_false_no_charge_state(self) -> None:
         bs = BatteryStatus(battery_voltage=400.0, battery_current=-10.0)
         assert bs.is_charging is False
 
     def test_is_charging_false_no_power_data(self) -> None:
-        bs = BatteryStatus(charge_remain_time=60)
+        bs = BatteryStatus(charge_state=ChargeState.CHARGING)
         assert bs.is_charging is False
 
     def test_is_charging_false_empty(self) -> None:
         bs = BatteryStatus()
         assert bs.is_charging is False
+
+    # -- BoolStatus enum --
+
+    def test_bool_status_values(self) -> None:
+        assert BoolStatus.OFF == 0
+        assert BoolStatus.ON == 1
+
+    # -- is_charge_fast_gun_insert / is_charge_slow_gun_insert --
+
+    def test_is_charge_fast_gun_insert_true(self) -> None:
+        bs = BatteryStatus(dc_input_fast_charge=1)
+        assert bs.is_charge_fast_gun_insert is True
+
+    def test_is_charge_fast_gun_insert_false(self) -> None:
+        bs = BatteryStatus(dc_input_fast_charge=0)
+        assert bs.is_charge_fast_gun_insert is False
+
+    def test_is_charge_fast_gun_insert_none(self) -> None:
+        bs = BatteryStatus()
+        assert bs.is_charge_fast_gun_insert is None
+
+    def test_is_charge_slow_gun_insert_true(self) -> None:
+        bs = BatteryStatus(ac_input_slow_charge=1)
+        assert bs.is_charge_slow_gun_insert is True
+
+    def test_is_charge_slow_gun_insert_false(self) -> None:
+        bs = BatteryStatus(ac_input_slow_charge=0)
+        assert bs.is_charge_slow_gun_insert is False
+
+    def test_is_charge_slow_gun_insert_none(self) -> None:
+        bs = BatteryStatus()
+        assert bs.is_charge_slow_gun_insert is None
 
     def test_is_discharging_true(self) -> None:
         bs = BatteryStatus(battery_voltage=400.0, battery_current=50.0)
@@ -763,12 +796,9 @@ class TestVehicleStatusFromDict:
         assert vs.is_charging is False
 
     def test_convenience_is_regening(self) -> None:
-        """Regen: battery charging while driving and not plugged in."""
+        """Regen: charge_state is REGENING while driving."""
         data: dict[str, Any] = {
-            "chargeState": 0,
-            "batteryCurrent": -5.0,
-            "batteryVoltage": 400.0,
-            "chargeRemainTime": 60,
+            "chargeState": 5,
             "speed": 50,
         }
         vs = VehicleStatus.from_dict(data)
@@ -776,21 +806,15 @@ class TestVehicleStatusFromDict:
 
     def test_convenience_is_regening_false_when_parked(self) -> None:
         data: dict[str, Any] = {
-            "chargeState": 0,
-            "batteryCurrent": -5.0,
-            "batteryVoltage": 400.0,
-            "chargeRemainTime": 60,
+            "chargeState": 5,
             "speed": 0,
         }
         vs = VehicleStatus.from_dict(data)
         assert vs.is_regening is False
 
-    def test_convenience_is_regening_false_when_connected(self) -> None:
+    def test_convenience_is_regening_false_when_not_regening(self) -> None:
         data: dict[str, Any] = {
-            "chargeState": 1,
-            "batteryCurrent": -5.0,
-            "batteryVoltage": 400.0,
-            "chargeRemainTime": 60,
+            "chargeState": 0,
             "speed": 50,
         }
         vs = VehicleStatus.from_dict(data)
@@ -1252,7 +1276,7 @@ class TestVehicleStatusFromDict:
     # -- VehicleStatus.is_plugged --
 
     def test_is_plugged_true(self) -> None:
-        """Plugged in but not actively charging."""
+        """Plugged in (fast gun) but not actively charging."""
         data: dict[str, Any] = {
             "dcInputFastCharge": 1,
             "speed": 0,
@@ -1262,8 +1286,29 @@ class TestVehicleStatusFromDict:
         assert vs.is_plugged is True
         assert vs.is_charging is False
 
+    def test_is_plugged_true_slow_gun(self) -> None:
+        """Plugged in (slow gun) but not actively charging."""
+        data: dict[str, Any] = {
+            "acInputSlowCharge": 1,
+            "speed": 0,
+            "chargeRemainTime": 0,
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.is_plugged is True
+        assert vs.is_charging is False
+
     def test_is_plugged_false_not_connected(self) -> None:
         data: dict[str, Any] = {"chargeState": 0, "speed": 0}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.is_plugged is False
+
+    def test_is_plugged_false_guns_not_inserted(self) -> None:
+        """Both gun signals present but both OFF."""
+        data: dict[str, Any] = {
+            "dcInputFastCharge": 0,
+            "acInputSlowCharge": 0,
+            "speed": 0,
+        }
         vs = VehicleStatus.from_dict(data)
         assert vs.is_plugged is False
 
@@ -1279,6 +1324,22 @@ class TestVehicleStatusFromDict:
         vs = VehicleStatus.from_dict(data)
         assert vs.is_plugged is False
         assert vs.is_charging is True
+
+    def test_is_plugged_fallback_t03_charging(self) -> None:
+        """T03 without gun signals: fallback to charge_state."""
+        data: dict[str, Any] = {"chargeState": 1, "speed": 0}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.is_plugged is True
+
+    def test_is_plugged_fallback_t03_finish(self) -> None:
+        data: dict[str, Any] = {"chargeState": 2, "speed": 0}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.is_plugged is True
+
+    def test_is_plugged_fallback_t03_not_charging(self) -> None:
+        data: dict[str, Any] = {"chargeState": 0, "speed": 0}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.is_plugged is False
 
 
 # ---------------------------------------------------------------------------

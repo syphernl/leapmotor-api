@@ -250,6 +250,13 @@ class GearStatus(IntEnum):
     REVERSE = 3
 
 
+class BoolStatus(IntEnum):
+    """Generic boolean status represented as 0/1 in the API."""
+
+    OFF = 0
+    ON = 1
+
+
 # ---------------------------------------------------------------------------
 # Helpers for parsing permission strings from the API
 # ---------------------------------------------------------------------------
@@ -494,6 +501,20 @@ class BatteryStatus:
         """True if the battery is actively discharging (e.g., driving or powering onboard systems)."""
         return bool(self.discharging_power_kw is not None and self.discharging_power_kw > 0)
 
+    @property
+    def is_charge_fast_gun_insert(self) -> bool | None:
+        """True if the fast charging gun is detected as inserted (C10/B10 signal `dcInputFastCharge`)."""
+        if self.dc_input_fast_charge is None:
+            return None
+        return self.dc_input_fast_charge == BoolStatus.ON
+
+    @property
+    def is_charge_slow_gun_insert(self) -> bool | None:
+        """True if the slow charging gun is detected as inserted (C10/B10 signal `acInputSlowCharge`)."""
+        if self.ac_input_slow_charge is None:
+            return None
+        return self.ac_input_slow_charge == BoolStatus.ON
+
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> BatteryStatus:
         """Build a BatteryStatus from a raw API dict."""
@@ -733,8 +754,21 @@ class VehicleStatus:
     @property
     def is_plugged(self) -> bool:
         """True if a charger is connected but charging has not started yet."""
+        if self.battery.dc_input_fast_charge is None and self.battery.ac_input_slow_charge is None:
+            # When dc_input_fast_charge and ac_input_slow_charge are both None, we don't have the data
+            # to determine if it's plugged in (maybe a T03 vehicle that is missing some data).
+            # So fall back to charge_state for charging status
+
+            return self.battery.charge_state in (
+                ChargeState.CHARGING,
+                ChargeState.FINISH,
+                ChargeState.ERROR,
+                ChargeState.SETTING,
+                ChargeState.PAUSE,
+            )
+
         return bool(
-            self.battery.charge_state in (ChargeState.AC_CONNECTED, ChargeState.DC_CONNECTED)
+            (self.battery.is_charge_fast_gun_insert or self.battery.is_charge_slow_gun_insert)
             and self.driving.is_parked
             and not self.battery.is_charging
         )
@@ -742,20 +776,12 @@ class VehicleStatus:
     @property
     def is_charging(self) -> bool | None:
         """True if the vehicle is currently charger plugin connected, is parked and the charging is started."""
-        return (
-            self.battery.charge_state in (ChargeState.AC_CONNECTED, ChargeState.DC_CONNECTED)
-            and self.driving.is_parked
-            and self.battery.is_charging
-        )
+        return self.battery.charge_state == ChargeState.CHARGING and self.driving.is_parked and self.battery.is_charging
 
     @property
     def is_regening(self) -> bool | None:
         """True if the vehicle is currently regeneratively braking (i.e., driving with battery charging)."""
-        return (
-            self.battery.is_charging
-            and not self.driving.is_parked
-            and self.battery.charge_state == ChargeState.NOT_CONNECTED
-        )
+        return self.battery.charge_state == ChargeState.REGENING and not self.driving.is_parked
 
     @property
     def is_parked(self) -> bool | None:

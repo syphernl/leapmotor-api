@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 - Added `BatteryStatus.ac_input_slow_charge` field: AC slow charge input status (signal `47` / `acInputSlowCharge`)
+- Added `BoolStatus` IntEnum (`OFF=0`, `ON=1`) for generic boolean signals from the API
+- Added `BatteryStatus.is_charge_fast_gun_insert` computed property: `True` when the DC fast charge gun is inserted (`dcInputFastCharge == BoolStatus.ON`)
+- Added `BatteryStatus.is_charge_slow_gun_insert` computed property: `True` when the AC slow charge gun is inserted (`acInputSlowCharge == BoolStatus.ON`)
 - Added `GearStatus` IntEnum for gear position codes (`PARK=0`, `DRIVE=1`, `NEUTRAL=2`, `REVERSE=3`)
 - Added `VehicleAbility`, `VehicleRight`, and `ModuleRight` IntEnum classes for typed vehicle permissions, replacing raw strings/lists
 - `Vehicle.rights`, `Vehicle.abilities`, and `Vehicle.module_rights` are now typed lists of enum members (parsed from API strings) with empty-list defaults
@@ -42,8 +45,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 - **Breaking:** `ChargeState` enum members renamed: `NOT_CONNECTED` → `NOT_CHARGING`, `AC_CONNECTED` → `CHARGING`, `DC_CONNECTED` → `FINISH`; added new members: `ERROR=3`, `SETTING=4`, `REGENING=5`, `PAUSE=6`
 - **Breaking:** `BatteryStatus.is_charging` now uses `charge_state == ChargeState.CHARGING` instead of `charging_power_kw is not None and charge_remain_time`
-- **Breaking:** `VehicleStatus.is_plugged` now checks `dc_input_fast_charge` / `ac_input_slow_charge` input signals instead of `charge_state`
+- **Breaking:** `VehicleStatus.is_plugged` now uses `is_charge_fast_gun_insert` / `is_charge_slow_gun_insert` properties; falls back to `charge_state` when gun signals are unavailable (T03 compatibility)
 - **Breaking:** `VehicleStatus.is_charging` simplified to `charge_state == ChargeState.CHARGING and is_parked and is_charging`
+- **Breaking:** `VehicleStatus.is_regening` now checks `charge_state == ChargeState.REGENING` instead of combining `battery.is_charging` with `charge_state == NOT_CHARGING`
 - **Breaking:** `DrivingStatus.gear_status` changed from `int | None` to `GearStatus | None`
 - **Breaking:** `Vehicle.rights` changed from `str | None` to `list[VehicleRight]` (was a comma-separated string like `"110,120,230"`)
 - **Breaking:** `Vehicle.abilities` changed from `list[str] | None` to `list[VehicleAbility]` (was a list of numeric strings like `["1", "10", "36"]`)

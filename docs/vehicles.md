@@ -166,8 +166,8 @@ works uniformly across all models.
 | `1200` | `chargeRemainTime` | Remaining charge time (minutes) | `int` |
 | `1178` | `batteryCurrent` | Battery current (A) | `float` |
 | `1177` | `batteryVoltage` | Battery voltage (V) | `float` |
-| `47` | `acInputSlowCharge` | AC slow charge input status | `int` |
-| `1197` | `dcInputFastCharge` | DC fast charge status | `int` |
+| `47` | `acInputSlowCharge` | AC slow charge gun inserted (`BoolStatus`: 0=OFF, 1=ON) | `int` |
+| `1197` | `dcInputFastCharge` | DC fast charge gun inserted (`BoolStatus`: 0=OFF, 1=ON) | `int` |
 | `1149` | `chargeState` | Charge state (`ChargeState` enum) | `int` |
 | `1182` | `minBatteryTemp` | Minimum battery temperature (°C) | `int` |
 | `1186` | `batteryThermalRequest` | Battery thermal request: 4=Heating | `int` |
@@ -324,7 +324,6 @@ mapped to `VehicleStatus` fields. They are available in the raw response
 
 | Signal ID | Description | Type |
 |---|---|---|
-| `47` | Legacy plug-in status: 0=No, 1=Yes | `int` |
 | `1480` | Parking camera status | `int` |
 | `1939` | AC status / fan mode | `int` |
 | `1949` | (Undocumented) | `int` |

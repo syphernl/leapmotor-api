@@ -85,7 +85,7 @@ await client.close()
 
 | Sub-object | Key fields |
 |---|---|
-| `status.battery` | `soc`, `expected_mileage`, `charge_state`, `is_charging`, `charging_power_kw`, `battery_power`, `dump_energy_kwh`, `charge_plan.*` |
+| `status.battery` | `soc`, `expected_mileage`, `charge_state`, `is_charging`, `is_charge_fast_gun_insert`, `is_charge_slow_gun_insert`, `charging_power_kw`, `battery_power`, `dump_energy_kwh`, `charge_plan.*` |
 | `status.driving` | `speed`, `total_mileage`, `gear_status`, `is_parked` |
 | `status.location` | `latitude`, `longitude` |
 | `status.climate` | `ac_switch`, `ac_setting`, `outdoor_temp`, `interior_temp` |
@@ -97,7 +97,7 @@ await client.close()
 | `status.security` | `vehicle_security_active`, `sentry_mode`, `roof_opening` |
 | `status.ignition` | `bcm_key_position_on1`, `bcm_key_position_on3` |
 
-Top-level convenience properties: `status.is_locked`, `status.is_charging`, `status.is_parked`, `status.is_regening`, `status.tire_pressure_bar`.
+Top-level convenience properties: `status.is_locked`, `status.is_plugged`, `status.is_charging`, `status.is_parked`, `status.is_regening`, `status.tire_pressure_bar`.
 
 All fields are `T | None` — they are populated only when the vehicle reports the corresponding signal.
 
