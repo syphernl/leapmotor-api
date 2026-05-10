@@ -94,6 +94,7 @@ from .models import (
     WeeklyConsumption,
     WindowStatus,
     WindowsValue,
+    WindshieldDefrostState,
 )
 
 __all__ = [
@@ -184,4 +185,5 @@ __all__ = [
     "WeeklyConsumption",
     "WindowStatus",
     "WindowsValue",
+    "WindshieldDefrostState",
 ]

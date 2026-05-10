@@ -1416,6 +1416,16 @@ class TestVehicleStatusFromDict:
         vs = VehicleStatus.from_dict({"windshieldDefrost": 2})
         assert vs.climate.is_windshield_defrost_active is True
 
+    def test_windshield_defrost_state_enum_values(self) -> None:
+        """WindshieldDefrostState enum has correct values."""
+        from leapmotor_api import WindshieldDefrostState
+
+        assert WindshieldDefrostState.OFF == 0
+        assert WindshieldDefrostState.ON_1 == 1
+        assert WindshieldDefrostState.ON_2 == 2
+        vs = VehicleStatus.from_dict({"windshieldDefrost": 1})
+        assert vs.climate.windshield_defrost == WindshieldDefrostState.ON_1
+
     # -- BatteryStatus.healthy_charge_enabled (signal 48) --
 
     def test_healthy_charge_enabled_named(self) -> None:

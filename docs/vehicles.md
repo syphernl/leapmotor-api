@@ -211,7 +211,7 @@ works uniformly across all models.
 | `2184` | `acSettingRight` | Right set temperature (°C) | `float` |
 | `1349` | `interiorTemp` | Interior temperature (°C) | `float` |
 | `1943` | `recirculationMode` | Air recirculation mode (`RecirculationMode`: 0=FRESH_AIR, 1=RECIRCULATION) | `int` |
-| `1945` | `windshieldDefrost` | Windshield defrost active | `int` |
+| `1945` | `windshieldDefrost` | Windshield defrost state (`WindshieldDefrostState`: 0=OFF, 1/2=ON) | `int` |
 | `1946` | `rearWindowHeating` | Rear window heating active | `int` |
 | `3713` | `climateMode` | Climate mode (`HvacMode`: 0=OFF, 1=FAST_COOL, 3=FAST_HEAT) | `int` |
 | `2669` | `rapidCooling` | Rapid cooling active | `int` |

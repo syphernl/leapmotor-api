@@ -309,6 +309,17 @@ class VehicleSecurityState(IntEnum):
     ACTIVE_3 = 3
 
 
+class WindshieldDefrostState(IntEnum):
+    """Windshield defrost state from signal ``1945``.
+
+    Both ``ON_1`` and ``ON_2`` mean the defrost is active.
+    """
+
+    OFF = 0
+    ON_1 = 1
+    ON_2 = 2
+
+
 # ---------------------------------------------------------------------------
 # Helpers for parsing permission strings from the API
 # ---------------------------------------------------------------------------
@@ -652,7 +663,7 @@ class ClimateStatus:
     ptc_state: int | None = None
     ptc_power_setting_value: int | None = None
     recirculation_mode: RecirculationMode | None = None
-    windshield_defrost: int | None = None
+    windshield_defrost: WindshieldDefrostState | None = None
     rear_window_heating: int | None = None
     climate_mode: HvacMode | None = None
     rapid_cooling: int | None = None
