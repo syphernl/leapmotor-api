@@ -237,6 +237,15 @@ _VEHICLE_ABILITY_DESCRIPTIONS: dict[int, str] = {
 }
 
 
+class GearStatus(IntEnum):
+    """Gear position codes."""
+
+    PARK = 0
+    DRIVE = 1
+    NEUTRAL = 2
+    REVERSE = 3
+
+
 # ---------------------------------------------------------------------------
 # Helpers for parsing permission strings from the API
 # ---------------------------------------------------------------------------
@@ -513,7 +522,7 @@ class DrivingStatus:
 
     speed: int | None = None
     total_mileage: int | None = None
-    gear_status: int | None = None
+    gear_status: GearStatus | None = None
     vehicle_state: int | None = None
     driving_state: int | None = None
     speed_limit: int | None = None

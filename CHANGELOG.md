@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- Added `GearStatus` IntEnum for gear position codes (`PARK=0`, `DRIVE=1`, `NEUTRAL=2`, `REVERSE=3`)
 - Added `VehicleAbility`, `VehicleRight`, and `ModuleRight` IntEnum classes for typed vehicle permissions, replacing raw strings/lists
 - `Vehicle.rights`, `Vehicle.abilities`, and `Vehicle.module_rights` are now typed lists of enum members (parsed from API strings) with empty-list defaults
 - Added `Vehicle.has_ability()`, `Vehicle.has_right()`, and `Vehicle.has_module_right()` convenience methods accepting both enum members and raw ints
@@ -38,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `get_charging_daily_detail()` method for fetching paginated charging session history, with typed models: `ChargeType` enum (`AC`/`DC`), `ChargeRecord` dataclass (with `start_datetime`, `end_datetime`, `duration_seconds`, `is_fast_charge` properties), and `ChargeDailyDetailPage` paginated response; accepts `datetime.date` for `start_time`/`end_time` and a `timezone` parameter (default `"GMT+00:00"`)
 
 ### Changed
+- **Breaking:** `DrivingStatus.gear_status` changed from `int | None` to `GearStatus | None`
 - **Breaking:** `Vehicle.rights` changed from `str | None` to `list[VehicleRight]` (was a comma-separated string like `"110,120,230"`)
 - **Breaking:** `Vehicle.abilities` changed from `list[str] | None` to `list[VehicleAbility]` (was a list of numeric strings like `["1", "10", "36"]`)
 - **Breaking:** `Vehicle.module_rights` changed from `str | None` to `list[ModuleRight]` (was a comma-separated string like `"100,200,300,400"`)

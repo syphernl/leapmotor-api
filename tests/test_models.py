@@ -29,6 +29,7 @@ from leapmotor_api.models import (
     ConsumptionWeeklyRank,
     DoorStatus,
     DrivingStatus,
+    GearStatus,
     Message,
     MessageList,
     ModuleRight,
@@ -621,7 +622,7 @@ class TestVehicleStatusFromDict:
         vs = VehicleStatus.from_dict(data)
         assert vs.driving.speed == 80
         assert vs.driving.total_mileage == 15000
-        assert vs.driving.gear_status == 3
+        assert vs.driving.gear_status == GearStatus.REVERSE
 
     def test_location_fields(self) -> None:
         data: dict[str, Any] = {"latitude": 45.123, "longitude": 7.456}
@@ -830,7 +831,7 @@ class TestVehicleStatusFromDict:
         vs = VehicleStatus.from_dict(data)
         assert vs.driving.speed == 0.0
         assert vs.driving.total_mileage == 3030
-        assert vs.driving.gear_status == 0
+        assert vs.driving.gear_status == GearStatus.PARK
 
     def test_signal_based_location(self) -> None:
         data: dict[str, Any] = {

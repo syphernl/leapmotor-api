@@ -178,7 +178,7 @@ works uniformly across all models.
 |---|---|---|---|
 | `1319` | `speed` | Speed (km/h) | `float` |
 | `1318` | `totalMileage` | Total odometer (km) | `int` |
-| `1010` | `gearStatus` | Gear: 0=P, 1=R, 2=N, 3=D | `int` |
+| `1010` | `gearStatus` | Gear: 0=Park, 1=Drive, 2=Neutral, 3=Reverse (`GearStatus` enum) | `int` |
 | `1944` | `vehicleState` | Vehicle state: 0,1,3=Parked, 2,4,5=Driving | `int` |
 | `1941` | `drivingState` | Driving state: 1,2,4=Parked, 3,5=Driving | `int` |
 | `6048` | `speedLimit` | Speed limit (km/h) | `int` |
