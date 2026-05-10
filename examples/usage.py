@@ -88,6 +88,8 @@ def main() -> None:
             print(f"    Charge state:           {vs.battery.charge_state}")
             print(f"    AC input (slow):        {vs.battery.ac_input_slow_charge}")
             print(f"    DC input (fast):        {vs.battery.dc_input_fast_charge}")
+            print(f"    Slow gun inserted:      {vs.battery.is_charge_slow_gun_insert}")
+            print(f"    Fast gun inserted:      {vs.battery.is_charge_fast_gun_insert}")
             print(f"    Charge completed:       {vs.battery.charge_completed}")
             print(f"    Expected mileage:       {vs.battery.expected_mileage} km")
             print(f"    Min battery temp:       {vs.battery.min_battery_temp}")
@@ -112,6 +114,7 @@ def main() -> None:
             print(f"    Range mode:             {vs.driving.range_mode}")
 
             print("\n  [Combined status]")
+            print(f"    is_plugged:             {vs.is_plugged}")
             print(f"    is_charging:            {vs.is_charging}")
             print(f"    is_regening:            {vs.is_regening}")
             print(f"    is_locked:              {vs.is_locked}")
