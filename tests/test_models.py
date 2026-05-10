@@ -514,6 +514,7 @@ class TestBatteryStatus:
             "chargeRemainTime": 120,
             "chargesocSetting": 80,
             "chargeTimeSetting": "08:00",
+            "acInputSlowCharge": 1,
             "dcInputFastCharge": 1,
             "dumpEnergy": 50000,
             "batteryCurrent": -15.5,
@@ -526,6 +527,7 @@ class TestBatteryStatus:
         assert bs.charge_remain_time == 120
         assert bs.charge_plan.soc_setting == 80
         assert bs.charge_plan.time_setting == "08:00"
+        assert bs.ac_input_slow_charge == 1
         assert bs.dc_input_fast_charge == 1
         assert bs.dump_energy == 50000
         assert bs.battery_current == -15.5
@@ -806,6 +808,7 @@ class TestVehicleStatusFromDict:
         """C10/B10 return signal IDs; they should be mapped to named fields."""
         data: dict[str, Any] = {
             "signal": {
+                "47": 1,
                 "1204": 65,
                 "1178": 0.1,
                 "1177": 424.9,
@@ -819,6 +822,7 @@ class TestVehicleStatusFromDict:
         assert vs.battery.soc == 65
         assert vs.battery.battery_current == 0.1
         assert vs.battery.battery_voltage == 424.9
+        assert vs.battery.ac_input_slow_charge == 1
         assert vs.battery.dc_input_fast_charge == 0
         assert vs.battery.charge_state is ChargeState.NOT_CONNECTED
         assert vs.battery.charge_remain_time == 45
@@ -1246,7 +1250,7 @@ class TestVehicleStatusFromDict:
     def test_is_plugged_true(self) -> None:
         """Plugged in but not actively charging."""
         data: dict[str, Any] = {
-            "chargeState": 1,
+            "dcInputFastCharge": 1,
             "speed": 0,
             "chargeRemainTime": 0,
         }
@@ -1261,6 +1265,7 @@ class TestVehicleStatusFromDict:
 
     def test_is_plugged_false_while_charging(self) -> None:
         data: dict[str, Any] = {
+            "dcInputFastCharge": 1,
             "chargeState": 1,
             "speed": 0,
             "batteryCurrent": -10.0,
