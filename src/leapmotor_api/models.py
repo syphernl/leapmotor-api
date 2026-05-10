@@ -870,13 +870,29 @@ class VehicleStatus:
 
     @property
     def is_parked(self) -> bool | None:
-        """True if the vehicle is stationary."""
-        return self.driving.is_parked
+        """True if the vehicle is not driving.
+
+        Complementary to ``is_driving``: the vehicle is considered parked
+        when ignition is off **or** gear is in Park/Neutral.  Falls back
+        to the speed-based check when ignition/gear data is unavailable.
+        """
+        driving = self.is_driving
+        if driving is None:
+            return self.driving.is_parked
+        return not driving
 
     @property
     def is_driving(self) -> bool | None:
-        """True if the vehicle is currently driving (i.e., not parked)."""
-        return self.ignition.bcm_key_position_on3 and self.driving.gear_status in (GearStatus.DRIVE, GearStatus.REVERSE)
+        """True if the vehicle is currently driving.
+
+        Requires ignition ON3 active **and** gear in Drive or Reverse.
+        Returns ``None`` when ignition or gear data is unavailable.
+        """
+        if self.ignition.bcm_key_position_on3 is None or self.driving.gear_status is None:
+            return None
+        return bool(
+            self.ignition.bcm_key_position_on3 and self.driving.gear_status in (GearStatus.DRIVE, GearStatus.REVERSE)
+        )
 
     @property
     def tire_pressure(self) -> TirePressure:

@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `ChargePlan.cancelled_once` field: scheduled charge cancelled once (signal `3737` / `isCancelChargeOnce`, `BoolStatus`)
 - Added `GearStatus._missing_()` handler for graceful handling of unknown gear values (e.g. `0xFFFFFF` = invalid)
 - Added `WindshieldDefrostState` IntEnum for `windshield_defrost` field (signal `1945`): `OFF=0`, `ON_1=1`, `ON_2=2` (both 1 and 2 mean active per APK)
+### Changed
+- **Breaking**: `VehicleStatus.is_parked` is now complementary to `is_driving` — uses ignition + gear logic (APK-aligned) instead of speed-based. Falls back to speed when ignition/gear data is unavailable
+- `VehicleStatus.is_driving` now returns explicit `False` (instead of falsy `None`/`0`) when ignition or gear indicate not driving
 - Added `HvacDirection` IntEnum for `ac_cooling_and_heating` field: `WIND=0`, `COLD=1`, `HOT=2`
 - Added `HvacMode` IntEnum for `climate_mode` field (signal `$3713`): `OFF=0`, `FAST_COOL=1`, `FAST_HEAT=3`
 - Added `AcOperateMode` IntEnum for `ac_operate_mode` field (signal `$1939`): `AUTO=0`, `MANUAL=1`

@@ -826,9 +826,36 @@ class TestVehicleStatusFromDict:
         assert vs.is_regening is False
 
     def test_convenience_is_parked(self) -> None:
+        """is_parked falls back to speed when no ignition/gear data."""
         data: dict[str, Any] = {"speed": 0}
         vs = VehicleStatus.from_dict(data)
         assert vs.is_parked is True
+
+    def test_convenience_is_parked_gear_park(self) -> None:
+        """is_parked True when ignition ON3 but gear in PARK."""
+        data: dict[str, Any] = {"bcmKeyPositionOn3": True, "gearStatus": 0}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.is_parked is True
+
+    def test_convenience_is_parked_ignition_off(self) -> None:
+        """is_parked True when ignition OFF regardless of gear."""
+        data: dict[str, Any] = {"bcmKeyPositionOn3": False, "gearStatus": 1}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.is_parked is True
+
+    def test_convenience_is_parked_driving(self) -> None:
+        """is_parked False when driving (ON3 + gear D)."""
+        data: dict[str, Any] = {"bcmKeyPositionOn3": True, "gearStatus": 1}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.is_parked is False
+
+    def test_convenience_is_parked_complementary(self) -> None:
+        """is_parked and is_driving are always complementary when data available."""
+        for gear in (0, 1, 2, 3):
+            for on3 in (True, False):
+                data: dict[str, Any] = {"bcmKeyPositionOn3": on3, "gearStatus": gear}
+                vs = VehicleStatus.from_dict(data)
+                assert vs.is_parked is not vs.is_driving
 
     def test_convenience_is_driving_true_drive(self) -> None:
         """is_driving is True when ignition ON3 and gear in DRIVE."""
@@ -846,24 +873,24 @@ class TestVehicleStatusFromDict:
         """is_driving is False when ignition ON3 but gear in PARK."""
         data: dict[str, Any] = {"bcmKeyPositionOn3": True, "gearStatus": 0}
         vs = VehicleStatus.from_dict(data)
-        assert vs.is_driving is not True
+        assert vs.is_driving is False
 
     def test_convenience_is_driving_false_neutral(self) -> None:
         """is_driving is False when ignition ON3 but gear in NEUTRAL."""
         data: dict[str, Any] = {"bcmKeyPositionOn3": True, "gearStatus": 2}
         vs = VehicleStatus.from_dict(data)
-        assert vs.is_driving is not True
+        assert vs.is_driving is False
 
     def test_convenience_is_driving_false_ignition_off(self) -> None:
         """is_driving is False when ignition OFF regardless of gear."""
         data: dict[str, Any] = {"bcmKeyPositionOn3": False, "gearStatus": 1}
         vs = VehicleStatus.from_dict(data)
-        assert vs.is_driving is not True
+        assert vs.is_driving is False
 
     def test_convenience_is_driving_none_no_data(self) -> None:
-        """is_driving is None/falsy when no ignition or gear data."""
+        """is_driving is None when no ignition or gear data."""
         vs = VehicleStatus.from_dict({})
-        assert not vs.is_driving
+        assert vs.is_driving is None
 
     def test_convenience_is_driving_signal_based(self) -> None:
         """is_driving works with C10/B10 signal-based data."""
