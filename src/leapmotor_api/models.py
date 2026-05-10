@@ -787,6 +787,11 @@ class VehicleStatus:
         return self.driving.is_parked
 
     @property
+    def is_driving(self) -> bool | None:
+        """True if the vehicle is currently driving (i.e., not parked)."""
+        return self.ignition.bcm_key_position_on3 and self.driving.gear_status in (GearStatus.DRIVE, GearStatus.REVERSE)
+
+    @property
     def tire_pressure(self) -> TirePressure:
         """Structured tire pressure object."""
         return self.tires

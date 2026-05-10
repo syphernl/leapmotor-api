@@ -825,6 +825,47 @@ class TestVehicleStatusFromDict:
         vs = VehicleStatus.from_dict(data)
         assert vs.is_parked is True
 
+    def test_convenience_is_driving_true_drive(self) -> None:
+        """is_driving is True when ignition ON3 and gear in DRIVE."""
+        data: dict[str, Any] = {"bcmKeyPositionOn3": True, "gearStatus": 1}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.is_driving is True
+
+    def test_convenience_is_driving_true_reverse(self) -> None:
+        """is_driving is True when ignition ON3 and gear in REVERSE."""
+        data: dict[str, Any] = {"bcmKeyPositionOn3": True, "gearStatus": 3}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.is_driving is True
+
+    def test_convenience_is_driving_false_parked(self) -> None:
+        """is_driving is False when ignition ON3 but gear in PARK."""
+        data: dict[str, Any] = {"bcmKeyPositionOn3": True, "gearStatus": 0}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.is_driving is not True
+
+    def test_convenience_is_driving_false_neutral(self) -> None:
+        """is_driving is False when ignition ON3 but gear in NEUTRAL."""
+        data: dict[str, Any] = {"bcmKeyPositionOn3": True, "gearStatus": 2}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.is_driving is not True
+
+    def test_convenience_is_driving_false_ignition_off(self) -> None:
+        """is_driving is False when ignition OFF regardless of gear."""
+        data: dict[str, Any] = {"bcmKeyPositionOn3": False, "gearStatus": 1}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.is_driving is not True
+
+    def test_convenience_is_driving_none_no_data(self) -> None:
+        """is_driving is None/falsy when no ignition or gear data."""
+        vs = VehicleStatus.from_dict({})
+        assert not vs.is_driving
+
+    def test_convenience_is_driving_signal_based(self) -> None:
+        """is_driving works with C10/B10 signal-based data."""
+        data: dict[str, Any] = {"signal": {"1258": 1, "1010": 1}}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.is_driving is True
+
     def test_tire_pressure_property(self) -> None:
         data: dict[str, Any] = {"leftFrontTirePressure": 250}
         vs = VehicleStatus.from_dict(data)

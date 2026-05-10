@@ -97,7 +97,7 @@ await client.close()
 | `status.security` | `vehicle_security_active`, `sentry_mode`, `roof_opening` |
 | `status.ignition` | `bcm_key_position_on1`, `bcm_key_position_on3` |
 
-Top-level convenience properties: `status.is_locked`, `status.is_plugged`, `status.is_charging`, `status.is_parked`, `status.is_regening`, `status.tire_pressure_bar`.
+Top-level convenience properties: `status.is_locked`, `status.is_plugged`, `status.is_charging`, `status.is_parked`, `status.is_driving`, `status.is_regening`, `status.tire_pressure_bar`.
 
 All fields are `T | None` — they are populated only when the vehicle reports the corresponding signal.
 

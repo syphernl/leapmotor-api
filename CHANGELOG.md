@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- Added `VehicleStatus.is_driving` convenience property: `True` when ignition ON3 is active and gear is in DRIVE or REVERSE (based on `bcmKeyPositionOn3` and `gearStatus`)
 - Added `BatteryStatus.ac_input_slow_charge` field: AC slow charge input status (signal `47` / `acInputSlowCharge`)
 - Added `BoolStatus` IntEnum (`OFF=0`, `ON=1`) for generic boolean signals from the API
 - Added `BatteryStatus.is_charge_fast_gun_insert` computed property: `True` when the DC fast charge gun is inserted (`dcInputFastCharge == BoolStatus.ON`)
