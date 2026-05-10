@@ -40,6 +40,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `get_charging_daily_detail()` method for fetching paginated charging session history, with typed models: `ChargeType` enum (`AC`/`DC`), `ChargeRecord` dataclass (with `start_datetime`, `end_datetime`, `duration_seconds`, `is_fast_charge` properties), and `ChargeDailyDetailPage` paginated response; accepts `datetime.date` for `start_time`/`end_time` and a `timezone` parameter (default `"GMT+00:00"`)
 
 ### Changed
+- **Breaking:** `ChargeState` enum members renamed: `NOT_CONNECTED` → `NOT_CHARGING`, `AC_CONNECTED` → `CHARGING`, `DC_CONNECTED` → `FINISH`; added new members: `ERROR=3`, `SETTING=4`, `REGENING=5`, `PAUSE=6`
+- **Breaking:** `BatteryStatus.is_charging` now uses `charge_state == ChargeState.CHARGING` instead of `charging_power_kw is not None and charge_remain_time`
+- **Breaking:** `VehicleStatus.is_plugged` now checks `dc_input_fast_charge` / `ac_input_slow_charge` input signals instead of `charge_state`
+- **Breaking:** `VehicleStatus.is_charging` simplified to `charge_state == ChargeState.CHARGING and is_parked and is_charging`
 - **Breaking:** `DrivingStatus.gear_status` changed from `int | None` to `GearStatus | None`
 - **Breaking:** `Vehicle.rights` changed from `str | None` to `list[VehicleRight]` (was a comma-separated string like `"110,120,230"`)
 - **Breaking:** `Vehicle.abilities` changed from `list[str] | None` to `list[VehicleAbility]` (was a list of numeric strings like `["1", "10", "36"]`)

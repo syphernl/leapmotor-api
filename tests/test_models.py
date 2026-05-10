@@ -406,14 +406,18 @@ class TestTirePressure:
 
 class TestChargeState:
     def test_enum_values(self) -> None:
-        assert ChargeState.NOT_CONNECTED == 0
-        assert ChargeState.AC_CONNECTED == 1
-        assert ChargeState.DC_CONNECTED == 2
+        assert ChargeState.NOT_CHARGING == 0
+        assert ChargeState.CHARGING == 1
+        assert ChargeState.FINISH == 2
+        assert ChargeState.ERROR == 3
+        assert ChargeState.SETTING == 4
+        assert ChargeState.REGENING == 5
+        assert ChargeState.PAUSE == 6
 
     def test_enum_from_int(self) -> None:
-        assert ChargeState(0) is ChargeState.NOT_CONNECTED
-        assert ChargeState(1) is ChargeState.AC_CONNECTED
-        assert ChargeState(2) is ChargeState.DC_CONNECTED
+        assert ChargeState(0) is ChargeState.NOT_CHARGING
+        assert ChargeState(1) is ChargeState.CHARGING
+        assert ChargeState(2) is ChargeState.FINISH
 
     def test_invalid_value_raises(self) -> None:
         with pytest.raises(ValueError):
@@ -523,7 +527,7 @@ class TestBatteryStatus:
         }
         bs = BatteryStatus.from_dict(data)
         assert bs.soc == 85
-        assert bs.charge_state is ChargeState.AC_CONNECTED
+        assert bs.charge_state is ChargeState.CHARGING
         assert bs.charge_remain_time == 120
         assert bs.charge_plan.soc_setting == 80
         assert bs.charge_plan.time_setting == "08:00"
@@ -611,7 +615,7 @@ class TestVehicleStatusFromDict:
         }
         vs = VehicleStatus.from_dict(data)
         assert vs.battery.soc == 85
-        assert vs.battery.charge_state is ChargeState.AC_CONNECTED
+        assert vs.battery.charge_state is ChargeState.CHARGING
         assert vs.battery.charge_remain_time == 120
         assert vs.battery.charge_plan.soc_setting == 80
         assert vs.battery.dump_energy == 50000
@@ -824,7 +828,7 @@ class TestVehicleStatusFromDict:
         assert vs.battery.battery_voltage == 424.9
         assert vs.battery.ac_input_slow_charge == 1
         assert vs.battery.dc_input_fast_charge == 0
-        assert vs.battery.charge_state is ChargeState.NOT_CONNECTED
+        assert vs.battery.charge_state is ChargeState.NOT_CHARGING
         assert vs.battery.charge_remain_time == 45
         assert vs.battery.expected_mileage == 278
 
@@ -965,7 +969,7 @@ class TestVehicleStatusFromDict:
         }
         vs = VehicleStatus.from_dict(data)
         assert vs.battery.soc == 65
-        assert vs.battery.charge_state is ChargeState.NOT_CONNECTED
+        assert vs.battery.charge_state is ChargeState.NOT_CHARGING
         assert vs.driving.speed == 0.0
         assert vs.driving.total_mileage == 3030
         assert vs.location.latitude == 40.85812

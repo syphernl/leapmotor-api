@@ -168,7 +168,7 @@ works uniformly across all models.
 | `1177` | `batteryVoltage` | Battery voltage (V) | `float` |
 | `47` | `acInputSlowCharge` | AC slow charge input status | `int` |
 | `1197` | `dcInputFastCharge` | DC fast charge status | `int` |
-| `1149` | `chargeState` | Connection: 0=Disconnected, 1=AC, 2=DC | `int` |
+| `1149` | `chargeState` | Charge state (`ChargeState` enum) | `int` |
 | `1182` | `minBatteryTemp` | Minimum battery temperature (°C) | `int` |
 | `1186` | `batteryThermalRequest` | Battery thermal request: 4=Heating | `int` |
 | `3736` | `chargeCompleted` | Charge completed: 0=No, 1=Yes | `int` |
