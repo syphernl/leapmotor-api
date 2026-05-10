@@ -437,6 +437,7 @@ class BatteryStatus:
     charge_remain_time: int | None = None
     charge_plan: ChargePlan = field(default_factory=ChargePlan)
     charge_completed: int | None = None
+    ac_input_slow_charge: int | None = None
     dc_input_fast_charge: int | None = None
     dump_energy: int | None = None
     battery_current: float | None = None
@@ -506,6 +507,7 @@ class BatteryStatus:
             charge_remain_time=data.get("chargeRemainTime"),
             charge_plan=ChargePlan.from_dict(data),
             charge_completed=data.get("chargeCompleted"),
+            ac_input_slow_charge=data.get("acInputSlowCharge"),
             dc_input_fast_charge=data.get("dcInputFastCharge"),
             dump_energy=data.get("dumpEnergy"),
             battery_current=data.get("batteryCurrent"),
@@ -889,6 +891,7 @@ _DATETIME_FMT = "%Y-%m-%d %H:%M:%S"
 
 _SIGNAL_TO_NAMED: dict[str, str] = {
     # Battery / charging
+    "47": "acInputSlowCharge",
     "1204": "soc",
     "100003": "preciseSoc",
     "1200": "chargeRemainTime",

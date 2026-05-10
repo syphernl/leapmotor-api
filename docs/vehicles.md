@@ -166,6 +166,7 @@ works uniformly across all models.
 | `1200` | `chargeRemainTime` | Remaining charge time (minutes) | `int` |
 | `1178` | `batteryCurrent` | Battery current (A) | `float` |
 | `1177` | `batteryVoltage` | Battery voltage (V) | `float` |
+| `47` | `acInputSlowCharge` | AC slow charge input status | `int` |
 | `1197` | `dcInputFastCharge` | DC fast charge status | `int` |
 | `1149` | `chargeState` | Connection: 0=Disconnected, 1=AC, 2=DC | `int` |
 | `1182` | `minBatteryTemp` | Minimum battery temperature (°C) | `int` |

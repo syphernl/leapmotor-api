@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- Added `BatteryStatus.ac_input_slow_charge` field: AC slow charge input status (signal `47` / `acInputSlowCharge`)
 - Added `GearStatus` IntEnum for gear position codes (`PARK=0`, `DRIVE=1`, `NEUTRAL=2`, `REVERSE=3`)
 - Added `VehicleAbility`, `VehicleRight`, and `ModuleRight` IntEnum classes for typed vehicle permissions, replacing raw strings/lists
 - `Vehicle.rights`, `Vehicle.abilities`, and `Vehicle.module_rights` are now typed lists of enum members (parsed from API strings) with empty-list defaults

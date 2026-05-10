@@ -86,6 +86,8 @@ def main() -> None:
             print(f"    is_discharging (batt):  {vs.battery.is_discharging}")
             print(f"    Charge remain time:     {vs.battery.charge_remain_time} min")
             print(f"    Charge state:           {vs.battery.charge_state}")
+            print(f"    AC input (slow):        {vs.battery.ac_input_slow_charge}")
+            print(f"    DC input (fast):        {vs.battery.dc_input_fast_charge}")
             print(f"    Charge completed:       {vs.battery.charge_completed}")
             print(f"    Expected mileage:       {vs.battery.expected_mileage} km")
             print(f"    Min battery temp:       {vs.battery.min_battery_temp}")
