@@ -32,6 +32,7 @@ used by the `leapmotor-api` library.
   - [Image Package Download](#image-package-download)
   - [Message List](#message-list)
   - [Unread Message Count](#unread-message-count)
+  - [Charging Daily Detail](#charging-daily-detail)
 - [Remote Control Endpoints](#remote-control-endpoints)
   - [Certificate Sync](#certificate-sync)
   - [Operation PIN Verification](#operation-pin-verification)
@@ -374,6 +375,37 @@ the previous calendar week (Monday 00:00 → Sunday 23:59:59 UTC).
 |---|---|
 | **Path** | `POST /carownerservice/oversea/message/v1/unread/count` |
 | **Body** | (empty) |
+
+### Charging Daily Detail
+
+| | |
+|---|---|
+| **Path** | `POST /carownerservice/charge/daily/detail/page` |
+| **Content-Type** | `application/json` |
+| **Signature** | HMAC-SHA256 (with `vin`, `timeZone`, `startTime`, `endTime`, `pageNum`, `pageSize` in body_params) |
+
+**JSON body:**
+
+| Parameter | Type | Description |
+|---|---|---|
+| `vin` | string | Vehicle Identification Number |
+| `timeZone` | string | Timezone (e.g. `"GMT+01:00"`) |
+| `startTime` | string | Start date (`"2025-01-01"`) |
+| `endTime` | string | End date (`"2026-05-10"`) |
+| `pageNum` | int | Page number (1-based) |
+| `pageSize` | int | Items per page |
+
+**Response (data):**
+
+| Field | Type | Description |
+|---|---|---|
+| `list[].chargeGunStartTs` | long | Charge start timestamp (epoch ms) |
+| `list[].chargeGunEndTs` | long | Charge end timestamp (epoch ms) |
+| `list[].chargeType` | string | `"1"` = AC (normal), `"2"` = DC (fast) |
+| `list[].chargeInEnergy` | float | Energy charged (kWh) |
+| `list[].chargeStartLongitude` | string | Longitude |
+| `list[].chargeStartLatitude` | string | Latitude |
+| `list[].zone` | string | Timezone (e.g. `"GMT+01:00"`) |
 
 ---
 
