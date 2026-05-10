@@ -11,8 +11,10 @@ import asyncio
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from datetime import date
+
     from .client import LeapmotorApiClient
-    from .models import MessageList, Vehicle, VehicleStatus
+    from .models import ChargeDailyDetailPage, MessageList, Vehicle, VehicleStatus
 
 
 class AsyncLeapmotorApiClient:
@@ -163,3 +165,23 @@ class AsyncLeapmotorApiClient:
 
     async def get_unread_message_count(self) -> int:
         return await asyncio.to_thread(self._client.get_unread_message_count)
+
+    async def get_charging_daily_detail(
+        self,
+        vin: str,
+        *,
+        start_time: date,
+        end_time: date,
+        timezone: str = "GMT+00:00",
+        page_num: int = 1,
+        page_size: int = 10,
+    ) -> ChargeDailyDetailPage:
+        return await asyncio.to_thread(
+            self._client.get_charging_daily_detail,
+            vin,
+            start_time=start_time,
+            end_time=end_time,
+            timezone=timezone,
+            page_num=page_num,
+            page_size=page_size,
+        )

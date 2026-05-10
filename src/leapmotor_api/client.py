@@ -10,6 +10,7 @@ import os
 import tempfile
 import time
 import uuid
+from datetime import date  # noqa: TCH003 - used at runtime (.isoformat())
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, TypeVar
 from urllib.parse import quote
@@ -68,6 +69,7 @@ from .exceptions import (
 )
 from .mappings import CAR_TYPE_PATH_MAP, REMOTE_ACTION_SPECS
 from .models import (
+    ChargeDailyDetailPage,
     ConsumptionLastWeekBreakdown,
     ConsumptionWeeklyRank,
     MessageList,
@@ -591,6 +593,63 @@ class LeapmotorApiClient:
         result = self._parse_api_body(response["status_code"], response["body"], "consumption last week breakdown")
         return ConsumptionLastWeekBreakdown.from_dict(result.get("data") or {})
 
+    def get_charging_daily_detail(
+        self,
+        vin: str,
+        *,
+        start_time: date,
+        end_time: date,
+        timezone: str = "GMT+00:00",
+        page_num: int = 1,
+        page_size: int = 10,
+    ) -> ChargeDailyDetailPage:
+        """Fetch paginated daily charging detail for a vehicle."""
+        self._ensure_token()
+        return self._retry_on_token_expiry(
+            self._get_charging_daily_detail,
+            vin,
+            start_time.isoformat(),
+            end_time.isoformat(),
+            timezone,
+            page_num,
+            page_size,
+        )
+
+    def _get_charging_daily_detail(
+        self, vin: str, start_time: str, end_time: str, timezone: str, page_num: int, page_size: int
+    ) -> ChargeDailyDetailPage:
+        body_params = {
+            "vin": vin,
+            "timeZone": timezone,
+            "startTime": start_time,
+            "endTime": end_time,
+            "pageNum": str(page_num),
+            "pageSize": str(page_size),
+        }
+        headers = build_signed_headers(
+            sign_key=self.sign_key,
+            device_id=self.device_id,
+            language=self.language,
+            body_params=body_params,
+        ).to_dict()
+        headers.update(self._auth_headers())
+        headers["Content-Type"] = "application/json"
+        response = self._post_json(
+            path="/carownerservice/charge/daily/detail/page",
+            headers=headers,
+            json_body={
+                "vin": vin,
+                "timeZone": timezone,
+                "startTime": start_time,
+                "endTime": end_time,
+                "pageNum": page_num,
+                "pageSize": page_size,
+            },
+            cert=self.account_cert,
+        )
+        body = self._parse_api_body(response["status_code"], response["body"], "charging daily detail")
+        return ChargeDailyDetailPage.from_dict(body.get("data") or {})
+
     # ------------------------------------------------------------------
     # Private — Data fetching
     # ------------------------------------------------------------------
@@ -879,6 +938,76 @@ class LeapmotorApiClient:
                 url,
                 headers=headers,
                 data=data.encode("utf-8") if data else b"",
+                cert=cert,
+                verify=self.verify_ssl,
+                timeout=self.timeout,
+            )
+        except requests.RequestException as exc:
+            raise LeapmotorApiError(f"HTTP request failed: {exc}") from exc
+
+        _LOGGER.debug(
+            "Leapmotor remote response for %s: HTTP %s %s",
+            path,
+            resp.status_code,
+            resp.text,
+        )
+
+        return {
+            "status_code": resp.status_code,
+            "body": resp.text,
+            "headers": dict(resp.headers),
+        }
+
+    def _get(
+        self,
+        *,
+        path: str,
+        headers: dict[str, str],
+        params: dict[str, str],
+        cert: tuple[str, str],
+    ) -> dict[str, Any]:
+        """Send a GET request using requests.Session with mutual TLS."""
+        url = f"{self.base_url}/{path.lstrip('/')}"
+        try:
+            resp = self.session.get(
+                url,
+                headers=headers,
+                params=params,
+                cert=cert,
+                verify=self.verify_ssl,
+                timeout=self.timeout,
+            )
+        except requests.RequestException as exc:
+            raise LeapmotorApiError(f"HTTP request failed: {exc}") from exc
+
+        _LOGGER.debug(
+            "Leapmotor remote response for %s: HTTP %s %s",
+            path,
+            resp.status_code,
+            resp.text,
+        )
+
+        return {
+            "status_code": resp.status_code,
+            "body": resp.text,
+            "headers": dict(resp.headers),
+        }
+
+    def _post_json(
+        self,
+        *,
+        path: str,
+        headers: dict[str, str],
+        json_body: dict[str, Any],
+        cert: tuple[str, str],
+    ) -> dict[str, Any]:
+        """Send a POST request with a JSON body using requests.Session with mutual TLS."""
+        url = f"{self.base_url}/{path.lstrip('/')}"
+        try:
+            resp = self.session.post(
+                url,
+                headers=headers,
+                json=json_body,
                 cert=cert,
                 verify=self.verify_ssl,
                 timeout=self.timeout,

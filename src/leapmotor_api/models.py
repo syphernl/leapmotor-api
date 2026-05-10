@@ -84,6 +84,13 @@ class ChargeState(IntEnum):
     DC_CONNECTED = 2  # ???
 
 
+class ChargeType(StrEnum):
+    """Charging type codes."""
+
+    AC = "1"
+    DC = "2"
+
+
 class ModuleRight(IntEnum):
     """Macro-category permission codes for vehicle sharing."""
 
@@ -1383,6 +1390,79 @@ class ConsumptionLastWeekBreakdown:
             driver_ec=float(data.get("driverEC", 0)),
             ac_ec=float(data.get("acEC", 0)),
             other_ec=float(data.get("otherEC", 0)),
+        )
+
+
+# ---------------------------------------------------------------------------
+# Charging record models
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True, slots=True)
+class ChargeRecord:
+    """A single charging session record."""
+
+    start_ts: int
+    end_ts: int
+    charge_type: ChargeType
+    energy_kwh: float
+    longitude: str | None
+    latitude: str | None
+    timezone: str | None
+
+    @property
+    def start_datetime(self) -> datetime | None:
+        """Convert start epoch ms to a datetime."""
+        if not self.start_ts:
+            return None
+        return datetime.fromtimestamp(self.start_ts / 1000)  # noqa: DTZ006
+
+    @property
+    def end_datetime(self) -> datetime | None:
+        """Convert end epoch ms to a datetime."""
+        if not self.end_ts:
+            return None
+        return datetime.fromtimestamp(self.end_ts / 1000)  # noqa: DTZ006
+
+    @property
+    def duration_seconds(self) -> int | None:
+        """Duration of the charging session in seconds."""
+        if not self.start_ts or not self.end_ts:
+            return None
+        return (self.end_ts - self.start_ts) // 1000
+
+    @property
+    def is_fast_charge(self) -> bool:
+        return self.charge_type == ChargeType.DC
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> ChargeRecord:
+        raw_type = str(data.get("chargeType", "1"))
+        try:
+            charge_type = ChargeType(raw_type)
+        except ValueError:
+            charge_type = ChargeType.AC
+        return cls(
+            start_ts=int(data.get("chargeGunStartTs", 0)),
+            end_ts=int(data.get("chargeGunEndTs", 0)),
+            charge_type=charge_type,
+            energy_kwh=float(data.get("chargeInEnergy", 0)),
+            longitude=data.get("chargeStartLongitude"),
+            latitude=data.get("chargeStartLatitude"),
+            timezone=data.get("zone"),
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class ChargeDailyDetailPage:
+    """Paginated charging daily detail response."""
+
+    records: list[ChargeRecord]
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> ChargeDailyDetailPage:
+        return cls(
+            records=[ChargeRecord.from_dict(r) for r in (data.get("list") or [])],
         )
 
 

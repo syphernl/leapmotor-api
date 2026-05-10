@@ -2,6 +2,7 @@
 
 import os
 import sys
+from datetime import date, timedelta
 
 from leapmotor_api.client import LeapmotorApiClient
 
@@ -182,6 +183,28 @@ def main() -> None:
             print(f"    {msg.message}")
             print(f"    Time: {msg.send_datetime}")
             print()
+
+        # --- Charging Daily Detail ---
+        print("\n" + "=" * 60)
+        print("CHARGING DAILY DETAIL")
+        print("=" * 60)
+
+        end = date.today()
+        start = date.today() - timedelta(days=30)
+        for vehicle in vehicles:
+            print(f"\nVehicle: {vehicle.vehicle_nickname} ({vehicle.vin})")
+            print(f"  Period: {start} ~ {end}")
+            charging_detail = client.get_charging_daily_detail(
+                vehicle.vin, start_time=start, end_time=end, timezone="GMT+01:00", page_num=1, page_size=50
+            )
+
+            if not charging_detail.records:
+                print("  No charging records found.")
+                continue
+
+            for record in charging_detail.records:
+                charge_kind = "DC (fast)" if record.is_fast_charge else "AC (normal)"
+                print(f"  {record.start_datetime} -> {record.end_datetime}  {charge_kind}  {record.energy_kwh} kWh")
 
     finally:
         client.close()
