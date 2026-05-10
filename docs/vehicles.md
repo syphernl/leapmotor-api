@@ -213,6 +213,13 @@ works uniformly across all models.
 | `3713` | `climateMode` | Climate mode: 0=Off, 1=Fast cool, 3=Fast heat | `int` |
 | `2669` | `rapidCooling` | Rapid cooling active | `int` |
 | `2681` | `rapidHeating` | Rapid heating active | `int` |
+| `1939` | `acOperateMode` | AC operate mode: 0=auto, else=manual | `int` |
+| `1941` | `acAirVolume` | HVAC fan speed: 1–7 | `int` |
+| `1940`+`1949` | `acCoolingAndHeating` ¹ | Legacy air direction (computed from cooling + heating flap signals) | `int` |
+
+¹ On legacy models (T03, S01, C11) without signal `3713`, the library
+combines cooling flap (`1940`: 0=off, 1/2=on) and heating flap (`1949`:
+0=off, 1=on) into `acCoolingAndHeating`: 0=wind, 1=cold, 2=hot.
 
 ### Doors and Locks
 
@@ -321,8 +328,6 @@ mapped to `VehicleStatus` fields. They are available in the raw response
 | Signal ID | Description | Type |
 |---|---|---|
 | `1480` | Parking camera status | `int` |
-| `1939` | AC status / fan mode | `int` |
-| `1949` | (Undocumented) | `int` |
 | `2190` | GPS latitude (used as auto-fallback) | `float` |
 | `2191` | GPS longitude (used as auto-fallback) | `float` |
 | `3273` | (Undocumented — seen value 100) | `int` |

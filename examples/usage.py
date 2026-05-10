@@ -129,6 +129,9 @@ def main() -> None:
             print(f"    Climate mode:           {vs.climate.climate_mode}")
             print(f"    Rapid cooling:          {vs.climate.rapid_cooling}")
             print(f"    Rapid heating:          {vs.climate.rapid_heating}")
+            print(f"    AC operate mode:        {vs.climate.ac_operate_mode}")
+            print(f"    AC air volume:          {vs.climate.ac_air_volume}")
+            print(f"    AC cooling/heating:     {vs.climate.ac_cooling_and_heating}")
 
             print("\n  [Seat & Comfort]")
             print(f"    Driver seat heating:    {vs.seat_comfort.driver_seat_heating}")

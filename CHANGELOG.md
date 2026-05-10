@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- Added `ClimateStatus.ac_operate_mode` field: AC operation mode from signal `1939` (0=auto, else=manual)
+- Added signal `1941` → `acAirVolume` mapping: HVAC fan speed (1–7) now populated on C10/B10 signal-based responses
+- Added legacy HVAC air direction derivation: when signal `3713` is absent, combines cooling flap (`1940`) and heating flap (`1949`) signals into `acCoolingAndHeating` (0=wind, 1=cold, 2=hot) following the APK truth table
 - Added `VehicleStatus.is_driving` convenience property: `True` when ignition ON3 is active and gear is in DRIVE or REVERSE (based on `bcmKeyPositionOn3` and `gearStatus`)
 - Added `BatteryStatus.ac_input_slow_charge` field: AC slow charge input status (signal `47` / `acInputSlowCharge`)
 - Added `BoolStatus` IntEnum (`OFF=0`, `ON=1`) for generic boolean signals from the API

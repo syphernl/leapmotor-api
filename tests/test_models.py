@@ -1196,6 +1196,85 @@ class TestVehicleStatusFromDict:
         assert vs.climate.rapid_cooling == 1
         assert vs.climate.rapid_heating == 0
 
+    # -- AirController fields --
+
+    def test_climate_air_controller_named_fields(self) -> None:
+        data: dict[str, Any] = {
+            "acOperateMode": 0,
+            "acAirVolume": 5,
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.climate.ac_operate_mode == 0
+        assert vs.climate.ac_air_volume == 5
+
+    def test_signal_air_controller_fields(self) -> None:
+        data: dict[str, Any] = {
+            "signal": {
+                "1939": 0,
+                "1941": 4,
+            },
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.climate.ac_operate_mode == 0
+        assert vs.climate.ac_air_volume == 4
+
+    # -- Legacy HVAC air direction from signals 1940+1949 --
+
+    def test_signal_hvac_legacy_wind(self) -> None:
+        """Both flaps off → 0 (wind)."""
+        data: dict[str, Any] = {"signal": {"1940": "0", "1949": "0"}}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.climate.ac_cooling_and_heating == 0
+
+    def test_signal_hvac_legacy_hot(self) -> None:
+        """Heating only → 2 (hot)."""
+        data: dict[str, Any] = {"signal": {"1940": "0", "1949": "1"}}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.climate.ac_cooling_and_heating == 2
+
+    def test_signal_hvac_legacy_cold(self) -> None:
+        """Cooling only → 1 (cold)."""
+        data: dict[str, Any] = {"signal": {"1940": "1", "1949": "0"}}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.climate.ac_cooling_and_heating == 1
+
+    def test_signal_hvac_legacy_cold_high(self) -> None:
+        """High cooling only → 1 (cold)."""
+        data: dict[str, Any] = {"signal": {"1940": "2", "1949": "0"}}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.climate.ac_cooling_and_heating == 1
+
+    def test_signal_hvac_legacy_both_active(self) -> None:
+        """Both active → 1 (cold, cooling priority)."""
+        data: dict[str, Any] = {"signal": {"1940": "1", "1949": "1"}}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.climate.ac_cooling_and_heating == 1
+
+    def test_signal_hvac_legacy_both_active_high(self) -> None:
+        """Both active (high cooling) → 1 (cold, cooling priority)."""
+        data: dict[str, Any] = {"signal": {"1940": "2", "1949": "1"}}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.climate.ac_cooling_and_heating == 1
+
+    def test_signal_hvac_legacy_missing_1949(self) -> None:
+        """Missing $1949 → no derivation."""
+        data: dict[str, Any] = {"signal": {"1940": "1"}}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.climate.ac_cooling_and_heating is None
+
+    def test_signal_hvac_legacy_skipped_when_3713_present(self) -> None:
+        """$3713 present → legacy derivation skipped, acCoolingAndHeating stays None."""
+        data: dict[str, Any] = {"signal": {"3713": 1, "1940": "0", "1949": "1"}}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.climate.ac_cooling_and_heating is None
+        assert vs.climate.climate_mode == 1
+
+    def test_signal_hvac_legacy_skipped_when_named_present(self) -> None:
+        """Named acCoolingAndHeating already present → not overwritten."""
+        data: dict[str, Any] = {"acCoolingAndHeating": 2, "signal": {"1940": "1", "1949": "0"}}
+        vs = VehicleStatus.from_dict(data)
+        assert vs.climate.ac_cooling_and_heating == 2
+
     # -- Ignition bcm_key_position_on2 --
 
     def test_ignition_on2_field(self) -> None:

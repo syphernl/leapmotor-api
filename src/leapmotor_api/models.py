@@ -600,6 +600,7 @@ class ClimateStatus:
     climate_mode: int | None = None
     rapid_cooling: int | None = None
     rapid_heating: int | None = None
+    ac_operate_mode: int | None = None
 
 
 @dataclass(slots=True)
@@ -846,6 +847,7 @@ _CLIMATE_FIELDS: dict[str, str] = {
     "climateMode": "climate_mode",
     "rapidCooling": "rapid_cooling",
     "rapidHeating": "rapid_heating",
+    "acOperateMode": "ac_operate_mode",
 }
 
 _DOOR_FIELDS: dict[str, str] = {
@@ -961,6 +963,8 @@ _SIGNAL_TO_NAMED: dict[str, str] = {
     "3713": "climateMode",
     "2669": "rapidCooling",
     "2681": "rapidHeating",
+    "1939": "acOperateMode",
+    "1941": "acAirVolume",
     # Windows (position percent)
     "3727": "leftFrontWindowPercent",
     "3728": "rightFrontWindowPercent",
@@ -1035,6 +1039,24 @@ def _merge_signal_to_named(status_data: dict[str, Any]) -> dict[str, Any]:
             ts = sts / 1000 if sts > 9_999_999_999 else sts
             with contextlib.suppress(OSError, ValueError, OverflowError):
                 merged["collectTime"] = datetime.fromtimestamp(ts).strftime(_DATETIME_FMT)  # noqa: DTZ006
+
+    # Derive acCoolingAndHeating from legacy signals 1940 + 1949
+    # when the newer unified signal 3713 is absent.
+    # Truth table:
+    #   1940=0,1949=0 → 0 (wind)  |  1940=0,1949=1 → 2 (hot)
+    #   1940=1/2,1949=0 → 1 (cold)  |  1940=1/2,1949=1 → 1 (cold, priority)
+    if "acCoolingAndHeating" not in merged and "3713" not in signal:
+        raw_1940 = signal.get("1940")
+        raw_1949 = signal.get("1949")
+        s1940 = str(raw_1940) if raw_1940 is not None else ""
+        s1949 = str(raw_1949) if raw_1949 is not None else ""
+        if s1940 and s1949:
+            if s1940 == "0" and s1949 == "1":
+                merged["acCoolingAndHeating"] = 2  # hot
+            elif s1940 in ("1", "2"):
+                merged["acCoolingAndHeating"] = 1  # cold (cooling priority)
+            else:
+                merged["acCoolingAndHeating"] = 0  # wind
 
     # Map config.3 (charge plan) to named fields for BatteryStatus
     config = status_data.get("config")
