@@ -16,6 +16,7 @@ from leapmotor_api.const import (
     DEFAULT_SOURCE,
 )
 from leapmotor_api.models import (
+    AcOperateMode,
     ApiRequestHeaders,
     BatteryStatus,
     BoolStatus,
@@ -31,9 +32,12 @@ from leapmotor_api.models import (
     DoorStatus,
     DrivingStatus,
     GearStatus,
+    HvacDirection,
+    HvacMode,
     Message,
     MessageList,
     ModuleRight,
+    RecirculationMode,
     RemoteActionCtlBatteryPreheat,
     RemoteActionCtlClimate,
     RemoteActionCtlFindCar,
@@ -1166,7 +1170,7 @@ class TestVehicleStatusFromDict:
         vs = VehicleStatus.from_dict(data)
         assert vs.climate.ac_setting_right == 21.5
         assert vs.climate.interior_temp == 25.0
-        assert vs.climate.recirculation_mode == 1
+        assert vs.climate.recirculation_mode == RecirculationMode.RECIRCULATION
         assert vs.climate.windshield_defrost == 0
         assert vs.climate.rear_window_heating == 1
         assert vs.climate.climate_mode == 2
@@ -1189,10 +1193,10 @@ class TestVehicleStatusFromDict:
         vs = VehicleStatus.from_dict(data)
         assert vs.climate.ac_setting_right == 22.0
         assert vs.climate.interior_temp == 26.5
-        assert vs.climate.recirculation_mode == 0
+        assert vs.climate.recirculation_mode == RecirculationMode.FRESH_AIR
         assert vs.climate.windshield_defrost == 1
         assert vs.climate.rear_window_heating == 0
-        assert vs.climate.climate_mode == 1
+        assert vs.climate.climate_mode == HvacMode.FAST_COOL
         assert vs.climate.rapid_cooling == 1
         assert vs.climate.rapid_heating == 0
 
@@ -1204,7 +1208,7 @@ class TestVehicleStatusFromDict:
             "acAirVolume": 5,
         }
         vs = VehicleStatus.from_dict(data)
-        assert vs.climate.ac_operate_mode == 0
+        assert vs.climate.ac_operate_mode == AcOperateMode.AUTO
         assert vs.climate.ac_air_volume == 5
 
     def test_signal_air_controller_fields(self) -> None:
@@ -1215,7 +1219,7 @@ class TestVehicleStatusFromDict:
             },
         }
         vs = VehicleStatus.from_dict(data)
-        assert vs.climate.ac_operate_mode == 0
+        assert vs.climate.ac_operate_mode == AcOperateMode.AUTO
         assert vs.climate.ac_air_volume == 4
 
     # -- Legacy HVAC air direction from signals 1940+1949 --
@@ -1224,37 +1228,37 @@ class TestVehicleStatusFromDict:
         """Both flaps off → 0 (wind)."""
         data: dict[str, Any] = {"signal": {"1940": "0", "1949": "0"}}
         vs = VehicleStatus.from_dict(data)
-        assert vs.climate.ac_cooling_and_heating == 0
+        assert vs.climate.ac_cooling_and_heating == HvacDirection.WIND
 
     def test_signal_hvac_legacy_hot(self) -> None:
         """Heating only → 2 (hot)."""
         data: dict[str, Any] = {"signal": {"1940": "0", "1949": "1"}}
         vs = VehicleStatus.from_dict(data)
-        assert vs.climate.ac_cooling_and_heating == 2
+        assert vs.climate.ac_cooling_and_heating == HvacDirection.HOT
 
     def test_signal_hvac_legacy_cold(self) -> None:
         """Cooling only → 1 (cold)."""
         data: dict[str, Any] = {"signal": {"1940": "1", "1949": "0"}}
         vs = VehicleStatus.from_dict(data)
-        assert vs.climate.ac_cooling_and_heating == 1
+        assert vs.climate.ac_cooling_and_heating == HvacDirection.COLD
 
     def test_signal_hvac_legacy_cold_high(self) -> None:
         """High cooling only → 1 (cold)."""
         data: dict[str, Any] = {"signal": {"1940": "2", "1949": "0"}}
         vs = VehicleStatus.from_dict(data)
-        assert vs.climate.ac_cooling_and_heating == 1
+        assert vs.climate.ac_cooling_and_heating == HvacDirection.COLD
 
     def test_signal_hvac_legacy_both_active(self) -> None:
         """Both active → 1 (cold, cooling priority)."""
         data: dict[str, Any] = {"signal": {"1940": "1", "1949": "1"}}
         vs = VehicleStatus.from_dict(data)
-        assert vs.climate.ac_cooling_and_heating == 1
+        assert vs.climate.ac_cooling_and_heating == HvacDirection.COLD
 
     def test_signal_hvac_legacy_both_active_high(self) -> None:
         """Both active (high cooling) → 1 (cold, cooling priority)."""
         data: dict[str, Any] = {"signal": {"1940": "2", "1949": "1"}}
         vs = VehicleStatus.from_dict(data)
-        assert vs.climate.ac_cooling_and_heating == 1
+        assert vs.climate.ac_cooling_and_heating == HvacDirection.COLD
 
     def test_signal_hvac_legacy_missing_1949(self) -> None:
         """Missing $1949 → no derivation."""
@@ -1267,13 +1271,13 @@ class TestVehicleStatusFromDict:
         data: dict[str, Any] = {"signal": {"3713": 1, "1940": "0", "1949": "1"}}
         vs = VehicleStatus.from_dict(data)
         assert vs.climate.ac_cooling_and_heating is None
-        assert vs.climate.climate_mode == 1
+        assert vs.climate.climate_mode == HvacMode.FAST_COOL
 
     def test_signal_hvac_legacy_skipped_when_named_present(self) -> None:
         """Named acCoolingAndHeating already present → not overwritten."""
         data: dict[str, Any] = {"acCoolingAndHeating": 2, "signal": {"1940": "1", "1949": "0"}}
         vs = VehicleStatus.from_dict(data)
-        assert vs.climate.ac_cooling_and_heating == 2
+        assert vs.climate.ac_cooling_and_heating == HvacDirection.HOT
 
     # -- Ignition bcm_key_position_on2 --
 
@@ -1785,6 +1789,24 @@ class TestEnumValues:
     def test_climate_windshield(self) -> None:
         assert ClimateWindshield.NORMAL == "1"
         assert ClimateWindshield.DEFROST == "2"
+
+    def test_hvac_direction(self) -> None:
+        assert HvacDirection.WIND == 0
+        assert HvacDirection.COLD == 1
+        assert HvacDirection.HOT == 2
+
+    def test_hvac_mode(self) -> None:
+        assert HvacMode.OFF == 0
+        assert HvacMode.FAST_COOL == 1
+        assert HvacMode.FAST_HEAT == 3
+
+    def test_ac_operate_mode(self) -> None:
+        assert AcOperateMode.AUTO == 0
+        assert AcOperateMode.MANUAL == 1
+
+    def test_recirculation_mode(self) -> None:
+        assert RecirculationMode.FRESH_AIR == 0
+        assert RecirculationMode.RECIRCULATION == 1
 
 
 # ---------------------------------------------------------------------------

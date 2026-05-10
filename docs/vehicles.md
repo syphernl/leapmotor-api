@@ -207,15 +207,15 @@ works uniformly across all models.
 | `2183` | `acSetting` | Left set temperature (°C) | `float` |
 | `2184` | `acSettingRight` | Right set temperature (°C) | `float` |
 | `1349` | `interiorTemp` | Interior temperature (°C) | `float` |
-| `1943` | `recirculationMode` | Air recirculation mode | `int` |
+| `1943` | `recirculationMode` | Air recirculation mode (`RecirculationMode`: 0=FRESH_AIR, 1=RECIRCULATION) | `int` |
 | `1945` | `windshieldDefrost` | Windshield defrost active | `int` |
 | `1946` | `rearWindowHeating` | Rear window heating active | `int` |
-| `3713` | `climateMode` | Climate mode: 0=Off, 1=Fast cool, 3=Fast heat | `int` |
+| `3713` | `climateMode` | Climate mode (`HvacMode`: 0=OFF, 1=FAST_COOL, 3=FAST_HEAT) | `int` |
 | `2669` | `rapidCooling` | Rapid cooling active | `int` |
 | `2681` | `rapidHeating` | Rapid heating active | `int` |
-| `1939` | `acOperateMode` | AC operate mode: 0=auto, else=manual | `int` |
+| `1939` | `acOperateMode` | AC operate mode (`AcOperateMode`: 0=AUTO, 1=MANUAL) | `int` |
 | `1941` | `acAirVolume` | HVAC fan speed: 1–7 | `int` |
-| `1940`+`1949` | `acCoolingAndHeating` ¹ | Legacy air direction (computed from cooling + heating flap signals) | `int` |
+| `1940`+`1949` | `acCoolingAndHeating` ¹ | Legacy air direction (`HvacDirection`: 0=WIND, 1=COLD, 2=HOT) | `int` |
 
 ¹ On legacy models (T03, S01, C11) without signal `3713`, the library
 combines cooling flap (`1940`: 0=off, 1/2=on) and heating flap (`1949`:

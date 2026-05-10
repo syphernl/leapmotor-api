@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- Added `HvacDirection` IntEnum for `ac_cooling_and_heating` field: `WIND=0`, `COLD=1`, `HOT=2`
+- Added `HvacMode` IntEnum for `climate_mode` field (signal `$3713`): `OFF=0`, `FAST_COOL=1`, `FAST_HEAT=3`
+- Added `AcOperateMode` IntEnum for `ac_operate_mode` field (signal `$1939`): `AUTO=0`, `MANUAL=1`
+- Added `RecirculationMode` IntEnum for `recirculation_mode` field (signal `$1943`): `FRESH_AIR=0`, `RECIRCULATION=1`
 - Added `ClimateStatus.ac_operate_mode` field: AC operation mode from signal `1939` (0=auto, else=manual)
 - Added signal `1941` → `acAirVolume` mapping: HVAC fan speed (1–7) now populated on C10/B10 signal-based responses
 - Added legacy HVAC air direction derivation: when signal `3713` is absent, combines cooling flap (`1940`) and heating flap (`1949`) signals into `acCoolingAndHeating` (0=wind, 1=cold, 2=hot) following the APK truth table

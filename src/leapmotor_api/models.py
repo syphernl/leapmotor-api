@@ -257,6 +257,36 @@ class BoolStatus(IntEnum):
     ON = 1
 
 
+class HvacDirection(IntEnum):
+    """HVAC air direction."""
+
+    WIND = 0
+    COLD = 1
+    HOT = 2
+
+
+class HvacMode(IntEnum):
+    """Climate mode."""
+
+    OFF = 0
+    FAST_COOL = 1
+    FAST_HEAT = 3
+
+
+class AcOperateMode(IntEnum):
+    """AC operation mode."""
+
+    AUTO = 0
+    MANUAL = 1
+
+
+class RecirculationMode(IntEnum):
+    """Air recirculation mode."""
+
+    FRESH_AIR = 0
+    RECIRCULATION = 1
+
+
 # ---------------------------------------------------------------------------
 # Helpers for parsing permission strings from the API
 # ---------------------------------------------------------------------------
@@ -589,18 +619,18 @@ class ClimateStatus:
     ac_wind_direction: int | None = None
     ac_temp_mode: bool | None = None
     ac_circle_mode: bool | None = None
-    ac_cooling_and_heating: int | None = None
+    ac_cooling_and_heating: HvacDirection | None = None
     outdoor_temp: int | None = None
     min_single_temp: int | None = None
     ptc_state: int | None = None
     ptc_power_setting_value: int | None = None
-    recirculation_mode: int | None = None
+    recirculation_mode: RecirculationMode | None = None
     windshield_defrost: int | None = None
     rear_window_heating: int | None = None
-    climate_mode: int | None = None
+    climate_mode: HvacMode | None = None
     rapid_cooling: int | None = None
     rapid_heating: int | None = None
-    ac_operate_mode: int | None = None
+    ac_operate_mode: AcOperateMode | None = None
 
 
 @dataclass(slots=True)

@@ -36,6 +36,7 @@ from .exceptions import (
 )
 from .mappings import REMOTE_ACTION_SPECS
 from .models import (
+    AcOperateMode,
     ApiRequestHeaders,
     BatteryPreheatValue,
     BatteryStatus,
@@ -59,12 +60,15 @@ from .models import (
     DoorStatus,
     DrivingStatus,
     GearStatus,
+    HvacDirection,
+    HvacMode,
     IgnitionStatus,
     LocationStatus,
     LockValue,
     Message,
     MessageList,
     ModuleRight,
+    RecirculationMode,
     RemoteActionCtlBatteryPreheat,
     RemoteActionCtlChargePlan,
     RemoteActionCtlClimate,
@@ -93,6 +97,7 @@ from .models import (
 
 __all__ = [
     "__version__",
+    "AcOperateMode",
     "ApiRequestHeaders",
     "BatteryPreheatValue",
     "BatteryStatus",
@@ -118,6 +123,8 @@ __all__ = [
     "DoorStatus",
     "DrivingStatus",
     "GearStatus",
+    "HvacDirection",
+    "HvacMode",
     "IgnitionStatus",
     "LeapmotorAccountCertError",
     "LeapmotorApiClient",
@@ -150,6 +157,7 @@ __all__ = [
     "REMOTE_CTL_WINDOWS",
     "REMOTE_CTL_WINDOWS_CLOSE",
     "REMOTE_CTL_WINDOWS_OPEN",
+    "RecirculationMode",
     "RemoteActionCtlBatteryPreheat",
     "RemoteActionCtlChargePlan",
     "RemoteActionCtlClimate",
