@@ -79,9 +79,13 @@ class ApiRequestHeaders:
 class ChargeState(IntEnum):
     """Charging state codes reported by the vehicle."""
 
-    NOT_CONNECTED = 0
-    AC_CONNECTED = 1
-    DC_CONNECTED = 2  # ???
+    NOT_CHARGING = 0
+    CHARGING = 1
+    FINISH = 2
+    ERROR = 3
+    SETTING = 4
+    REGENING = 5
+    PAUSE = 6
 
 
 class ChargeType(StrEnum):
@@ -483,7 +487,7 @@ class BatteryStatus:
         The vehicle's overall charging status (e.g. whether it's plugged in and charging) can be determined
         from the ``VehicleStatus.is_charging`` property, which also considers the driving status.
         """
-        return bool(self.charging_power_kw is not None and self.charge_remain_time)
+        return bool(self.charging_power_kw is not None and self.charge_state == ChargeState.CHARGING)
 
     @property
     def is_discharging(self) -> bool | None:
