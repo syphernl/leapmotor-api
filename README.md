@@ -103,6 +103,26 @@ All fields are `T | None` — they are populated only when the vehicle reports t
 
 For raw API data, use `get_vehicle_raw_status()` or access `status.raw`.
 
+## Charging History
+
+```python
+from datetime import date, timedelta
+
+result = client.get_charging_daily_detail(
+    vehicle.vin,
+    start_time=date.today() - timedelta(days=90),
+    end_time=date.today(),
+    timezone="GMT+01:00",
+    page_size=50,
+)
+for record in result.records:
+    charge_kind = "DC (fast)" if record.is_fast_charge else "AC (normal)"
+    print(f"{record.start_datetime} -> {record.end_datetime}  {charge_kind}  {record.energy_kwh} kWh")
+```
+
+`ChargeRecord` fields: `start_ts`, `end_ts`, `charge_type` (`ChargeType.AC` / `ChargeType.DC`), `energy_kwh`, `longitude`, `latitude`, `timezone`.  
+Convenience properties: `start_datetime`, `end_datetime`, `duration_seconds`, `is_fast_charge`.
+
 ## Energy Consumption Statistics
 
 ```python
