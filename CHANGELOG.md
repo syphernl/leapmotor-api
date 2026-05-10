@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- Added `VehicleSecurityState` IntEnum for `vehicle_security_active` field (signal `1255`): `INACTIVE=0`, `ACTIVE_1=1`, `ACTIVE_2=2`, `ACTIVE_3=3`
+- Added `SecurityStatus.is_security_active` convenience property: `True` when anti-theft is active (values 1, 2, or 3)
+- Added `ClimateStatus.is_windshield_defrost_active` convenience property: `True` when windshield defrost is ON (APK: both values 1 and 2 mean active)
+- Added `BatteryStatus.healthy_charge_enabled` field: healthy charge switch (signal `48` / `isCarHealthyChargeOpen`, `BoolStatus`)
+- Added `DrivingStatus.parking_brake_state` field: parking brake state (signal `1480` / `prakingState`)
+- Added `ChargePlan.cancelled_once` field: scheduled charge cancelled once (signal `3737` / `isCancelChargeOnce`, `BoolStatus`)
+- Added `GearStatus._missing_()` handler for graceful handling of unknown gear values (e.g. `0xFFFFFF` = invalid)
 - Added `HvacDirection` IntEnum for `ac_cooling_and_heating` field: `WIND=0`, `COLD=1`, `HOT=2`
 - Added `HvacMode` IntEnum for `climate_mode` field (signal `$3713`): `OFF=0`, `FAST_COOL=1`, `FAST_HEAT=3`
 - Added `AcOperateMode` IntEnum for `ac_operate_mode` field (signal `$1939`): `AUTO=0`, `MANUAL=1`

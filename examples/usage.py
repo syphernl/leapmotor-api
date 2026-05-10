@@ -94,11 +94,13 @@ def main() -> None:
             print(f"    Expected mileage:       {vs.battery.expected_mileage} km")
             print(f"    Min battery temp:       {vs.battery.min_battery_temp}")
             print(f"    Battery thermal req:    {vs.battery.battery_thermal_request}")
+            print(f"    Healthy charge:         {vs.battery.healthy_charge_enabled}")
             print(f"    Schedule enabled:       {vs.battery.charge_plan.enabled}")
             print(f"    Schedule start:         {vs.battery.charge_plan.start}")
             print(f"    Schedule end:           {vs.battery.charge_plan.end}")
             print(f"    Schedule cycles:        {vs.battery.charge_plan.cycles}")
             print(f"    Schedule circulation:   {vs.battery.charge_plan.circulation}")
+            print(f"    Schedule cancelled:     {vs.battery.charge_plan.cancelled_once}")
 
             print("\n  [Driving]")
             print(f"    Speed:                  {vs.driving.speed}")
@@ -111,6 +113,7 @@ def main() -> None:
             print(f"    Live remaining range:   {vs.driving.live_remaining_range}")
             print(f"    Max range:              {vs.driving.max_range}")
             print(f"    Range mode:             {vs.driving.range_mode}")
+            print(f"    Parking brake:          {vs.driving.parking_brake_state}")
 
             print("\n  [Combined status]")
             print(f"    is_plugged:             {vs.is_plugged}")
@@ -133,6 +136,7 @@ def main() -> None:
             print(f"    AC cooling/heating:     {vs.climate.ac_cooling_and_heating}")
             print(f"    Recirculation mode:     {vs.climate.recirculation_mode}")
             print(f"    Windshield defrost:     {vs.climate.windshield_defrost}")
+            print(f"    Defrost active:         {vs.climate.is_windshield_defrost_active}")
             print(f"    Rear window heating:    {vs.climate.rear_window_heating}")
             print(f"    Climate mode:           {vs.climate.climate_mode}")
             print(f"    Rapid cooling:          {vs.climate.rapid_cooling}")
@@ -151,6 +155,7 @@ def main() -> None:
 
             print("\n  [Security]")
             print(f"    Security active:        {vs.security.vehicle_security_active}")
+            print(f"    is_security_active:     {vs.security.is_security_active}")
             print(f"    Sentry mode:            {vs.security.sentry_mode}")
             print(f"    Left mirror heating:    {vs.security.left_mirror_heating}")
             print(f"    Right mirror heating:   {vs.security.right_mirror_heating}")

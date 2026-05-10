@@ -249,6 +249,16 @@ class GearStatus(IntEnum):
     NEUTRAL = 2
     REVERSE = 3
 
+    @classmethod
+    def _missing_(cls, value: object) -> GearStatus | None:
+        """Handle unknown gear values (e.g. 0xFFFFFF = invalid)."""
+        if not isinstance(value, int):
+            return None
+        member = int.__new__(cls, value)
+        member._name_ = f"UNKNOWN_{value}"
+        member._value_ = value
+        return member
+
 
 class BoolStatus(IntEnum):
     """Generic boolean status represented as 0/1 in the API."""
@@ -285,6 +295,18 @@ class RecirculationMode(IntEnum):
 
     FRESH_AIR = 0
     RECIRCULATION = 1
+
+
+class VehicleSecurityState(IntEnum):
+    """Vehicle security / anti-theft state from signal ``$1255``.
+
+    Values 1, 2, 3 all indicate an active anti-theft mode.
+    """
+
+    INACTIVE = 0
+    ACTIVE_1 = 1
+    ACTIVE_2 = 2
+    ACTIVE_3 = 3
 
 
 # ---------------------------------------------------------------------------
@@ -452,6 +474,7 @@ class ChargePlan:
     cycles: str | None = None
     circulation: int | None = None
     recharge: int | None = None
+    cancelled_once: int | None = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> ChargePlan:
@@ -465,6 +488,7 @@ class ChargePlan:
             cycles=data.get("chargeScheduleCycles"),
             circulation=data.get("chargeScheduleCirculation"),
             recharge=data.get("chargeScheduleRecharge"),
+            cancelled_once=data.get("chargeScheduleCancelledOnce"),
         )
 
 
@@ -486,6 +510,7 @@ class BatteryStatus:
     expected_mileage: int | None = None
     min_battery_temp: int | None = None
     battery_thermal_request: int | None = None
+    healthy_charge_enabled: int | None = None
 
     @property
     def dump_energy_kwh(self) -> float | None:
@@ -570,6 +595,7 @@ class BatteryStatus:
             expected_mileage=data.get("expectedMileage"),
             min_battery_temp=data.get("minBatteryTemp"),
             battery_thermal_request=data.get("batteryThermalRequest"),
+            healthy_charge_enabled=data.get("healthyChargeEnabled"),
         )
 
 
@@ -587,6 +613,7 @@ class DrivingStatus:
     live_remaining_range: int | None = None
     max_range: int | None = None
     range_mode: int | None = None
+    parking_brake_state: int | None = None
 
     @property
     def is_parked(self) -> bool | None:
@@ -631,6 +658,13 @@ class ClimateStatus:
     rapid_cooling: int | None = None
     rapid_heating: int | None = None
     ac_operate_mode: AcOperateMode | None = None
+
+    @property
+    def is_windshield_defrost_active(self) -> bool | None:
+        """True if windshield defrost is active (values 1 and 2 both mean ON)."""
+        if self.windshield_defrost is None:
+            return None
+        return self.windshield_defrost in (1, 2)
 
 
 @dataclass(slots=True)
@@ -694,11 +728,22 @@ class SeatComfortStatus:
 class SecurityStatus:
     """Vehicle security and exterior status."""
 
-    vehicle_security_active: int | None = None
+    vehicle_security_active: VehicleSecurityState | None = None
     sentry_mode: int | None = None
     left_mirror_heating: int | None = None
     right_mirror_heating: int | None = None
     roof_opening: int | None = None
+
+    @property
+    def is_security_active(self) -> bool | None:
+        """True if anti-theft is active (values 1, 2, 3). None if unknown."""
+        if self.vehicle_security_active is None:
+            return None
+        return self.vehicle_security_active in (
+            VehicleSecurityState.ACTIVE_1,
+            VehicleSecurityState.ACTIVE_2,
+            VehicleSecurityState.ACTIVE_3,
+        )
 
 
 @dataclass(slots=True)
@@ -849,6 +894,7 @@ _DRIVING_FIELDS: dict[str, str] = {
     "liveRemainingRange": "live_remaining_range",
     "maxRange": "max_range",
     "rangeMode": "range_mode",
+    "parkingBrakeState": "parking_brake_state",
 }
 
 _LOCATION_FIELDS: dict[str, str] = {
@@ -966,6 +1012,8 @@ _SIGNAL_TO_NAMED: dict[str, str] = {
     "1182": "minBatteryTemp",
     "1186": "batteryThermalRequest",
     "3736": "chargeCompleted",
+    "48": "healthyChargeEnabled",
+    "3737": "chargeScheduleCancelledOnce",
     # Range
     "3260": "expectedMileage",
     "2188": "liveRemainingRange",
@@ -976,6 +1024,7 @@ _SIGNAL_TO_NAMED: dict[str, str] = {
     "1318": "totalMileage",
     "1010": "gearStatus",
     "1944": "vehicleState",
+    "1480": "parkingBrakeState",
     "6048": "speedLimit",
     "6047": "speedLimitUnit",
     "12054": "speedLimitActive",

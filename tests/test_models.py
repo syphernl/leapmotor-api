@@ -51,6 +51,7 @@ from leapmotor_api.models import (
     Vehicle,
     VehicleAbility,
     VehicleRight,
+    VehicleSecurityState,
     VehicleStatus,
     WeeklyConsumption,
 )
@@ -1373,6 +1374,98 @@ class TestVehicleStatusFromDict:
         assert vs.security.vehicle_security_active is None
         assert vs.security.sentry_mode is None
 
+    # -- SecurityStatus.is_security_active --
+
+    def test_is_security_active_none(self) -> None:
+        vs = VehicleStatus.from_dict({})
+        assert vs.security.is_security_active is None
+
+    def test_is_security_active_inactive(self) -> None:
+        vs = VehicleStatus.from_dict({"vehicleSecurityActive": 0})
+        assert vs.security.is_security_active is False
+        assert vs.security.vehicle_security_active == VehicleSecurityState.INACTIVE
+
+    def test_is_security_active_mode_1(self) -> None:
+        vs = VehicleStatus.from_dict({"vehicleSecurityActive": 1})
+        assert vs.security.is_security_active is True
+
+    def test_is_security_active_mode_2(self) -> None:
+        vs = VehicleStatus.from_dict({"vehicleSecurityActive": 2})
+        assert vs.security.is_security_active is True
+
+    def test_is_security_active_mode_3(self) -> None:
+        vs = VehicleStatus.from_dict({"vehicleSecurityActive": 3})
+        assert vs.security.is_security_active is True
+
+    # -- ClimateStatus.is_windshield_defrost_active --
+
+    def test_windshield_defrost_active_none(self) -> None:
+        vs = VehicleStatus.from_dict({})
+        assert vs.climate.is_windshield_defrost_active is None
+
+    def test_windshield_defrost_active_off(self) -> None:
+        vs = VehicleStatus.from_dict({"windshieldDefrost": 0})
+        assert vs.climate.is_windshield_defrost_active is False
+
+    def test_windshield_defrost_active_value_1(self) -> None:
+        vs = VehicleStatus.from_dict({"windshieldDefrost": 1})
+        assert vs.climate.is_windshield_defrost_active is True
+
+    def test_windshield_defrost_active_value_2(self) -> None:
+        """APK: both 1 and 2 mean defrost ON."""
+        vs = VehicleStatus.from_dict({"windshieldDefrost": 2})
+        assert vs.climate.is_windshield_defrost_active is True
+
+    # -- BatteryStatus.healthy_charge_enabled (signal 48) --
+
+    def test_healthy_charge_enabled_named(self) -> None:
+        vs = VehicleStatus.from_dict({"healthyChargeEnabled": 1})
+        assert vs.battery.healthy_charge_enabled == 1
+
+    def test_healthy_charge_enabled_signal(self) -> None:
+        vs = VehicleStatus.from_dict({"signal": {"48": 1}})
+        assert vs.battery.healthy_charge_enabled == 1
+
+    def test_healthy_charge_enabled_default(self) -> None:
+        vs = VehicleStatus.from_dict({})
+        assert vs.battery.healthy_charge_enabled is None
+
+    # -- DrivingStatus.parking_brake_state (signal 1480) --
+
+    def test_parking_brake_state_named(self) -> None:
+        vs = VehicleStatus.from_dict({"parkingBrakeState": 1})
+        assert vs.driving.parking_brake_state == 1
+
+    def test_parking_brake_state_signal(self) -> None:
+        vs = VehicleStatus.from_dict({"signal": {"1480": 1}})
+        assert vs.driving.parking_brake_state == 1
+
+    def test_parking_brake_state_default(self) -> None:
+        vs = VehicleStatus.from_dict({})
+        assert vs.driving.parking_brake_state is None
+
+    # -- ChargePlan.cancelled_once (signal 3737) --
+
+    def test_charge_plan_cancelled_once_named(self) -> None:
+        vs = VehicleStatus.from_dict({"chargeScheduleCancelledOnce": 1})
+        assert vs.battery.charge_plan.cancelled_once == 1
+
+    def test_charge_plan_cancelled_once_signal(self) -> None:
+        vs = VehicleStatus.from_dict({"signal": {"3737": 1}})
+        assert vs.battery.charge_plan.cancelled_once == 1
+
+    def test_charge_plan_cancelled_once_default(self) -> None:
+        vs = VehicleStatus.from_dict({})
+        assert vs.battery.charge_plan.cancelled_once is None
+
+    # -- GearStatus._missing_() --
+
+    def test_gear_status_unknown_value(self) -> None:
+        """GearStatus should handle unknown values like 16777215 (0xFFFFFF) gracefully."""
+        gs = GearStatus(16777215)
+        assert gs.value == 16777215
+        assert "UNKNOWN" in gs.name
+
     # -- GPS fallback signals --
 
     def test_gps_fallback_signals(self) -> None:
@@ -1807,6 +1900,12 @@ class TestEnumValues:
     def test_recirculation_mode(self) -> None:
         assert RecirculationMode.FRESH_AIR == 0
         assert RecirculationMode.RECIRCULATION == 1
+
+    def test_vehicle_security_state(self) -> None:
+        assert VehicleSecurityState.INACTIVE == 0
+        assert VehicleSecurityState.ACTIVE_1 == 1
+        assert VehicleSecurityState.ACTIVE_2 == 2
+        assert VehicleSecurityState.ACTIVE_3 == 3
 
 
 # ---------------------------------------------------------------------------

@@ -172,6 +172,8 @@ works uniformly across all models.
 | `1182` | `minBatteryTemp` | Minimum battery temperature (°C) | `int` |
 | `1186` | `batteryThermalRequest` | Battery thermal request: 4=Heating | `int` |
 | `3736` | `chargeCompleted` | Charge completed: 0=No, 1=Yes | `int` |
+| `48` | `healthyChargeEnabled` | Healthy charge (80% limit) enabled (`BoolStatus`: 0=OFF, 1=ON) | `int` |
+| `3737` | `chargeScheduleCancelledOnce` | Scheduled charge cancelled once (`BoolStatus`: 0=No, 1=Yes) | `int` |
 
 ### Driving and Movement
 
@@ -188,6 +190,7 @@ works uniformly across all models.
 | `2188` | `liveRemainingRange` | Live remaining range (km) | `int` |
 | `3257` | `maxRange` | CLTC/WLTP max range (km) | `int` |
 | `3262` | `rangeMode` | Range mode: 0=CLTC, 1=WLTP | `int` |
+| `1480` | `parkingBrakeState` | Parking brake state | `int` |
 
 ### GPS Location
 
@@ -278,7 +281,7 @@ These signals are mapped to `SecurityStatus` (C10/B10 only).
 
 | Signal ID | Named Field | Description | Type |
 |---|---|---|---|
-| `1255` | `vehicleSecurityActive` | Vehicle security active | `int` |
+| `1255` | `vehicleSecurityActive` | Vehicle security / anti-theft state (`VehicleSecurityState`: 0=INACTIVE, 1/2/3=ACTIVE) | `int` |
 | `3636` | `sentryMode` | Sentry mode | `int` |
 | `49` | `leftMirrorHeating` | Left mirror heating | `int` |
 | `50` | `rightMirrorHeating` | Right mirror heating | `int` |
@@ -327,7 +330,6 @@ mapped to `VehicleStatus` fields. They are available in the raw response
 
 | Signal ID | Description | Type |
 |---|---|---|
-| `1480` | Parking camera status | `int` |
 | `2190` | GPS latitude (used as auto-fallback) | `float` |
 | `2191` | GPS longitude (used as auto-fallback) | `float` |
 | `3273` | (Undocumented — seen value 100) | `int` |
@@ -338,7 +340,6 @@ mapped to `VehicleStatus` fields. They are available in the raw response
 | `3712` | (Undocumented — seen value 1) | `int` |
 | `3734` | (Undocumented) | `int` |
 | `3735` | (Undocumented) | `int` |
-| `3737` | (Undocumented — seen value 1) | `int` |
 | `100010`–`100017` | Battery module voltages (V) | `str`/`int` |
 
 ---
