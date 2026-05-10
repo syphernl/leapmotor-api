@@ -551,7 +551,6 @@ class DrivingStatus:
     total_mileage: int | None = None
     gear_status: GearStatus | None = None
     vehicle_state: int | None = None
-    driving_state: int | None = None
     speed_limit: int | None = None
     speed_limit_unit: int | None = None
     speed_limit_active: int | None = None
@@ -566,8 +565,6 @@ class DrivingStatus:
             return self.speed == 0
         if self.vehicle_state is not None:
             return self.vehicle_state in (0, 1, 3)
-        if self.driving_state is not None:
-            return self.driving_state in (1, 2, 4)
         return None
 
 
@@ -810,7 +807,6 @@ _DRIVING_FIELDS: dict[str, str] = {
     "totalMileage": "total_mileage",
     "gearStatus": "gear_status",
     "vehicleState": "vehicle_state",
-    "drivingState": "driving_state",
     "speedLimit": "speed_limit",
     "speedLimitUnit": "speed_limit_unit",
     "speedLimitActive": "speed_limit_active",
@@ -943,7 +939,6 @@ _SIGNAL_TO_NAMED: dict[str, str] = {
     "1318": "totalMileage",
     "1010": "gearStatus",
     "1944": "vehicleState",
-    "1941": "drivingState",
     "6048": "speedLimit",
     "6047": "speedLimitUnit",
     "12054": "speedLimitActive",

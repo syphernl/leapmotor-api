@@ -104,7 +104,6 @@ def main() -> None:
             print(f"    Speed:                  {vs.driving.speed}")
             print(f"    Gear:                   {vs.driving.gear_status}")
             print(f"    Vehicle state:          {vs.driving.vehicle_state}")
-            print(f"    Driving state:          {vs.driving.driving_state}")
             print(f"    is_parked:              {vs.is_parked}")
             print(f"    Speed limit:            {vs.driving.speed_limit}")
             print(f"    Speed limit unit:       {vs.driving.speed_limit_unit}")

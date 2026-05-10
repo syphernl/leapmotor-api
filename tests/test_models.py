@@ -1072,7 +1072,6 @@ class TestVehicleStatusFromDict:
     def test_driving_new_fields(self) -> None:
         data: dict[str, Any] = {
             "vehicleState": 2,
-            "drivingState": 3,
             "speedLimit": 130,
             "speedLimitUnit": 0,
             "speedLimitActive": 1,
@@ -1082,7 +1081,6 @@ class TestVehicleStatusFromDict:
         }
         vs = VehicleStatus.from_dict(data)
         assert vs.driving.vehicle_state == 2
-        assert vs.driving.driving_state == 3
         assert vs.driving.speed_limit == 130
         assert vs.driving.speed_limit_unit == 0
         assert vs.driving.speed_limit_active == 1
@@ -1094,7 +1092,6 @@ class TestVehicleStatusFromDict:
         data: dict[str, Any] = {
             "signal": {
                 "1944": 2,
-                "1941": 3,
                 "6048": 120,
                 "6047": 1,
                 "12054": 0,
@@ -1105,7 +1102,6 @@ class TestVehicleStatusFromDict:
         }
         vs = VehicleStatus.from_dict(data)
         assert vs.driving.vehicle_state == 2
-        assert vs.driving.driving_state == 3
         assert vs.driving.speed_limit == 120
         assert vs.driving.speed_limit_unit == 1
         assert vs.driving.speed_limit_active == 0
@@ -1368,17 +1364,8 @@ class TestDrivingStatusIsParkedFallbacks:
         assert DrivingStatus(vehicle_state=4).is_parked is False
         assert DrivingStatus(vehicle_state=5).is_parked is False
 
-    def test_driving_state_parked(self) -> None:
-        assert DrivingStatus(driving_state=1).is_parked is True
-        assert DrivingStatus(driving_state=2).is_parked is True
-        assert DrivingStatus(driving_state=4).is_parked is True
-
-    def test_driving_state_driving(self) -> None:
-        assert DrivingStatus(driving_state=3).is_parked is False
-        assert DrivingStatus(driving_state=5).is_parked is False
-
     def test_speed_takes_priority(self) -> None:
-        """Speed always takes priority over vehicle_state/driving_state."""
+        """Speed always takes priority over vehicle_state."""
         assert DrivingStatus(speed=0, vehicle_state=2).is_parked is True
         assert DrivingStatus(speed=50, vehicle_state=0).is_parked is False
 

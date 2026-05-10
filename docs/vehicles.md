@@ -181,7 +181,6 @@ works uniformly across all models.
 | `1318` | `totalMileage` | Total odometer (km) | `int` |
 | `1010` | `gearStatus` | Gear: 0=Park, 1=Drive, 2=Neutral, 3=Reverse (`GearStatus` enum) | `int` |
 | `1944` | `vehicleState` | Vehicle state: 0,1,3=Parked, 2,4,5=Driving | `int` |
-| `1941` | `drivingState` | Driving state: 1,2,4=Parked, 3,5=Driving | `int` |
 | `6048` | `speedLimit` | Speed limit (km/h) | `int` |
 | `6047` | `speedLimitUnit` | Speed limit unit | `int` |
 | `12054` | `speedLimitActive` | Speed limit active: 0=No, 1=Yes | `int` |

@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `SecurityStatus` sub-object: vehicle security active, sentry mode, mirror heating (left/right), roof/skylight opening
 - Added new fields to `BatteryStatus`: `precise_soc`, `min_battery_temp`, `battery_thermal_request`, `charge_completed`
 - Added `ChargePlan` sub-object inside `BatteryStatus` (`battery.charge_plan`) grouping charge schedule fields: `soc_setting`, `time_setting`, `enabled`, `start`, `end`, `cycles`, `circulation`, `recharge`
-- Added new fields to `DrivingStatus`: `vehicle_state`, `driving_state`, `speed_limit`, `speed_limit_unit`, `speed_limit_active`, `live_remaining_range`, `max_range`, `range_mode`
+- Added new fields to `DrivingStatus`: `vehicle_state`, `speed_limit`, `speed_limit_unit`, `speed_limit_active`, `live_remaining_range`, `max_range`, `range_mode`
 - Added new fields to `ClimateStatus`: `ac_setting_right`, `interior_temp`, `recirculation_mode`, `windshield_defrost`, `rear_window_heating`, `climate_mode`, `rapid_cooling`, `rapid_heating`
 - Added `bcm_key_position_on2` to `IgnitionStatus`
 - Added `config.3` charge plan mapping for C10/B10: charge limit and scheduling fields are now populated from the `config` section (including `recharge`)
@@ -53,7 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Breaking:** `Vehicle.rights` changed from `str | None` to `list[VehicleRight]` (was a comma-separated string like `"110,120,230"`)
 - **Breaking:** `Vehicle.abilities` changed from `list[str] | None` to `list[VehicleAbility]` (was a list of numeric strings like `["1", "10", "36"]`)
 - **Breaking:** `Vehicle.module_rights` changed from `str | None` to `list[ModuleRight]` (was a comma-separated string like `"100,200,300,400"`)
-- `DrivingStatus.is_parked` now falls back to `vehicle_state` and `driving_state` signals when `speed` is unavailable (improves C10/B10 reliability)
+- `DrivingStatus.is_parked` now falls back to `vehicle_state` signal when `speed` is unavailable (improves C10/B10 reliability)
 - `set_charge_limit` now reads charging plan data from the typed `VehicleStatus.battery.charge_plan` sub-object instead of navigating raw API dicts
 - `set_charge_limit` now delegates to `_remote_control()` for consistent token/PIN/permission checks instead of calling `_remote_control_raw()` directly
 - `send_destination` now uses `RemoteActionCtlSendDestination` and delegates to `_remote_control()` for consistent permission checks instead of inline JSON and `_remote_control_without_pin_raw()`
