@@ -1297,6 +1297,20 @@ class TestVehicleStatusFromDict:
         assert vs.is_plugged is True
         assert vs.is_charging is False
 
+    def test_is_plugged_true_while_charging(self) -> None:
+        """Plugged in and actively charging — is_plugged still True."""
+        data: dict[str, Any] = {
+            "dcInputFastCharge": 1,
+            "chargeState": 1,
+            "speed": 0,
+            "batteryCurrent": -10.0,
+            "batteryVoltage": 400.0,
+            "chargeRemainTime": 60,
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.is_plugged is True
+        assert vs.is_charging is True
+
     def test_is_plugged_false_not_connected(self) -> None:
         data: dict[str, Any] = {"chargeState": 0, "speed": 0}
         vs = VehicleStatus.from_dict(data)
@@ -1312,18 +1326,14 @@ class TestVehicleStatusFromDict:
         vs = VehicleStatus.from_dict(data)
         assert vs.is_plugged is False
 
-    def test_is_plugged_false_while_charging(self) -> None:
+    def test_is_plugged_false_not_parked(self) -> None:
+        """Gun inserted but vehicle is driving — is_plugged False."""
         data: dict[str, Any] = {
             "dcInputFastCharge": 1,
-            "chargeState": 1,
-            "speed": 0,
-            "batteryCurrent": -10.0,
-            "batteryVoltage": 400.0,
-            "chargeRemainTime": 60,
+            "speed": 50,
         }
         vs = VehicleStatus.from_dict(data)
         assert vs.is_plugged is False
-        assert vs.is_charging is True
 
     def test_is_plugged_fallback_t03_charging(self) -> None:
         """T03 without gun signals: fallback to charge_state."""
