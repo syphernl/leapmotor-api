@@ -45,7 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 - **Breaking:** `ChargeState` enum members renamed: `NOT_CONNECTED` → `NOT_CHARGING`, `AC_CONNECTED` → `CHARGING`, `DC_CONNECTED` → `FINISH`; added new members: `ERROR=3`, `SETTING=4`, `REGENING=5`, `PAUSE=6`
 - **Breaking:** `BatteryStatus.is_charging` now uses `charge_state == ChargeState.CHARGING` instead of `charging_power_kw is not None and charge_remain_time`
-- **Breaking:** `VehicleStatus.is_plugged` now uses `is_charge_fast_gun_insert` / `is_charge_slow_gun_insert` properties; falls back to `charge_state` when gun signals are unavailable (T03 compatibility)
+- **Breaking:** `VehicleStatus.is_plugged` now returns `True` even while actively charging (previously required `not is_charging`); checks fast gun first, then falls back to `charge_state` when `ac_input_slow_charge` is unavailable (T03), otherwise uses slow gun signal; all paths require `is_parked`
 - **Breaking:** `VehicleStatus.is_charging` simplified to `charge_state == ChargeState.CHARGING and is_parked and is_charging`
 - **Breaking:** `VehicleStatus.is_regening` now checks `charge_state == ChargeState.REGENING` instead of combining `battery.is_charging` with `charge_state == NOT_CHARGING`
 - **Breaking:** `DrivingStatus.gear_status` changed from `int | None` to `GearStatus | None`

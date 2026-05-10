@@ -753,13 +753,16 @@ class VehicleStatus:
 
     @property
     def is_plugged(self) -> bool:
-        """True if a charger is connected but charging has not started yet."""
-        if self.battery.dc_input_fast_charge is None and self.battery.ac_input_slow_charge is None:
-            # When dc_input_fast_charge and ac_input_slow_charge are both None, we don't have the data
+        """True if a gun charger is connected."""
+        if self.battery.is_charge_fast_gun_insert and self.driving.is_parked:
+            return True
+
+        if self.battery.ac_input_slow_charge is None:
+            # When ac_input_slow_charge is None, we don't have the data
             # to determine if it's plugged in (maybe a T03 vehicle that is missing some data).
             # So fall back to charge_state for charging status
 
-            return self.battery.charge_state in (
+            gun_plugged = self.battery.charge_state in (
                 ChargeState.CHARGING,
                 ChargeState.FINISH,
                 ChargeState.ERROR,
@@ -767,11 +770,9 @@ class VehicleStatus:
                 ChargeState.PAUSE,
             )
 
-        return bool(
-            (self.battery.is_charge_fast_gun_insert or self.battery.is_charge_slow_gun_insert)
-            and self.driving.is_parked
-            and not self.battery.is_charging
-        )
+            return bool(gun_plugged and self.driving.is_parked)
+        else:
+            return bool(self.battery.is_charge_slow_gun_insert and self.driving.is_parked)
 
     @property
     def is_charging(self) -> bool | None:
