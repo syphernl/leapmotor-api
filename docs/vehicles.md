@@ -252,9 +252,6 @@ works uniformly across all models.
 | `2655` | `leftRearTirePressureState` | Left rear alarm: 0=OK | `int` |
 | `2662` | `rightRearTirePressureState` | Right rear alarm: 0=OK | `int` |
 
-> ⚠️ **B10 note:** The tire pressure sensor mapping may be inverted
-> compared to the C10 (see [B10-Specific Differences](#b10-specific-differences-vs-c10)).
-
 ### Seat and Comfort
 
 These signals are mapped to `SeatComfortStatus` (C10/B10 only; T03 does not
@@ -349,24 +346,6 @@ mapped to `VehicleStatus` fields. They are available in the raw response
 The B10 does **not** have a dedicated `/status/get/b10` endpoint. The API
 returns HTTP 404 if `b10` is used in the path. The library automatically
 maps `b10` → `c10` in the endpoint path.
-
-### Tire Pressure
-
-The `kerniger/leapmotor-ha` repo reports that the B10 tire pressure sensors
-have an **inverted** mapping compared to the C10:
-
-| Position | C10 (signal ID) | B10 (signal ID) |
-|---|---|---|
-| Front left | `2667` | `2646` |
-| Front right | `2653` | `2653` |
-| Rear left | `2646` | `2660` |
-| Rear right | `2660` | `2667` |
-
-This means that for the B10, signal `2667` corresponds to the rear right
-tire (not front left as in the C10). This difference is handled in the
-`normalize_vehicle()` function of the `kerniger/leapmotor-ha` repo but is
-**not** yet reflected in the `_SIGNAL_TO_NAMED` mapping in `models.py`,
-which uses the C10 mapping for both.
 
 ### `seatLayout` and `rudder` Fields
 
