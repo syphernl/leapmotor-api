@@ -1639,7 +1639,7 @@ class TestRemoteActionCtlClimate:
             mode="cold",
             operate="auto",
             temperature="20",
-            windlevel="6",
+            windlevel=6,
             wshld="2",
         )
         import json

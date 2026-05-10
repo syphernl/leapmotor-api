@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `get_charging_daily_detail()` method for fetching paginated charging session history, with typed models: `ChargeType` enum (`AC`/`DC`), `ChargeRecord` dataclass (with `start_datetime`, `end_datetime`, `duration_seconds`, `is_fast_charge` properties), and `ChargeDailyDetailPage` paginated response; accepts `datetime.date` for `start_time`/`end_time` and a `timezone` parameter (default `"GMT+00:00"`)
 
 ### Changed
+- **Breaking:** `RemoteActionCtlClimate.windlevel` changed from `str` (default `"4"`) to `int` (default `4`) with validation constraining the value to the range 1–7; the JSON payload still serialises the value as a string for API compatibility
 - **Breaking:** `ChargeState` enum members renamed: `NOT_CONNECTED` → `NOT_CHARGING`, `AC_CONNECTED` → `CHARGING`, `DC_CONNECTED` → `FINISH`; added new members: `ERROR=3`, `SETTING=4`, `REGENING=5`, `PAUSE=6`
 - **Breaking:** `BatteryStatus.is_charging` now uses `charge_state == ChargeState.CHARGING` instead of `charging_power_kw is not None and charge_remain_time`
 - **Breaking:** `VehicleStatus.is_plugged` now returns `True` even while actively charging (previously required `not is_charging`); checks fast gun first, then falls back to `charge_state` when `ac_input_slow_charge` is unavailable (T03), otherwise uses slow gun signal; all paths require `is_parked`

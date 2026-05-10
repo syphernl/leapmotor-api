@@ -1249,12 +1249,16 @@ class RemoteActionCtlClimate(RemoteActionSpec):
     operate: str = ClimateOperate.MANUAL
     position: str = ClimatePosition.ALL
     temperature: str = "24"
-    windlevel: str = "4"
+    windlevel: int = 4
     wshld: str = ClimateWindshield.NORMAL
     cmd_id: str = field(default="170", init=False)
     cmd_content: str = field(default="", init=False)
 
+    _WINDLEVEL_RANGE: range = field(default=range(1, 8), init=False, repr=False)
+
     def __post_init__(self) -> None:
+        if self.windlevel not in self._WINDLEVEL_RANGE:
+            raise ValueError(f"windlevel must be 1-7, got {self.windlevel!r}")
         self.cmd_content = json.dumps(
             {
                 "circle": self.circle,
@@ -1262,7 +1266,7 @@ class RemoteActionCtlClimate(RemoteActionSpec):
                 "operate": self.operate,
                 "position": self.position,
                 "temperature": self.temperature,
-                "windlevel": self.windlevel,
+                "windlevel": str(self.windlevel),
                 "wshld": self.wshld,
             },
             separators=(",", ":"),
