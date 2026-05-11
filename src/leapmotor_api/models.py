@@ -207,6 +207,7 @@ class VehicleRight(IntEnum):
     PREPARE_CAR_ALARM = 361
     SEAT_VENTILATION = 370
     FUEL_HEATING = 380
+    REARVIEW_MIRROR_HEAT = 440
     WINDSHIELD_DEFROST = 460
     SPEED_LIMIT = 510
 
@@ -1404,6 +1405,13 @@ class FuelHeatingValue(StrEnum):
     OFF = "0"
 
 
+class RearviewMirrorHeatValue(StrEnum):
+    """Values for rearview mirror heat command (cmd_id=440)."""
+
+    ON = "on"
+    OFF = "off"
+
+
 class SunshadeValue(StrEnum):
     """Convenience values for sunshade position (range: 0-10)."""
 
@@ -1582,6 +1590,21 @@ class RemoteActionCtlFuelHeating(RemoteActionSpec):
 
     value: str = FuelHeatingValue.ON
     cmd_id: str = field(default="380", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps({"value": self.value}, separators=(",", ":"))
+
+
+@dataclass(slots=True)
+class RemoteActionCtlRearviewMirrorHeat(RemoteActionSpec):
+    """Rearview mirror heat command (cmd_id=440).
+
+    Value: ``"on"`` or ``"off"``.
+    """
+
+    value: str = RearviewMirrorHeatValue.ON
+    cmd_id: str = field(default="440", init=False)
     cmd_content: str = field(default="", init=False)
 
     def __post_init__(self) -> None:

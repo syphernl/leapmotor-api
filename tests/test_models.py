@@ -43,6 +43,7 @@ from leapmotor_api.models import (
     RemoteActionCtlFindCar,
     RemoteActionCtlFuelHeating,
     RemoteActionCtlLock,
+    RemoteActionCtlRearviewMirrorHeat,
     RemoteActionCtlSteeringWheelHeat,
     RemoteActionCtlSunshade,
     RemoteActionCtlToggleCharge,
@@ -2090,3 +2091,15 @@ class TestRemoteActionCtlFuelHeating:
         action = RemoteActionCtlFuelHeating(value="0")
         assert action.cmd_id == "380"
         assert action.cmd_content == '{"value":"0"}'
+
+
+class TestRemoteActionCtlRearviewMirrorHeat:
+    def test_on(self) -> None:
+        action = RemoteActionCtlRearviewMirrorHeat(value="on")
+        assert action.cmd_id == "440"
+        assert action.cmd_content == '{"value":"on"}'
+
+    def test_off(self) -> None:
+        action = RemoteActionCtlRearviewMirrorHeat(value="off")
+        assert action.cmd_id == "440"
+        assert action.cmd_content == '{"value":"off"}'

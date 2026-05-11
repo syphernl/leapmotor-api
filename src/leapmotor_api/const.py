@@ -51,5 +51,8 @@ REMOTE_CTL_STEERING_WHEEL_HEAT_OFF = "steering_wheel_heat_off"
 REMOTE_CTL_FUEL_HEATING = "fuel_heating"
 REMOTE_CTL_FUEL_HEATING_ON = "fuel_heating_on"
 REMOTE_CTL_FUEL_HEATING_OFF = "fuel_heating_off"
+REMOTE_CTL_REARVIEW_MIRROR_HEAT = "rearview_mirror_heat"
+REMOTE_CTL_REARVIEW_MIRROR_HEAT_ON = "rearview_mirror_heat_on"
+REMOTE_CTL_REARVIEW_MIRROR_HEAT_OFF = "rearview_mirror_heat_off"
 
 DEFAULT_TIMEOUT = 30

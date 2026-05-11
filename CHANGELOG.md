@@ -27,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `fuel_heating_on()` and `fuel_heating_off()` methods to both clients
 - Added `REMOTE_CTL_FUEL_HEATING`, `REMOTE_CTL_FUEL_HEATING_ON`, `REMOTE_CTL_FUEL_HEATING_OFF` constants
 - Added `FuelHeatingValue` enum (`ON`, `OFF`) and `RemoteActionCtlFuelHeating` dataclass
+- Added `rearview_mirror_heat_on()` and `rearview_mirror_heat_off()` methods to both clients
+- Added `REMOTE_CTL_REARVIEW_MIRROR_HEAT`, `REMOTE_CTL_REARVIEW_MIRROR_HEAT_ON`, `REMOTE_CTL_REARVIEW_MIRROR_HEAT_OFF` constants
+- Added `RearviewMirrorHeatValue` enum (`ON`, `OFF`) and `RemoteActionCtlRearviewMirrorHeat` dataclass
+- Added `VehicleRight.REARVIEW_MIRROR_HEAT = 440`
 - Added permission reference table to `docs/api.md` mapping each `VehicleRight` to its corresponding remote command
 - Added `VehicleSecurityState` IntEnum for `vehicle_security_active` field (signal `1255`): `INACTIVE=0`, `ACTIVE_1=1`, `ACTIVE_2=2`, `ACTIVE_3=3`
 - Added `SecurityStatus.is_security_active` convenience property: `True` when anti-theft is active (values 1, 2, or 3)

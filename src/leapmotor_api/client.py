@@ -36,6 +36,8 @@ from .const import (
     REMOTE_CTL_LOCK,
     REMOTE_CTL_QUICK_COOL,
     REMOTE_CTL_QUICK_HEAT,
+    REMOTE_CTL_REARVIEW_MIRROR_HEAT_OFF,
+    REMOTE_CTL_REARVIEW_MIRROR_HEAT_ON,
     REMOTE_CTL_SEND_DESTINATION,
     REMOTE_CTL_SENTRY_MODE_OFF,
     REMOTE_CTL_SENTRY_MODE_ON,
@@ -499,6 +501,14 @@ class LeapmotorApiClient:
     def fuel_heating_off(self, vin: str) -> dict[str, Any]:
         """Disable fuel heating (cmd_id=380)."""
         return self._remote_control(vin=vin, action=REMOTE_CTL_FUEL_HEATING_OFF)
+
+    def rearview_mirror_heat_on(self, vin: str) -> dict[str, Any]:
+        """Enable rearview mirror heating (cmd_id=440)."""
+        return self._remote_control(vin=vin, action=REMOTE_CTL_REARVIEW_MIRROR_HEAT_ON)
+
+    def rearview_mirror_heat_off(self, vin: str) -> dict[str, Any]:
+        """Disable rearview mirror heating (cmd_id=440)."""
+        return self._remote_control(vin=vin, action=REMOTE_CTL_REARVIEW_MIRROR_HEAT_OFF)
 
     def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         cmd_content = json.dumps({"value": value}, separators=(",", ":")) if value is not None else None

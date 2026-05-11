@@ -21,6 +21,9 @@ from .const import (
     REMOTE_CTL_LOCK,
     REMOTE_CTL_QUICK_COOL,
     REMOTE_CTL_QUICK_HEAT,
+    REMOTE_CTL_REARVIEW_MIRROR_HEAT,
+    REMOTE_CTL_REARVIEW_MIRROR_HEAT_OFF,
+    REMOTE_CTL_REARVIEW_MIRROR_HEAT_ON,
     REMOTE_CTL_SEND_DESTINATION,
     REMOTE_CTL_SENTRY_MODE,
     REMOTE_CTL_SENTRY_MODE_OFF,
@@ -52,12 +55,14 @@ from .models import (
     ClimateWindshield,
     FuelHeatingValue,
     LockValue,
+    RearviewMirrorHeatValue,
     RemoteActionCtlBatteryPreheat,
     RemoteActionCtlChargePlan,
     RemoteActionCtlClimate,
     RemoteActionCtlFindCar,
     RemoteActionCtlFuelHeating,
     RemoteActionCtlLock,
+    RemoteActionCtlRearviewMirrorHeat,
     RemoteActionCtlSendDestination,
     RemoteActionCtlSentryMode,
     RemoteActionCtlSteeringWheelHeat,
@@ -173,6 +178,15 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
     ),
     REMOTE_CTL_FUEL_HEATING_OFF: RemoteActionCtlFuelHeating(
         value=FuelHeatingValue.OFF, required_right=VehicleRight.FUEL_HEATING
+    ),
+    REMOTE_CTL_REARVIEW_MIRROR_HEAT: RemoteActionCtlRearviewMirrorHeat(
+        value=RearviewMirrorHeatValue.ON, required_right=VehicleRight.REARVIEW_MIRROR_HEAT
+    ),
+    REMOTE_CTL_REARVIEW_MIRROR_HEAT_ON: RemoteActionCtlRearviewMirrorHeat(
+        value=RearviewMirrorHeatValue.ON, required_right=VehicleRight.REARVIEW_MIRROR_HEAT
+    ),
+    REMOTE_CTL_REARVIEW_MIRROR_HEAT_OFF: RemoteActionCtlRearviewMirrorHeat(
+        value=RearviewMirrorHeatValue.OFF, required_right=VehicleRight.REARVIEW_MIRROR_HEAT
     ),
 }
 
