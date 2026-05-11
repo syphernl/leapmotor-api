@@ -94,6 +94,18 @@ class AsyncLeapmotorApiClient:
     async def battery_preheat(self, vin: str) -> dict[str, Any]:
         return await asyncio.to_thread(self._client.battery_preheat, vin)
 
+    async def battery_preheat_off(self, vin: str) -> dict[str, Any]:
+        """Turn off battery preheating."""
+        return await asyncio.to_thread(self._client.battery_preheat_off, vin)
+
+    async def sentry_mode_on(self, vin: str) -> dict[str, Any]:
+        """Enable sentry mode (sentinel / dashcam)."""
+        return await asyncio.to_thread(self._client.sentry_mode_on, vin)
+
+    async def sentry_mode_off(self, vin: str) -> dict[str, Any]:
+        """Disable sentry mode (sentinel / dashcam)."""
+        return await asyncio.to_thread(self._client.sentry_mode_off, vin)
+
     async def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         kwargs: dict[str, str] = {}
         if value is not None:

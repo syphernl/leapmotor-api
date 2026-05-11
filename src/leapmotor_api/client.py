@@ -26,12 +26,15 @@ from .const import (
     KNOWN_ACCOUNT_P12_PASSWORDS,
     REMOTE_CTL_AC_SWITCH,
     REMOTE_CTL_BATTERY_PREHEAT,
+    REMOTE_CTL_BATTERY_PREHEAT_OFF,
     REMOTE_CTL_CHARGE_LIMIT,
     REMOTE_CTL_FIND_CAR,
     REMOTE_CTL_LOCK,
     REMOTE_CTL_QUICK_COOL,
     REMOTE_CTL_QUICK_HEAT,
     REMOTE_CTL_SEND_DESTINATION,
+    REMOTE_CTL_SENTRY_MODE_OFF,
+    REMOTE_CTL_SENTRY_MODE_ON,
     REMOTE_CTL_SUNSHADE,
     REMOTE_CTL_SUNSHADE_CLOSE,
     REMOTE_CTL_SUNSHADE_OPEN,
@@ -454,6 +457,18 @@ class LeapmotorApiClient:
 
     def battery_preheat(self, vin: str) -> dict[str, Any]:
         return self._remote_control(vin=vin, action=REMOTE_CTL_BATTERY_PREHEAT)
+
+    def battery_preheat_off(self, vin: str) -> dict[str, Any]:
+        """Turn off battery preheating."""
+        return self._remote_control(vin=vin, action=REMOTE_CTL_BATTERY_PREHEAT_OFF)
+
+    def sentry_mode_on(self, vin: str) -> dict[str, Any]:
+        """Enable sentry mode (sentinel / dashcam)."""
+        return self._remote_control(vin=vin, action=REMOTE_CTL_SENTRY_MODE_ON)
+
+    def sentry_mode_off(self, vin: str) -> dict[str, Any]:
+        """Disable sentry mode (sentinel / dashcam)."""
+        return self._remote_control(vin=vin, action=REMOTE_CTL_SENTRY_MODE_OFF)
 
     def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         cmd_content = json.dumps({"value": value}, separators=(",", ":")) if value is not None else None

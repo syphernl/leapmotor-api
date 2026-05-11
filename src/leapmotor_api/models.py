@@ -1376,6 +1376,13 @@ class BatteryPreheatValue(StrEnum):
     OFF = "ptcoff"
 
 
+class SentryModeValue(StrEnum):
+    """Values for sentry mode (sentinel / dashcam) command."""
+
+    ON = "1"
+    OFF = "0"
+
+
 class SunshadeValue(StrEnum):
     """Convenience values for sunshade position (range: 0-10)."""
 
@@ -1494,6 +1501,21 @@ class RemoteActionCtlBatteryPreheat(RemoteActionSpec):
 
     value: str = BatteryPreheatValue.ON
     cmd_id: str = field(default="160", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps({"value": self.value}, separators=(",", ":"))
+
+
+@dataclass(slots=True)
+class RemoteActionCtlSentryMode(RemoteActionSpec):
+    """Sentry mode (sentinel / dashcam) command (cmd_id=220).
+
+    Value: ``"1"`` (on) or ``"0"`` (off).
+    """
+
+    value: str = SentryModeValue.ON
+    cmd_id: str = field(default="220", init=False)
     cmd_content: str = field(default="", init=False)
 
     def __post_init__(self) -> None:

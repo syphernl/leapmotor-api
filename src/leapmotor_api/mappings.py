@@ -9,12 +9,17 @@ from __future__ import annotations
 from .const import (
     REMOTE_CTL_AC_SWITCH,
     REMOTE_CTL_BATTERY_PREHEAT,
+    REMOTE_CTL_BATTERY_PREHEAT_OFF,
+    REMOTE_CTL_BATTERY_PREHEAT_ON,
     REMOTE_CTL_CHARGE_LIMIT,
     REMOTE_CTL_FIND_CAR,
     REMOTE_CTL_LOCK,
     REMOTE_CTL_QUICK_COOL,
     REMOTE_CTL_QUICK_HEAT,
     REMOTE_CTL_SEND_DESTINATION,
+    REMOTE_CTL_SENTRY_MODE,
+    REMOTE_CTL_SENTRY_MODE_OFF,
+    REMOTE_CTL_SENTRY_MODE_ON,
     REMOTE_CTL_SUNSHADE,
     REMOTE_CTL_SUNSHADE_CLOSE,
     REMOTE_CTL_SUNSHADE_OPEN,
@@ -43,11 +48,13 @@ from .models import (
     RemoteActionCtlFindCar,
     RemoteActionCtlLock,
     RemoteActionCtlSendDestination,
+    RemoteActionCtlSentryMode,
     RemoteActionCtlSunshade,
     RemoteActionCtlTrunk,
     RemoteActionCtlUnlockCharger,
     RemoteActionCtlWindows,
     RemoteActionSpec,
+    SentryModeValue,
     SunshadeValue,
     ToggleValue,
     VehicleAbility,
@@ -68,6 +75,12 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
     REMOTE_CTL_SUNSHADE_CLOSE: RemoteActionCtlSunshade(value=SunshadeValue.CLOSE, required_right=VehicleRight.SUNSHADE),
     REMOTE_CTL_BATTERY_PREHEAT: RemoteActionCtlBatteryPreheat(
         value=BatteryPreheatValue.ON, required_right=VehicleRight.BATTERY_PREHEAT
+    ),
+    REMOTE_CTL_BATTERY_PREHEAT_ON: RemoteActionCtlBatteryPreheat(
+        value=BatteryPreheatValue.ON, required_right=VehicleRight.BATTERY_PREHEAT
+    ),
+    REMOTE_CTL_BATTERY_PREHEAT_OFF: RemoteActionCtlBatteryPreheat(
+        value=BatteryPreheatValue.OFF, required_right=VehicleRight.BATTERY_PREHEAT
     ),
     REMOTE_CTL_WINDOWS: RemoteActionCtlWindows(value=WindowsValue.OPEN, required_right=VehicleRight.WINDOWS),
     REMOTE_CTL_WINDOWS_OPEN: RemoteActionCtlWindows(value=WindowsValue.OPEN, required_right=VehicleRight.WINDOWS),
@@ -114,6 +127,15 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
     ),
     REMOTE_CTL_CHARGE_LIMIT: RemoteActionCtlChargePlan(required_right=VehicleRight.CHARGE_LIMIT),
     REMOTE_CTL_SEND_DESTINATION: RemoteActionCtlSendDestination(required_right=VehicleRight.SEND_DESTINATION),
+    REMOTE_CTL_SENTRY_MODE: RemoteActionCtlSentryMode(
+        value=SentryModeValue.ON, required_right=VehicleRight.SENTRY_MODE
+    ),
+    REMOTE_CTL_SENTRY_MODE_ON: RemoteActionCtlSentryMode(
+        value=SentryModeValue.ON, required_right=VehicleRight.SENTRY_MODE
+    ),
+    REMOTE_CTL_SENTRY_MODE_OFF: RemoteActionCtlSentryMode(
+        value=SentryModeValue.OFF, required_right=VehicleRight.SENTRY_MODE
+    ),
 }
 
 # ---------------------------------------------------------------------------
