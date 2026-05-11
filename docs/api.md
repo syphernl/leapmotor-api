@@ -53,6 +53,7 @@ used by the `leapmotor-api` library.
   - [Start / Stop Charging (cmd_id=193)](#start--stop-charging-cmd_id193)
   - [Steering Wheel Heat (cmd_id=320)](#steering-wheel-heat-cmd_id320)
   - [Fuel Heating (cmd_id=380)](#fuel-heating-cmd_id380)
+  - [ON3 (cmd_id=410)](#on3-cmd_id410)
   - [Rearview Mirror Heat (cmd_id=440)](#rearview-mirror-heat-cmd_id440)
   - [Healthy Charging (cmd_id=480)](#healthy-charging-cmd_id480)
   - [Speed Limit (cmd_id=510)](#speed-limit-cmd_id510)
@@ -655,6 +656,15 @@ Available on C10/B10 models.
 
 Requires PIN. Enables or disables healthy charging mode (limits charge to ~80% to preserve battery health).
 
+### ON3 (cmd_id=410)
+
+| Action | cmd_content |
+|---|---|
+| On | `{"on3":"on"}` |
+| Off | `{"on3":"off"}` |
+
+Requires PIN. Enables or disables ON3 mode (domestic models).
+
 ### Speed Limit (cmd_id=510)
 
 | Action | cmd_content |
@@ -750,6 +760,7 @@ check and logs a warning when a required right is missing.
 | 361 | `PREPARE_CAR_ALARM` | — | Pre-conditioning alarm |
 | 370 | `SEAT_VENTILATION` | — | Seat ventilation |
 | 380 | `FUEL_HEATING` | — | Fuel heating |
+| 410 | `ON3` | 410 | ON3 mode |
 | 460 | `WINDSHIELD_DEFROST` | 170 (defrost) | Windshield defrost / mirror heating |
 | 480 | `HEALTHY_CHARGING` | 480 | Healthy charging mode |
 | 510 | `SPEED_LIMIT` | — | Speed limit |

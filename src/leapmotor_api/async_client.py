@@ -174,6 +174,14 @@ class AsyncLeapmotorApiClient:
         """Disable healthy charging mode (cmd_id=480)."""
         return await asyncio.to_thread(self._client.healthy_charging_off, vin)
 
+    async def on3_on(self, vin: str) -> dict[str, Any]:
+        """Enable ON3 mode (cmd_id=410)."""
+        return await asyncio.to_thread(self._client.on3_on, vin)
+
+    async def on3_off(self, vin: str) -> dict[str, Any]:
+        """Disable ON3 mode (cmd_id=410)."""
+        return await asyncio.to_thread(self._client.on3_off, vin)
+
     async def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         kwargs: dict[str, str] = {}
         if value is not None:

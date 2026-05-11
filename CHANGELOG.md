@@ -50,6 +50,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `VehicleRight.HOTSPOT = 140`
 - Added `autopark()` method to both clients
 - Added `REMOTE_CTL_AUTOPARK` constant and `RemoteActionCtlAutopark` dataclass (cmd_id=150)
+- Added `on3_on()` and `on3_off()` methods to both clients
+- Added `REMOTE_CTL_ON3`, `REMOTE_CTL_ON3_ON`, `REMOTE_CTL_ON3_OFF` constants
+- Added `On3Value` enum (`ON`, `OFF`) and `RemoteActionCtlOn3` dataclass (cmd_id=410)
+- Added `VehicleRight.ON3 = 410`
 - Added permission reference table to `docs/api.md` mapping each `VehicleRight` to its corresponding remote command
 - Added `VehicleSecurityState` IntEnum for `vehicle_security_active` field (signal `1255`): `INACTIVE=0`, `ACTIVE_1=1`, `ACTIVE_2=2`, `ACTIVE_3=3`
 - Added `SecurityStatus.is_security_active` convenience property: `True` when anti-theft is active (values 1, 2, or 3)

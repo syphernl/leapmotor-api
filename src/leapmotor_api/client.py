@@ -38,6 +38,8 @@ from .const import (
     REMOTE_CTL_HEALTHY_CHARGING_ON,
     REMOTE_CTL_HOTSPOT,
     REMOTE_CTL_LOCK,
+    REMOTE_CTL_ON3_OFF,
+    REMOTE_CTL_ON3_ON,
     REMOTE_CTL_QUICK_COOL,
     REMOTE_CTL_QUICK_HEAT,
     REMOTE_CTL_REARVIEW_MIRROR_HEAT_OFF,
@@ -557,6 +559,14 @@ class LeapmotorApiClient:
     def healthy_charging_off(self, vin: str) -> dict[str, Any]:
         """Disable healthy charging mode (cmd_id=480)."""
         return self._remote_control(vin=vin, action=REMOTE_CTL_HEALTHY_CHARGING_OFF)
+
+    def on3_on(self, vin: str) -> dict[str, Any]:
+        """Enable ON3 mode (cmd_id=410)."""
+        return self._remote_control(vin=vin, action=REMOTE_CTL_ON3_ON)
+
+    def on3_off(self, vin: str) -> dict[str, Any]:
+        """Disable ON3 mode (cmd_id=410)."""
+        return self._remote_control(vin=vin, action=REMOTE_CTL_ON3_OFF)
 
     def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         cmd_content = json.dumps({"value": value}, separators=(",", ":")) if value is not None else None

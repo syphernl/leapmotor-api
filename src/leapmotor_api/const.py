@@ -65,5 +65,8 @@ REMOTE_CTL_SUNROOF_CLOSE = "sunroof_close"
 REMOTE_CTL_HEALTHY_CHARGING = "healthy_charging"
 REMOTE_CTL_HEALTHY_CHARGING_ON = "healthy_charging_on"
 REMOTE_CTL_HEALTHY_CHARGING_OFF = "healthy_charging_off"
+REMOTE_CTL_ON3 = "on3"
+REMOTE_CTL_ON3_ON = "on3_on"
+REMOTE_CTL_ON3_OFF = "on3_off"
 
 DEFAULT_TIMEOUT = 30

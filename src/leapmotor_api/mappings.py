@@ -24,6 +24,9 @@ from .const import (
     REMOTE_CTL_HEALTHY_CHARGING_ON,
     REMOTE_CTL_HOTSPOT,
     REMOTE_CTL_LOCK,
+    REMOTE_CTL_ON3,
+    REMOTE_CTL_ON3_OFF,
+    REMOTE_CTL_ON3_ON,
     REMOTE_CTL_QUICK_COOL,
     REMOTE_CTL_QUICK_HEAT,
     REMOTE_CTL_REARVIEW_MIRROR_HEAT,
@@ -67,6 +70,7 @@ from .models import (
     FuelHeatingValue,
     HealthyChargingValue,
     LockValue,
+    On3Value,
     RearviewMirrorHeatValue,
     RemoteActionCtlAutopark,
     RemoteActionCtlBatteryPreheat,
@@ -77,6 +81,7 @@ from .models import (
     RemoteActionCtlHealthyCharging,
     RemoteActionCtlHotspot,
     RemoteActionCtlLock,
+    RemoteActionCtlOn3,
     RemoteActionCtlRearviewMirrorHeat,
     RemoteActionCtlSeatHeat,
     RemoteActionCtlSeatVentilation,
@@ -225,6 +230,9 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
     REMOTE_CTL_HEALTHY_CHARGING_OFF: RemoteActionCtlHealthyCharging(
         value=HealthyChargingValue.OFF, required_right=VehicleRight.HEALTHY_CHARGING
     ),
+    REMOTE_CTL_ON3: RemoteActionCtlOn3(value=On3Value.ON, required_right=VehicleRight.ON3),
+    REMOTE_CTL_ON3_ON: RemoteActionCtlOn3(value=On3Value.ON, required_right=VehicleRight.ON3),
+    REMOTE_CTL_ON3_OFF: RemoteActionCtlOn3(value=On3Value.OFF, required_right=VehicleRight.ON3),
 }
 
 # ---------------------------------------------------------------------------

@@ -208,6 +208,7 @@ class VehicleRight(IntEnum):
     PREPARE_CAR_ALARM = 361
     SEAT_VENTILATION = 370
     FUEL_HEATING = 380
+    ON3 = 410
     REARVIEW_MIRROR_HEAT = 440
     WINDSHIELD_DEFROST = 460
     HEALTHY_CHARGING = 480
@@ -1414,6 +1415,13 @@ class HealthyChargingValue(StrEnum):
     OFF = "0"
 
 
+class On3Value(StrEnum):
+    """Values for ON3 command (cmd_id=410)."""
+
+    ON = "on"
+    OFF = "off"
+
+
 class RearviewMirrorHeatValue(StrEnum):
     """Values for rearview mirror heat command (cmd_id=440)."""
 
@@ -1650,6 +1658,22 @@ class RemoteActionCtlHealthyCharging(RemoteActionSpec):
 
     def __post_init__(self) -> None:
         self.cmd_content = json.dumps({"value": self.value}, separators=(",", ":"))
+
+
+@dataclass(slots=True)
+class RemoteActionCtlOn3(RemoteActionSpec):
+    """ON3 command (cmd_id=410).
+
+    Value: ``"on"`` or ``"off"``.
+    Enables or disables ON3 mode (domestic models).
+    """
+
+    value: str = On3Value.ON
+    cmd_id: str = field(default="410", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps({"on3": self.value}, separators=(",", ":"))
 
 
 @dataclass(slots=True)
