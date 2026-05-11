@@ -52,6 +52,7 @@ used by the `leapmotor-api` library.
   - [Steering Wheel Heat (cmd_id=320)](#steering-wheel-heat-cmd_id320)
   - [Fuel Heating (cmd_id=380)](#fuel-heating-cmd_id380)
   - [Rearview Mirror Heat (cmd_id=440)](#rearview-mirror-heat-cmd_id440)
+  - [Healthy Charging (cmd_id=480)](#healthy-charging-cmd_id480)
   - [Speed Limit (cmd_id=510)](#speed-limit-cmd_id510)
   - [Seat Heat (cmd_id=301)](#seat-heat-cmd_id301)
   - [Seat Ventilation (cmd_id=370)](#seat-ventilation-cmd_id370)
@@ -627,6 +628,15 @@ Available on C10 fuel variant.
 Requires PIN. Enables or disables rearview mirror heating.
 Available on C10/B10 models.
 
+### Healthy Charging (cmd_id=480)
+
+| Action | cmd_content |
+|---|---|
+| On | `{"value":"1"}` |
+| Off | `{"value":"0"}` |
+
+Requires PIN. Enables or disables healthy charging mode (limits charge to ~80% to preserve battery health).
+
 ### Speed Limit (cmd_id=510)
 
 | Action | cmd_content |
@@ -722,6 +732,7 @@ check and logs a warning when a required right is missing.
 | 370 | `SEAT_VENTILATION` | — | Seat ventilation |
 | 380 | `FUEL_HEATING` | — | Fuel heating |
 | 460 | `WINDSHIELD_DEFROST` | 170 (defrost) | Windshield defrost / mirror heating |
+| 480 | `HEALTHY_CHARGING` | 480 | Healthy charging mode |
 | 510 | `SPEED_LIMIT` | — | Speed limit |
 
 > **"—"** in the cmd_id column indicates the command is not yet implemented

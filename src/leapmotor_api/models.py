@@ -209,6 +209,7 @@ class VehicleRight(IntEnum):
     FUEL_HEATING = 380
     REARVIEW_MIRROR_HEAT = 440
     WINDSHIELD_DEFROST = 460
+    HEALTHY_CHARGING = 480
     SPEED_LIMIT = 510
 
     @classmethod
@@ -1405,6 +1406,13 @@ class FuelHeatingValue(StrEnum):
     OFF = "0"
 
 
+class HealthyChargingValue(StrEnum):
+    """Values for healthy charging command (cmd_id=480)."""
+
+    ON = "1"
+    OFF = "0"
+
+
 class RearviewMirrorHeatValue(StrEnum):
     """Values for rearview mirror heat command (cmd_id=440)."""
 
@@ -1597,6 +1605,22 @@ class RemoteActionCtlFuelHeating(RemoteActionSpec):
 
     value: str = FuelHeatingValue.ON
     cmd_id: str = field(default="380", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps({"value": self.value}, separators=(",", ":"))
+
+
+@dataclass(slots=True)
+class RemoteActionCtlHealthyCharging(RemoteActionSpec):
+    """Healthy charging command (cmd_id=480).
+
+    Value: ``"1"`` (on) or ``"0"`` (off).
+    Toggles battery-protecting charging mode (80% SOC limit).
+    """
+
+    value: str = HealthyChargingValue.ON
+    cmd_id: str = field(default="480", init=False)
     cmd_content: str = field(default="", init=False)
 
     def __post_init__(self) -> None:

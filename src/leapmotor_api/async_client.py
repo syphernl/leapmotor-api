@@ -158,6 +158,14 @@ class AsyncLeapmotorApiClient:
         """Close sunroof (cmd_id=300)."""
         return await asyncio.to_thread(self._client.close_sunroof, vin)
 
+    async def healthy_charging_on(self, vin: str) -> dict[str, Any]:
+        """Enable healthy charging mode (cmd_id=480)."""
+        return await asyncio.to_thread(self._client.healthy_charging_on, vin)
+
+    async def healthy_charging_off(self, vin: str) -> dict[str, Any]:
+        """Disable healthy charging mode (cmd_id=480)."""
+        return await asyncio.to_thread(self._client.healthy_charging_off, vin)
+
     async def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         kwargs: dict[str, str] = {}
         if value is not None:

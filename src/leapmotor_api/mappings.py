@@ -18,6 +18,9 @@ from .const import (
     REMOTE_CTL_FUEL_HEATING,
     REMOTE_CTL_FUEL_HEATING_OFF,
     REMOTE_CTL_FUEL_HEATING_ON,
+    REMOTE_CTL_HEALTHY_CHARGING,
+    REMOTE_CTL_HEALTHY_CHARGING_OFF,
+    REMOTE_CTL_HEALTHY_CHARGING_ON,
     REMOTE_CTL_LOCK,
     REMOTE_CTL_QUICK_COOL,
     REMOTE_CTL_QUICK_HEAT,
@@ -60,6 +63,7 @@ from .models import (
     ClimatePosition,
     ClimateWindshield,
     FuelHeatingValue,
+    HealthyChargingValue,
     LockValue,
     RearviewMirrorHeatValue,
     RemoteActionCtlBatteryPreheat,
@@ -67,6 +71,7 @@ from .models import (
     RemoteActionCtlClimate,
     RemoteActionCtlFindCar,
     RemoteActionCtlFuelHeating,
+    RemoteActionCtlHealthyCharging,
     RemoteActionCtlLock,
     RemoteActionCtlRearviewMirrorHeat,
     RemoteActionCtlSeatHeat,
@@ -205,6 +210,15 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
     REMOTE_CTL_SUNROOF: RemoteActionCtlSunroof(value=SunroofValue.OPEN, required_right=VehicleRight.SUNROOF),
     REMOTE_CTL_SUNROOF_OPEN: RemoteActionCtlSunroof(value=SunroofValue.OPEN, required_right=VehicleRight.SUNROOF),
     REMOTE_CTL_SUNROOF_CLOSE: RemoteActionCtlSunroof(value=SunroofValue.CLOSE, required_right=VehicleRight.SUNROOF),
+    REMOTE_CTL_HEALTHY_CHARGING: RemoteActionCtlHealthyCharging(
+        value=HealthyChargingValue.ON, required_right=VehicleRight.HEALTHY_CHARGING
+    ),
+    REMOTE_CTL_HEALTHY_CHARGING_ON: RemoteActionCtlHealthyCharging(
+        value=HealthyChargingValue.ON, required_right=VehicleRight.HEALTHY_CHARGING
+    ),
+    REMOTE_CTL_HEALTHY_CHARGING_OFF: RemoteActionCtlHealthyCharging(
+        value=HealthyChargingValue.OFF, required_right=VehicleRight.HEALTHY_CHARGING
+    ),
 }
 
 # ---------------------------------------------------------------------------

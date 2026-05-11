@@ -60,5 +60,8 @@ REMOTE_CTL_SEAT_VENTILATION = "seat_ventilation"
 REMOTE_CTL_SUNROOF = "sunroof"
 REMOTE_CTL_SUNROOF_OPEN = "sunroof_open"
 REMOTE_CTL_SUNROOF_CLOSE = "sunroof_close"
+REMOTE_CTL_HEALTHY_CHARGING = "healthy_charging"
+REMOTE_CTL_HEALTHY_CHARGING_ON = "healthy_charging_on"
+REMOTE_CTL_HEALTHY_CHARGING_OFF = "healthy_charging_off"
 
 DEFAULT_TIMEOUT = 30

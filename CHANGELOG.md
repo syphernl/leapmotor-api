@@ -41,6 +41,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `open_sunroof()` and `close_sunroof()` methods to both clients
 - Added `REMOTE_CTL_SUNROOF`, `REMOTE_CTL_SUNROOF_OPEN`, `REMOTE_CTL_SUNROOF_CLOSE` constants
 - Added `SunroofValue` enum (`OPEN`, `CLOSE`) and `RemoteActionCtlSunroof` dataclass
+- Added `healthy_charging_on()` and `healthy_charging_off()` methods to both clients
+- Added `REMOTE_CTL_HEALTHY_CHARGING`, `REMOTE_CTL_HEALTHY_CHARGING_ON`, `REMOTE_CTL_HEALTHY_CHARGING_OFF` constants
+- Added `HealthyChargingValue` enum (`ON`, `OFF`) and `RemoteActionCtlHealthyCharging` dataclass
+- Added `VehicleRight.HEALTHY_CHARGING = 480`
 - Added permission reference table to `docs/api.md` mapping each `VehicleRight` to its corresponding remote command
 - Added `VehicleSecurityState` IntEnum for `vehicle_security_active` field (signal `1255`): `INACTIVE=0`, `ACTIVE_1=1`, `ACTIVE_2=2`, `ACTIVE_3=3`
 - Added `SecurityStatus.is_security_active` convenience property: `True` when anti-theft is active (values 1, 2, or 3)
