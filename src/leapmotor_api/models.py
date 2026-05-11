@@ -126,11 +126,18 @@ _MODULE_RIGHT_DESCRIPTIONS: dict[int, str] = {
 
 
 class VehicleRight(IntEnum):
-    """Remote command permission codes (rightList)."""
+    """Remote command permission codes (rightList).
+
+    These are PEI_* constants from the international APK
+    (``CarAblityToPerManager.java``).  The server returns a subset
+    of these codes in ``rightList`` depending on the vehicle model,
+    abilities, and sharing level.
+    """
 
     LOCK = 110
     FIND_CAR = 120
     TRUNK = 130
+    AUTOPARK = 150
     SUNROOF = 160
     SUNSHADE = 161
     CLIMATE = 170
@@ -138,9 +145,20 @@ class VehicleRight(IntEnum):
     SEND_DESTINATION = 180
     BATTERY_PREHEAT = 190
     UNLOCK_CHARGER = 192
+    TOGGLE_CHARGE = 193
     SENTRY_MODE = 220
     WINDOWS = 230
+    SKYLIGHT = 240
+    MUSIC = 270
+    SEAT_ADJUST = 280
+    VIDEO = 290
+    SEAT_HEAT = 301
+    STEERING_WHEEL_HEAT = 320
     CHARGE_LIMIT = 340
+    PREPARE_CAR = 360
+    PREPARE_CAR_ALARM = 361
+    SEAT_VENTILATION = 370
+    FUEL_HEATING = 380
     WINDSHIELD_DEFROST = 460
     SPEED_LIMIT = 510
 
@@ -162,16 +180,28 @@ _VEHICLE_RIGHT_DESCRIPTIONS: dict[int, str] = {
     110: "Lock / Unlock doors",
     120: "Find car (horn + lights)",
     130: "Trunk open/close",
-    160: "Sunroof",
-    161: "Sunshade",
+    150: "Auto park / summon",
+    160: "Sunroof control",
+    161: "Sunshade control",
     170: "Climate / AC on-off",
     171: "Quick cool / Quick heat",
     180: "Send destination (navigation)",
     190: "Battery preheating",
     192: "Unlock charger connector",
+    193: "Start / stop charging",
     220: "Sentry mode",
     230: "Windows",
+    240: "Skylight control",
+    270: "Music control",
+    280: "Seat adjust",
+    290: "Video",
+    301: "Seat heating",
+    320: "Steering wheel heating",
     340: "Charge limit",
+    360: "Pre-conditioning (prepare car)",
+    361: "Pre-conditioning alarm",
+    370: "Seat ventilation",
+    380: "Fuel heating",
     460: "Windshield defrost / mirror heating",
     510: "Speed limit",
 }
