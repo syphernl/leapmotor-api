@@ -202,6 +202,7 @@ client.rearview_mirror_heat_on("WLM...")
 client.rearview_mirror_heat_off("WLM...")
 client.set_speed_limit("WLM...", value="80")
 client.seat_heat("WLM...", position=3, level=3)
+client.seat_ventilation("WLM...", position=3, level=2)
 client.set_charge_limit("WLM...", charge_limit_percent=80)
 client.unlock_charger("WLM...")
 ```

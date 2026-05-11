@@ -54,6 +54,7 @@ used by the `leapmotor-api` library.
   - [Rearview Mirror Heat (cmd_id=440)](#rearview-mirror-heat-cmd_id440)
   - [Speed Limit (cmd_id=510)](#speed-limit-cmd_id510)
   - [Seat Heat (cmd_id=301)](#seat-heat-cmd_id301)
+  - [Seat Ventilation (cmd_id=370)](#seat-ventilation-cmd_id370)
   - [Windows (cmd_id=230)](#windows-cmd_id230)
   - [Sunshade (cmd_id=240)](#sunshade-cmd_id240)
 
@@ -643,6 +644,16 @@ Requires PIN. Sets a maximum speed limit (km/h). International models only.
 
 Requires PIN. Sets seat heating level.
 Value format: `"position,level"` — position: 1=left_front, 2=copilot, 3=driver, 4=right_front, 5=left_rear, 6=right_rear; level: 0-3.
+
+### Seat Ventilation (cmd_id=370)
+
+| Action | cmd_content |
+|---|---|
+| Driver seat, level 3 | `{"value":"3,3"}` |
+| Copilot, off | `{"value":"2,0"}` |
+
+Requires PIN. Sets seat ventilation level.
+Value format: same as Seat Heat — `"position,level"`.
 
 ### Windows (cmd_id=230)
 
