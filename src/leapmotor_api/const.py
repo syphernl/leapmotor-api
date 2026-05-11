@@ -45,5 +45,8 @@ REMOTE_CTL_SENTRY_MODE_ON = "sentry_mode_on"
 REMOTE_CTL_SENTRY_MODE_OFF = "sentry_mode_off"
 REMOTE_CTL_CHARGE_START = "charge_start"
 REMOTE_CTL_CHARGE_STOP = "charge_stop"
+REMOTE_CTL_STEERING_WHEEL_HEAT = "steering_wheel_heat"
+REMOTE_CTL_STEERING_WHEEL_HEAT_ON = "steering_wheel_heat_on"
+REMOTE_CTL_STEERING_WHEEL_HEAT_OFF = "steering_wheel_heat_off"
 
 DEFAULT_TIMEOUT = 30

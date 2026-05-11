@@ -1390,6 +1390,13 @@ class ChargeToggleValue(StrEnum):
     STOP = "stop"
 
 
+class SteeringWheelHeatValue(StrEnum):
+    """Values for steering wheel heat command (cmd_id=320)."""
+
+    ON = "on"
+    OFF = "off"
+
+
 class SunshadeValue(StrEnum):
     """Convenience values for sunshade position (range: 0-10)."""
 
@@ -1538,6 +1545,21 @@ class RemoteActionCtlToggleCharge(RemoteActionSpec):
 
     value: str = ChargeToggleValue.START
     cmd_id: str = field(default="193", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps({"value": self.value}, separators=(",", ":"))
+
+
+@dataclass(slots=True)
+class RemoteActionCtlSteeringWheelHeat(RemoteActionSpec):
+    """Steering wheel heat command (cmd_id=320).
+
+    Value: ``"on"`` or ``"off"``.
+    """
+
+    value: str = SteeringWheelHeatValue.ON
+    cmd_id: str = field(default="320", init=False)
     cmd_content: str = field(default="", init=False)
 
     def __post_init__(self) -> None:

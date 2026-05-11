@@ -22,6 +22,9 @@ from .const import (
     REMOTE_CTL_SENTRY_MODE,
     REMOTE_CTL_SENTRY_MODE_OFF,
     REMOTE_CTL_SENTRY_MODE_ON,
+    REMOTE_CTL_STEERING_WHEEL_HEAT,
+    REMOTE_CTL_STEERING_WHEEL_HEAT_OFF,
+    REMOTE_CTL_STEERING_WHEEL_HEAT_ON,
     REMOTE_CTL_SUNSHADE,
     REMOTE_CTL_SUNSHADE_CLOSE,
     REMOTE_CTL_SUNSHADE_OPEN,
@@ -52,6 +55,7 @@ from .models import (
     RemoteActionCtlLock,
     RemoteActionCtlSendDestination,
     RemoteActionCtlSentryMode,
+    RemoteActionCtlSteeringWheelHeat,
     RemoteActionCtlSunshade,
     RemoteActionCtlToggleCharge,
     RemoteActionCtlTrunk,
@@ -59,6 +63,7 @@ from .models import (
     RemoteActionCtlWindows,
     RemoteActionSpec,
     SentryModeValue,
+    SteeringWheelHeatValue,
     SunshadeValue,
     ToggleValue,
     VehicleAbility,
@@ -145,6 +150,15 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
     ),
     REMOTE_CTL_CHARGE_STOP: RemoteActionCtlToggleCharge(
         value=ChargeToggleValue.STOP, required_right=VehicleRight.TOGGLE_CHARGE
+    ),
+    REMOTE_CTL_STEERING_WHEEL_HEAT: RemoteActionCtlSteeringWheelHeat(
+        value=SteeringWheelHeatValue.ON, required_right=VehicleRight.STEERING_WHEEL_HEAT
+    ),
+    REMOTE_CTL_STEERING_WHEEL_HEAT_ON: RemoteActionCtlSteeringWheelHeat(
+        value=SteeringWheelHeatValue.ON, required_right=VehicleRight.STEERING_WHEEL_HEAT
+    ),
+    REMOTE_CTL_STEERING_WHEEL_HEAT_OFF: RemoteActionCtlSteeringWheelHeat(
+        value=SteeringWheelHeatValue.OFF, required_right=VehicleRight.STEERING_WHEEL_HEAT
     ),
 }
 

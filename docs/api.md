@@ -49,6 +49,7 @@ used by the `leapmotor-api` library.
   - [Set Charge Plan (cmd_id=190)](#set-charge-plan-cmd_id190)
   - [Unlock Charger (cmd_id=192)](#unlock-charger-cmd_id192)
   - [Start / Stop Charging (cmd_id=193)](#start--stop-charging-cmd_id193)
+  - [Steering Wheel Heat (cmd_id=320)](#steering-wheel-heat-cmd_id320)
   - [Windows (cmd_id=230)](#windows-cmd_id230)
   - [Sunshade (cmd_id=240)](#sunshade-cmd_id240)
 
@@ -588,6 +589,16 @@ Requires PIN. Unlocks the charging connector before unplugging.
 | Stop | `{"value":"stop"}` |
 
 Requires PIN. Starts or stops charging when the connector is plugged in.
+Available on C10/B10 models.
+
+### Steering Wheel Heat (cmd_id=320)
+
+| Action | cmd_content |
+|---|---|
+| On | `{"value":"on"}` |
+| Off | `{"value":"off"}` |
+
+Requires PIN. Enables or disables steering wheel heating.
 Available on C10/B10 models.
 
 ### Windows (cmd_id=230)
