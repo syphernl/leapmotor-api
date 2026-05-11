@@ -42,7 +42,52 @@ across the various Leapmotor vehicle models.
 | Privacy flags | ✓ | ✓ | ✓ |
 
 ¹ The B10 reports `carType=B10` in the vehicle list, but the backend uses
-the C10 endpoint. The library performs the mapping automatically.
+the C10 endpoint. B11 also uses the C10 endpoint. The library performs
+the mapping automatically via `CarType.status_path`.
+
+### Known Vehicle Models (CarType)
+
+| CarType | Model | Status Path | Notes |
+|---|---|---|---|
+| `T03` | Leapmotor T03 | `/status/get/t03` | Named fields, restricted feature set |
+| `S01` | Leapmotor S01 | `/status/get/s01` | Restricted feature set (like T03) |
+| `C01` | Leapmotor C01 | `/status/get/c01` | |
+| `C10` | Leapmotor C10 | `/status/get/c10` | Signal IDs, full feature set |
+| `C11` | Leapmotor C11 | `/status/get/c11` | |
+| `C16` | Leapmotor C16 | `/status/get/c16` | 3-row seat layout variants |
+| `B10` | Leapmotor B10 | `/status/get/c10` ¹ | Shares C10 endpoint |
+| `B11` | Leapmotor B11 | `/status/get/c10` ¹ | C10 variant, shares endpoint |
+| `B05` | Leapmotor B05 | `/status/get/b05` | |
+| `B03X` | Leapmotor B03X | `/status/get/b03x` | |
+
+### Model-Specific Feature Availability
+
+Based on decompiled APK analysis, T03 and S01 have a **restricted**
+permission set compared to C-platform and B-platform models:
+
+**T03/S01 typical rightList** (confirmed from captured API response):
+```
+110, 120, 130, 160, 161, 170, 171, 180, 190, 220, 230, 340, 460
+```
+
+**C10/B10 additional rights** (may include, depending on abilities):
+```
+150 (autopark), 193 (toggle charge), 280 (seat adjust),
+301 (seat heat), 320 (steering wheel heat), 360 (prepare car),
+370 (seat ventilation), 380 (fuel heating)
+```
+
+### Ability → Right Relationship (per model)
+
+The server maps vehicle abilities to rights. Key model-specific rules:
+
+| Ability | Enables Right | Models |
+|---|---|---|
+| 3 (TRUNK) | 130 (TRUNK) | C10/B10 (T03 always has trunk) |
+| 12 (WINDOWS_C10) | 230 (WINDOWS) | C10/B10 |
+| 36 (WINDOWS_T03) | 230 (WINDOWS) | T03 |
+| 38 (PREPARE) | 360 (PREPARE_CAR) | C10/B10 only |
+| 24 (TRUNK_SPECIAL) | 130 (TRUNK) special | C10/B10 |
 
 ---
 

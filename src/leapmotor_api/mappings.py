@@ -50,6 +50,7 @@ from .models import (
     RemoteActionSpec,
     SunshadeValue,
     ToggleValue,
+    VehicleAbility,
     VehicleRight,
     WindowsValue,
 )
@@ -126,3 +127,62 @@ CAR_TYPE_PATH_MAP: dict[str, str] = {
     CarType.B10: CarType.C10,
     CarType.B11: CarType.C10,
 }
+
+# ---------------------------------------------------------------------------
+# Ability → Right relationship mapping
+# ---------------------------------------------------------------------------
+# Documents which VehicleAbility codes enable which VehicleRight codes.
+# The server computes this; the mapping is informational for consumers.
+# Based on decompiled international APK ``CarAblityToPerManager.ablityToPer()``.
+
+ABILITY_TO_RIGHTS: dict[VehicleAbility, list[VehicleRight]] = {
+    VehicleAbility.BASE: [VehicleRight.LOCK],
+    VehicleAbility.STATUS_DATA: [VehicleRight.FIND_CAR],
+    VehicleAbility.TRUNK: [VehicleRight.TRUNK],
+    VehicleAbility.AUTOPARK: [VehicleRight.AUTOPARK],
+    VehicleAbility.AC_ON: [VehicleRight.CLIMATE],
+    VehicleAbility.AC_PRESET: [VehicleRight.QUICK_CLIMATE],
+    VehicleAbility.LOCK_UNLOCK: [VehicleRight.BATTERY_PREHEAT],
+    VehicleAbility.FIND_CAR: [VehicleRight.SUNSHADE],
+    VehicleAbility.WINDOWS_C10: [VehicleRight.WINDOWS],
+    VehicleAbility.WINDOWS_T03: [VehicleRight.WINDOWS],
+    VehicleAbility.SEAT_HEATING: [VehicleRight.SEAT_HEAT],
+    VehicleAbility.STEERING_WHEEL: [VehicleRight.STEERING_WHEEL_HEAT],
+    VehicleAbility.CLIMATE_ADVANCED: [VehicleRight.QUICK_CLIMATE],
+    VehicleAbility.WINDSHIELD_DEFROST: [VehicleRight.WINDSHIELD_DEFROST],
+    VehicleAbility.TRUNK_SPECIAL: [VehicleRight.TRUNK],
+    VehicleAbility.CYCLIC_CHARGE: [VehicleRight.SUNROOF],
+    VehicleAbility.GPS_SHARING: [VehicleRight.SEND_DESTINATION],
+    VehicleAbility.MILEAGE_ENERGY: [],
+    VehicleAbility.SPEED_LIMIT: [VehicleRight.SPEED_LIMIT],
+    VehicleAbility.CHARGE_LIMIT: [VehicleRight.CHARGE_LIMIT],
+    VehicleAbility.PREPARE: [VehicleRight.PREPARE_CAR, VehicleRight.PREPARE_CAR_ALARM],
+    VehicleAbility.FUEL_HEATING: [VehicleRight.FUEL_HEATING],
+    VehicleAbility.SENTINEL: [VehicleRight.SENTRY_MODE],
+    VehicleAbility.NAVIGATION: [VehicleRight.SEND_DESTINATION],
+    VehicleAbility.DRIVER_SEAT_VENTILATION: [VehicleRight.SEAT_VENTILATION],
+    VehicleAbility.PASSENGER_SEAT_VENTILATION: [VehicleRight.SEAT_VENTILATION],
+    VehicleAbility.UNLOCK_CHARGE_GUN: [VehicleRight.UNLOCK_CHARGER],
+}
+
+# Rights restricted to T03/S01 only — these models have a limited
+# feature set compared to C-platform and B-platform models.
+T03_S01_SUPPORTED_RIGHTS: frozenset[VehicleRight] = frozenset(
+    {
+        VehicleRight.LOCK,
+        VehicleRight.FIND_CAR,
+        VehicleRight.TRUNK,
+        VehicleRight.CLIMATE,
+        VehicleRight.QUICK_CLIMATE,
+        VehicleRight.SEND_DESTINATION,
+        VehicleRight.BATTERY_PREHEAT,
+        VehicleRight.SUNSHADE,
+        VehicleRight.SENTRY_MODE,
+        VehicleRight.WINDOWS,
+        VehicleRight.SKYLIGHT,
+        VehicleRight.CHARGE_LIMIT,
+        VehicleRight.WINDSHIELD_DEFROST,
+        VehicleRight.SUNROOF,
+        VehicleRight.AUTOPARK,
+    }
+)
