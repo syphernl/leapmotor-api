@@ -122,6 +122,14 @@ class AsyncLeapmotorApiClient:
         """Disable steering wheel heating (cmd_id=320)."""
         return await asyncio.to_thread(self._client.steering_wheel_heat_off, vin)
 
+    async def fuel_heating_on(self, vin: str) -> dict[str, Any]:
+        """Enable fuel heating (cmd_id=380)."""
+        return await asyncio.to_thread(self._client.fuel_heating_on, vin)
+
+    async def fuel_heating_off(self, vin: str) -> dict[str, Any]:
+        """Disable fuel heating (cmd_id=380)."""
+        return await asyncio.to_thread(self._client.fuel_heating_off, vin)
+
     async def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         kwargs: dict[str, str] = {}
         if value is not None:

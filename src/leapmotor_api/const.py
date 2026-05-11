@@ -48,5 +48,8 @@ REMOTE_CTL_CHARGE_STOP = "charge_stop"
 REMOTE_CTL_STEERING_WHEEL_HEAT = "steering_wheel_heat"
 REMOTE_CTL_STEERING_WHEEL_HEAT_ON = "steering_wheel_heat_on"
 REMOTE_CTL_STEERING_WHEEL_HEAT_OFF = "steering_wheel_heat_off"
+REMOTE_CTL_FUEL_HEATING = "fuel_heating"
+REMOTE_CTL_FUEL_HEATING_ON = "fuel_heating_on"
+REMOTE_CTL_FUEL_HEATING_OFF = "fuel_heating_off"
 
 DEFAULT_TIMEOUT = 30

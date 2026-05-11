@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `steering_wheel_heat_on()` and `steering_wheel_heat_off()` methods to both clients
 - Added `REMOTE_CTL_STEERING_WHEEL_HEAT`, `REMOTE_CTL_STEERING_WHEEL_HEAT_ON`, `REMOTE_CTL_STEERING_WHEEL_HEAT_OFF` constants
 - Added `SteeringWheelHeatValue` enum (`ON`, `OFF`) and `RemoteActionCtlSteeringWheelHeat` dataclass
+- Added `fuel_heating_on()` and `fuel_heating_off()` methods to both clients
+- Added `REMOTE_CTL_FUEL_HEATING`, `REMOTE_CTL_FUEL_HEATING_ON`, `REMOTE_CTL_FUEL_HEATING_OFF` constants
+- Added `FuelHeatingValue` enum (`ON`, `OFF`) and `RemoteActionCtlFuelHeating` dataclass
 - Added permission reference table to `docs/api.md` mapping each `VehicleRight` to its corresponding remote command
 - Added `VehicleSecurityState` IntEnum for `vehicle_security_active` field (signal `1255`): `INACTIVE=0`, `ACTIVE_1=1`, `ACTIVE_2=2`, `ACTIVE_3=3`
 - Added `SecurityStatus.is_security_active` convenience property: `True` when anti-theft is active (values 1, 2, or 3)

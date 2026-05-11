@@ -50,6 +50,7 @@ used by the `leapmotor-api` library.
   - [Unlock Charger (cmd_id=192)](#unlock-charger-cmd_id192)
   - [Start / Stop Charging (cmd_id=193)](#start--stop-charging-cmd_id193)
   - [Steering Wheel Heat (cmd_id=320)](#steering-wheel-heat-cmd_id320)
+  - [Fuel Heating (cmd_id=380)](#fuel-heating-cmd_id380)
   - [Windows (cmd_id=230)](#windows-cmd_id230)
   - [Sunshade (cmd_id=240)](#sunshade-cmd_id240)
 
@@ -600,6 +601,16 @@ Available on C10/B10 models.
 
 Requires PIN. Enables or disables steering wheel heating.
 Available on C10/B10 models.
+
+### Fuel Heating (cmd_id=380)
+
+| Action | cmd_content |
+|---|---|
+| On | `{"value":"1"}` |
+| Off | `{"value":"0"}` |
+
+Requires PIN. Enables or disables fuel heating (EREV/PHEV models).
+Available on C10 fuel variant.
 
 ### Windows (cmd_id=230)
 

@@ -1397,6 +1397,13 @@ class SteeringWheelHeatValue(StrEnum):
     OFF = "off"
 
 
+class FuelHeatingValue(StrEnum):
+    """Values for fuel heating command (cmd_id=380)."""
+
+    ON = "1"
+    OFF = "0"
+
+
 class SunshadeValue(StrEnum):
     """Convenience values for sunshade position (range: 0-10)."""
 
@@ -1560,6 +1567,21 @@ class RemoteActionCtlSteeringWheelHeat(RemoteActionSpec):
 
     value: str = SteeringWheelHeatValue.ON
     cmd_id: str = field(default="320", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps({"value": self.value}, separators=(",", ":"))
+
+
+@dataclass(slots=True)
+class RemoteActionCtlFuelHeating(RemoteActionSpec):
+    """Fuel heating command (cmd_id=380).
+
+    Value: ``"1"`` (on) or ``"0"`` (off).
+    """
+
+    value: str = FuelHeatingValue.ON
+    cmd_id: str = field(default="380", init=False)
     cmd_content: str = field(default="", init=False)
 
     def __post_init__(self) -> None:

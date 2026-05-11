@@ -15,6 +15,9 @@ from .const import (
     REMOTE_CTL_CHARGE_START,
     REMOTE_CTL_CHARGE_STOP,
     REMOTE_CTL_FIND_CAR,
+    REMOTE_CTL_FUEL_HEATING,
+    REMOTE_CTL_FUEL_HEATING_OFF,
+    REMOTE_CTL_FUEL_HEATING_ON,
     REMOTE_CTL_LOCK,
     REMOTE_CTL_QUICK_COOL,
     REMOTE_CTL_QUICK_HEAT,
@@ -47,11 +50,13 @@ from .models import (
     ClimateOperate,
     ClimatePosition,
     ClimateWindshield,
+    FuelHeatingValue,
     LockValue,
     RemoteActionCtlBatteryPreheat,
     RemoteActionCtlChargePlan,
     RemoteActionCtlClimate,
     RemoteActionCtlFindCar,
+    RemoteActionCtlFuelHeating,
     RemoteActionCtlLock,
     RemoteActionCtlSendDestination,
     RemoteActionCtlSentryMode,
@@ -159,6 +164,15 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
     ),
     REMOTE_CTL_STEERING_WHEEL_HEAT_OFF: RemoteActionCtlSteeringWheelHeat(
         value=SteeringWheelHeatValue.OFF, required_right=VehicleRight.STEERING_WHEEL_HEAT
+    ),
+    REMOTE_CTL_FUEL_HEATING: RemoteActionCtlFuelHeating(
+        value=FuelHeatingValue.ON, required_right=VehicleRight.FUEL_HEATING
+    ),
+    REMOTE_CTL_FUEL_HEATING_ON: RemoteActionCtlFuelHeating(
+        value=FuelHeatingValue.ON, required_right=VehicleRight.FUEL_HEATING
+    ),
+    REMOTE_CTL_FUEL_HEATING_OFF: RemoteActionCtlFuelHeating(
+        value=FuelHeatingValue.OFF, required_right=VehicleRight.FUEL_HEATING
     ),
 }
 

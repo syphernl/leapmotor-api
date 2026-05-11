@@ -196,6 +196,8 @@ client.start_charging("WLM...")
 client.stop_charging("WLM...")
 client.steering_wheel_heat_on("WLM...")
 client.steering_wheel_heat_off("WLM...")
+client.fuel_heating_on("WLM...")
+client.fuel_heating_off("WLM...")
 client.set_charge_limit("WLM...", charge_limit_percent=80)
 client.unlock_charger("WLM...")
 ```
