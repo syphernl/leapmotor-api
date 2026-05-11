@@ -41,6 +41,7 @@ from .const import (
     REMOTE_CTL_SEND_DESTINATION,
     REMOTE_CTL_SENTRY_MODE_OFF,
     REMOTE_CTL_SENTRY_MODE_ON,
+    REMOTE_CTL_SPEED_LIMIT,
     REMOTE_CTL_STEERING_WHEEL_HEAT_OFF,
     REMOTE_CTL_STEERING_WHEEL_HEAT_ON,
     REMOTE_CTL_SUNSHADE,
@@ -509,6 +510,11 @@ class LeapmotorApiClient:
     def rearview_mirror_heat_off(self, vin: str) -> dict[str, Any]:
         """Disable rearview mirror heating (cmd_id=440)."""
         return self._remote_control(vin=vin, action=REMOTE_CTL_REARVIEW_MIRROR_HEAT_OFF)
+
+    def set_speed_limit(self, vin: str, *, value: str) -> dict[str, Any]:
+        """Set speed limit in km/h (cmd_id=510)."""
+        cmd_content = json.dumps({"value": value}, separators=(",", ":"))
+        return self._remote_control(vin=vin, action=REMOTE_CTL_SPEED_LIMIT, cmd_content=cmd_content)
 
     def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         cmd_content = json.dumps({"value": value}, separators=(",", ":")) if value is not None else None

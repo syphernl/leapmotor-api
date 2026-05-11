@@ -1612,6 +1612,21 @@ class RemoteActionCtlRearviewMirrorHeat(RemoteActionSpec):
 
 
 @dataclass(slots=True)
+class RemoteActionCtlSpeedLimit(RemoteActionSpec):
+    """Speed limit command (cmd_id=510).
+
+    Value: speed in km/h as a string (e.g. ``"80"``).
+    """
+
+    value: str = "80"
+    cmd_id: str = field(default="510", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps({"value": self.value}, separators=(",", ":"))
+
+
+@dataclass(slots=True)
 class RemoteActionCtlWindows(RemoteActionSpec):
     """Windows open/close command (cmd_id=230). Value: 0 (closed) to 100 (fully open)."""
 

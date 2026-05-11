@@ -52,6 +52,7 @@ used by the `leapmotor-api` library.
   - [Steering Wheel Heat (cmd_id=320)](#steering-wheel-heat-cmd_id320)
   - [Fuel Heating (cmd_id=380)](#fuel-heating-cmd_id380)
   - [Rearview Mirror Heat (cmd_id=440)](#rearview-mirror-heat-cmd_id440)
+  - [Speed Limit (cmd_id=510)](#speed-limit-cmd_id510)
   - [Windows (cmd_id=230)](#windows-cmd_id230)
   - [Sunshade (cmd_id=240)](#sunshade-cmd_id240)
 
@@ -622,6 +623,15 @@ Available on C10 fuel variant.
 
 Requires PIN. Enables or disables rearview mirror heating.
 Available on C10/B10 models.
+
+### Speed Limit (cmd_id=510)
+
+| Action | cmd_content |
+|---|---|
+| Set 80 km/h | `{"value":"80"}` |
+| Set 120 km/h | `{"value":"120"}` |
+
+Requires PIN. Sets a maximum speed limit (km/h). International models only.
 
 ### Windows (cmd_id=230)
 

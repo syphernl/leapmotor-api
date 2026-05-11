@@ -28,6 +28,7 @@ from .const import (
     REMOTE_CTL_SENTRY_MODE,
     REMOTE_CTL_SENTRY_MODE_OFF,
     REMOTE_CTL_SENTRY_MODE_ON,
+    REMOTE_CTL_SPEED_LIMIT,
     REMOTE_CTL_STEERING_WHEEL_HEAT,
     REMOTE_CTL_STEERING_WHEEL_HEAT_OFF,
     REMOTE_CTL_STEERING_WHEEL_HEAT_ON,
@@ -65,6 +66,7 @@ from .models import (
     RemoteActionCtlRearviewMirrorHeat,
     RemoteActionCtlSendDestination,
     RemoteActionCtlSentryMode,
+    RemoteActionCtlSpeedLimit,
     RemoteActionCtlSteeringWheelHeat,
     RemoteActionCtlSunshade,
     RemoteActionCtlToggleCharge,
@@ -188,6 +190,7 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
     REMOTE_CTL_REARVIEW_MIRROR_HEAT_OFF: RemoteActionCtlRearviewMirrorHeat(
         value=RearviewMirrorHeatValue.OFF, required_right=VehicleRight.REARVIEW_MIRROR_HEAT
     ),
+    REMOTE_CTL_SPEED_LIMIT: RemoteActionCtlSpeedLimit(required_right=VehicleRight.SPEED_LIMIT),
 }
 
 # ---------------------------------------------------------------------------

@@ -138,6 +138,10 @@ class AsyncLeapmotorApiClient:
         """Disable rearview mirror heating (cmd_id=440)."""
         return await asyncio.to_thread(self._client.rearview_mirror_heat_off, vin)
 
+    async def set_speed_limit(self, vin: str, *, value: str) -> dict[str, Any]:
+        """Set speed limit in km/h (cmd_id=510)."""
+        return await asyncio.to_thread(self._client.set_speed_limit, vin, value=value)
+
     async def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         kwargs: dict[str, str] = {}
         if value is not None:

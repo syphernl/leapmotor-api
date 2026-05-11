@@ -44,6 +44,7 @@ from leapmotor_api.models import (
     RemoteActionCtlFuelHeating,
     RemoteActionCtlLock,
     RemoteActionCtlRearviewMirrorHeat,
+    RemoteActionCtlSpeedLimit,
     RemoteActionCtlSteeringWheelHeat,
     RemoteActionCtlSunshade,
     RemoteActionCtlToggleCharge,
@@ -2103,3 +2104,15 @@ class TestRemoteActionCtlRearviewMirrorHeat:
         action = RemoteActionCtlRearviewMirrorHeat(value="off")
         assert action.cmd_id == "440"
         assert action.cmd_content == '{"value":"off"}'
+
+
+class TestRemoteActionCtlSpeedLimit:
+    def test_default(self) -> None:
+        action = RemoteActionCtlSpeedLimit()
+        assert action.cmd_id == "510"
+        assert action.cmd_content == '{"value":"80"}'
+
+    def test_custom(self) -> None:
+        action = RemoteActionCtlSpeedLimit(value="120")
+        assert action.cmd_id == "510"
+        assert action.cmd_content == '{"value":"120"}'
