@@ -185,6 +185,7 @@ class VehicleRight(IntEnum):
     LOCK = 110
     FIND_CAR = 120
     TRUNK = 130
+    HOTSPOT = 140
     AUTOPARK = 150
     SUNROOF = 160
     SUNSHADE = 161
@@ -1517,6 +1518,18 @@ class RemoteActionCtlFindCar(RemoteActionSpec):
 
     value: str = ToggleValue.TRUE
     cmd_id: str = field(default="120", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps({"value": self.value}, separators=(",", ":"))
+
+
+@dataclass(slots=True)
+class RemoteActionCtlHotspot(RemoteActionSpec):
+    """Hotspot / connectivity command (cmd_id=140)."""
+
+    value: str = "findCar"
+    cmd_id: str = field(default="140", init=False)
     cmd_content: str = field(default="", init=False)
 
     def __post_init__(self) -> None:

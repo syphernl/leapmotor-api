@@ -35,6 +35,7 @@ from .const import (
     REMOTE_CTL_FUEL_HEATING_ON,
     REMOTE_CTL_HEALTHY_CHARGING_OFF,
     REMOTE_CTL_HEALTHY_CHARGING_ON,
+    REMOTE_CTL_HOTSPOT,
     REMOTE_CTL_LOCK,
     REMOTE_CTL_QUICK_COOL,
     REMOTE_CTL_QUICK_HEAT,
@@ -457,6 +458,10 @@ class LeapmotorApiClient:
 
     def find_vehicle(self, vin: str) -> dict[str, Any]:
         return self._remote_control(vin=vin, action=REMOTE_CTL_FIND_CAR)
+
+    def hotspot(self, vin: str) -> dict[str, Any]:
+        """Trigger hotspot / connectivity command (cmd_id=140)."""
+        return self._remote_control(vin=vin, action=REMOTE_CTL_HOTSPOT)
 
     def control_sunshade(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         cmd_content = json.dumps({"value": value}, separators=(",", ":")) if value is not None else None

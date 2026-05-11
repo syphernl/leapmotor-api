@@ -73,6 +73,10 @@ class AsyncLeapmotorApiClient:
     async def find_vehicle(self, vin: str) -> dict[str, Any]:
         return await asyncio.to_thread(self._client.find_vehicle, vin)
 
+    async def hotspot(self, vin: str) -> dict[str, Any]:
+        """Trigger hotspot / connectivity command (cmd_id=140)."""
+        return await asyncio.to_thread(self._client.hotspot, vin)
+
     async def control_sunshade(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         kwargs: dict[str, str] = {}
         if value is not None:
