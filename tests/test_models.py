@@ -48,6 +48,7 @@ from leapmotor_api.models import (
     RemoteActionCtlSeatVentilation,
     RemoteActionCtlSpeedLimit,
     RemoteActionCtlSteeringWheelHeat,
+    RemoteActionCtlSunroof,
     RemoteActionCtlSunshade,
     RemoteActionCtlToggleCharge,
     RemoteActionCtlTrunk,
@@ -2142,3 +2143,15 @@ class TestRemoteActionCtlSeatVentilation:
         action = RemoteActionCtlSeatVentilation(value="2,1")
         assert action.cmd_id == "370"
         assert action.cmd_content == '{"value":"2,1"}'
+
+
+class TestRemoteActionCtlSunroof:
+    def test_open(self) -> None:
+        action = RemoteActionCtlSunroof(value="open")
+        assert action.cmd_id == "300"
+        assert action.cmd_content == '{"value":"open"}'
+
+    def test_close(self) -> None:
+        action = RemoteActionCtlSunroof(value="close")
+        assert action.cmd_id == "300"
+        assert action.cmd_content == '{"value":"close"}'

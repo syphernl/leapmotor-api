@@ -1412,6 +1412,13 @@ class RearviewMirrorHeatValue(StrEnum):
     OFF = "off"
 
 
+class SunroofValue(StrEnum):
+    """Values for sunroof command (cmd_id=300)."""
+
+    OPEN = "open"
+    CLOSE = "close"
+
+
 class SunshadeValue(StrEnum):
     """Convenience values for sunshade position (range: 0-10)."""
 
@@ -1654,6 +1661,21 @@ class RemoteActionCtlSeatVentilation(RemoteActionSpec):
 
     value: str = "1,3"
     cmd_id: str = field(default="370", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps({"value": self.value}, separators=(",", ":"))
+
+
+@dataclass(slots=True)
+class RemoteActionCtlSunroof(RemoteActionSpec):
+    """Sunroof command (cmd_id=300).
+
+    Value: ``"open"`` or ``"close"``.
+    """
+
+    value: str = SunroofValue.OPEN
+    cmd_id: str = field(default="300", init=False)
     cmd_content: str = field(default="", init=False)
 
     def __post_init__(self) -> None:

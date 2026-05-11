@@ -150,6 +150,14 @@ class AsyncLeapmotorApiClient:
         """Set seat ventilation (cmd_id=370). Position: 1-6, level: 0-3."""
         return await asyncio.to_thread(self._client.seat_ventilation, vin, position=position, level=level)
 
+    async def open_sunroof(self, vin: str) -> dict[str, Any]:
+        """Open sunroof (cmd_id=300)."""
+        return await asyncio.to_thread(self._client.open_sunroof, vin)
+
+    async def close_sunroof(self, vin: str) -> dict[str, Any]:
+        """Close sunroof (cmd_id=300)."""
+        return await asyncio.to_thread(self._client.close_sunroof, vin)
+
     async def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         kwargs: dict[str, str] = {}
         if value is not None:

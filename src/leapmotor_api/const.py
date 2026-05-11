@@ -57,5 +57,8 @@ REMOTE_CTL_REARVIEW_MIRROR_HEAT_OFF = "rearview_mirror_heat_off"
 REMOTE_CTL_SPEED_LIMIT = "set_speed_limit"
 REMOTE_CTL_SEAT_HEAT = "seat_heat"
 REMOTE_CTL_SEAT_VENTILATION = "seat_ventilation"
+REMOTE_CTL_SUNROOF = "sunroof"
+REMOTE_CTL_SUNROOF_OPEN = "sunroof_open"
+REMOTE_CTL_SUNROOF_CLOSE = "sunroof_close"
 
 DEFAULT_TIMEOUT = 30

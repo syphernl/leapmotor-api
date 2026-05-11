@@ -34,6 +34,9 @@ from .const import (
     REMOTE_CTL_STEERING_WHEEL_HEAT,
     REMOTE_CTL_STEERING_WHEEL_HEAT_OFF,
     REMOTE_CTL_STEERING_WHEEL_HEAT_ON,
+    REMOTE_CTL_SUNROOF,
+    REMOTE_CTL_SUNROOF_CLOSE,
+    REMOTE_CTL_SUNROOF_OPEN,
     REMOTE_CTL_SUNSHADE,
     REMOTE_CTL_SUNSHADE_CLOSE,
     REMOTE_CTL_SUNSHADE_OPEN,
@@ -72,6 +75,7 @@ from .models import (
     RemoteActionCtlSentryMode,
     RemoteActionCtlSpeedLimit,
     RemoteActionCtlSteeringWheelHeat,
+    RemoteActionCtlSunroof,
     RemoteActionCtlSunshade,
     RemoteActionCtlToggleCharge,
     RemoteActionCtlTrunk,
@@ -80,6 +84,7 @@ from .models import (
     RemoteActionSpec,
     SentryModeValue,
     SteeringWheelHeatValue,
+    SunroofValue,
     SunshadeValue,
     ToggleValue,
     VehicleAbility,
@@ -197,6 +202,9 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
     REMOTE_CTL_SPEED_LIMIT: RemoteActionCtlSpeedLimit(required_right=VehicleRight.SPEED_LIMIT),
     REMOTE_CTL_SEAT_HEAT: RemoteActionCtlSeatHeat(required_right=VehicleRight.SEAT_HEAT),
     REMOTE_CTL_SEAT_VENTILATION: RemoteActionCtlSeatVentilation(required_right=VehicleRight.SEAT_VENTILATION),
+    REMOTE_CTL_SUNROOF: RemoteActionCtlSunroof(value=SunroofValue.OPEN, required_right=VehicleRight.SUNROOF),
+    REMOTE_CTL_SUNROOF_OPEN: RemoteActionCtlSunroof(value=SunroofValue.OPEN, required_right=VehicleRight.SUNROOF),
+    REMOTE_CTL_SUNROOF_CLOSE: RemoteActionCtlSunroof(value=SunroofValue.CLOSE, required_right=VehicleRight.SUNROOF),
 }
 
 # ---------------------------------------------------------------------------

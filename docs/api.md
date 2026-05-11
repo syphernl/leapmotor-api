@@ -55,6 +55,7 @@ used by the `leapmotor-api` library.
   - [Speed Limit (cmd_id=510)](#speed-limit-cmd_id510)
   - [Seat Heat (cmd_id=301)](#seat-heat-cmd_id301)
   - [Seat Ventilation (cmd_id=370)](#seat-ventilation-cmd_id370)
+  - [Sunroof (cmd_id=300)](#sunroof-cmd_id300)
   - [Windows (cmd_id=230)](#windows-cmd_id230)
   - [Sunshade (cmd_id=240)](#sunshade-cmd_id240)
 
@@ -654,6 +655,16 @@ Value format: `"position,level"` — position: 1=left_front, 2=copilot, 3=driver
 
 Requires PIN. Sets seat ventilation level.
 Value format: same as Seat Heat — `"position,level"`.
+
+### Sunroof (cmd_id=300)
+
+| Action | cmd_content |
+|---|---|
+| Open | `{"value":"open"}` |
+| Close | `{"value":"close"}` |
+
+Requires PIN. Opens or closes the sunroof.
+Available on C10/C16 models.
 
 ### Windows (cmd_id=230)
 
