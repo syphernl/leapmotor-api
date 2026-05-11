@@ -25,6 +25,7 @@ from .const import (
     DEFAULT_TIMEOUT,
     KNOWN_ACCOUNT_P12_PASSWORDS,
     REMOTE_CTL_AC_SWITCH,
+    REMOTE_CTL_AUTOPARK,
     REMOTE_CTL_BATTERY_PREHEAT,
     REMOTE_CTL_BATTERY_PREHEAT_OFF,
     REMOTE_CTL_CHARGE_LIMIT,
@@ -462,6 +463,10 @@ class LeapmotorApiClient:
     def hotspot(self, vin: str) -> dict[str, Any]:
         """Trigger hotspot / connectivity command (cmd_id=140)."""
         return self._remote_control(vin=vin, action=REMOTE_CTL_HOTSPOT)
+
+    def autopark(self, vin: str) -> dict[str, Any]:
+        """Trigger auto park / summon command (cmd_id=150)."""
+        return self._remote_control(vin=vin, action=REMOTE_CTL_AUTOPARK)
 
     def control_sunshade(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         cmd_content = json.dumps({"value": value}, separators=(",", ":")) if value is not None else None

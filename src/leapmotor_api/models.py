@@ -1537,6 +1537,18 @@ class RemoteActionCtlHotspot(RemoteActionSpec):
 
 
 @dataclass(slots=True)
+class RemoteActionCtlAutopark(RemoteActionSpec):
+    """Auto park / summon command (cmd_id=150)."""
+
+    value: str = "findCar"
+    cmd_id: str = field(default="150", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps({"value": self.value}, separators=(",", ":"))
+
+
+@dataclass(slots=True)
 class RemoteActionCtlSunshade(RemoteActionSpec):
     """Sunshade control command (cmd_id=240). Value: 0 (closed) to 10 (fully open)."""
 

@@ -77,6 +77,10 @@ class AsyncLeapmotorApiClient:
         """Trigger hotspot / connectivity command (cmd_id=140)."""
         return await asyncio.to_thread(self._client.hotspot, vin)
 
+    async def autopark(self, vin: str) -> dict[str, Any]:
+        """Trigger auto park / summon command (cmd_id=150)."""
+        return await asyncio.to_thread(self._client.autopark, vin)
+
     async def control_sunshade(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         kwargs: dict[str, str] = {}
         if value is not None:

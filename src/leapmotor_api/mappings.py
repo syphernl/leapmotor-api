@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from .const import (
     REMOTE_CTL_AC_SWITCH,
+    REMOTE_CTL_AUTOPARK,
     REMOTE_CTL_BATTERY_PREHEAT,
     REMOTE_CTL_BATTERY_PREHEAT_OFF,
     REMOTE_CTL_BATTERY_PREHEAT_ON,
@@ -67,6 +68,7 @@ from .models import (
     HealthyChargingValue,
     LockValue,
     RearviewMirrorHeatValue,
+    RemoteActionCtlAutopark,
     RemoteActionCtlBatteryPreheat,
     RemoteActionCtlChargePlan,
     RemoteActionCtlClimate,
@@ -108,6 +110,7 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
     REMOTE_CTL_TRUNK_CLOSE: RemoteActionCtlTrunk(value=ToggleValue.FALSE, required_right=VehicleRight.TRUNK),
     REMOTE_CTL_FIND_CAR: RemoteActionCtlFindCar(value=ToggleValue.TRUE, required_right=VehicleRight.FIND_CAR),
     REMOTE_CTL_HOTSPOT: RemoteActionCtlHotspot(required_right=VehicleRight.HOTSPOT),
+    REMOTE_CTL_AUTOPARK: RemoteActionCtlAutopark(required_right=VehicleRight.AUTOPARK),
     REMOTE_CTL_SUNSHADE: RemoteActionCtlSunshade(value=SunshadeValue.OPEN, required_right=VehicleRight.SUNSHADE),
     REMOTE_CTL_SUNSHADE_OPEN: RemoteActionCtlSunshade(value=SunshadeValue.OPEN, required_right=VehicleRight.SUNSHADE),
     REMOTE_CTL_SUNSHADE_CLOSE: RemoteActionCtlSunshade(value=SunshadeValue.CLOSE, required_right=VehicleRight.SUNSHADE),

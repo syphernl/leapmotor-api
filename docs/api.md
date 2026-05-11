@@ -43,6 +43,7 @@ used by the `leapmotor-api` library.
   - [Find Car (cmd_id=120)](#find-car-cmd_id120)
   - [Trunk (cmd_id=130)](#trunk-cmd_id130)
   - [Hotspot (cmd_id=140)](#hotspot-cmd_id140)
+  - [Autopark (cmd_id=150)](#autopark-cmd_id150)
   - [Battery Preheat (cmd_id=160)](#battery-preheat-cmd_id160)
   - [Sentry Mode (cmd_id=220)](#sentry-mode-cmd_id220)
   - [Climate (cmd_id=170)](#climate-cmd_id170)
@@ -519,6 +520,14 @@ Requires PIN.
 
 Requires PIN. Triggers the hotspot / connectivity command.
 
+### Autopark (cmd_id=150)
+
+| Action | cmd_content |
+|---|---|
+| Activate | `{"value":"findCar"}` |
+
+Requires PIN. Triggers auto park / summon.
+
 ### Battery Preheat (cmd_id=160)
 
 | Action | cmd_content |
@@ -719,7 +728,7 @@ check and logs a warning when a required right is missing.
 | 120 | `FIND_CAR` | 120 | Find car (horn + lights) |
 | 130 | `TRUNK` | 130 | Trunk open/close |
 | 140 | `HOTSPOT` | 140 | Hotspot / connectivity |
-| 150 | `AUTOPARK` | — | Auto park / summon |
+| 150 | `AUTOPARK` | 150 | Auto park / summon |
 | 160 | `SUNROOF` | — | Sunroof control |
 | 161 | `SUNSHADE` | 240 | Sunshade control |
 | 170 | `CLIMATE` | 170 (ac_switch) | Climate / AC on-off |

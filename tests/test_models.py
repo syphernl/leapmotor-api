@@ -38,6 +38,7 @@ from leapmotor_api.models import (
     MessageList,
     ModuleRight,
     RecirculationMode,
+    RemoteActionCtlAutopark,
     RemoteActionCtlBatteryPreheat,
     RemoteActionCtlClimate,
     RemoteActionCtlFindCar,
@@ -1828,6 +1829,13 @@ class TestRemoteActionCtlHotspot:
     def test_default(self) -> None:
         action = RemoteActionCtlHotspot()
         assert action.cmd_id == "140"
+        assert action.cmd_content == '{"value":"findCar"}'
+
+
+class TestRemoteActionCtlAutopark:
+    def test_default(self) -> None:
+        action = RemoteActionCtlAutopark()
+        assert action.cmd_id == "150"
         assert action.cmd_content == '{"value":"findCar"}'
 
 
