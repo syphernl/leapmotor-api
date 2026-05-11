@@ -43,6 +43,7 @@ used by the `leapmotor-api` library.
   - [Find Car (cmd_id=120)](#find-car-cmd_id120)
   - [Trunk (cmd_id=130)](#trunk-cmd_id130)
   - [Battery Preheat (cmd_id=160)](#battery-preheat-cmd_id160)
+  - [Sentry Mode (cmd_id=220)](#sentry-mode-cmd_id220)
   - [Climate (cmd_id=170)](#climate-cmd_id170)
   - [Send Destination (cmd_id=180)](#send-destination-cmd_id180)
   - [Set Charge Plan (cmd_id=190)](#set-charge-plan-cmd_id190)
@@ -508,6 +509,15 @@ Requires PIN.
 | Off | `{"value":"ptcoff"}` |
 
 Requires PIN.
+
+### Sentry Mode (cmd_id=220)
+
+| Action | cmd_content |
+|---|---|
+| On | `{"value":"1"}` |
+| Off | `{"value":"0"}` |
+
+Requires PIN. Controls the sentinel / dashcam mode.
 
 ### Climate (cmd_id=170)
 
