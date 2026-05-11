@@ -586,3 +586,55 @@ Requires PIN. The `value` represents the opening percentage.
 | Open (10) | `{"value":"10"}` |
 | Close (0) | `{"value":"0"}` |
 | Partial | `{"value":"0"}`–`{"value":"10"}` |
+
+---
+
+## Permission Reference
+
+### VehicleRight — Remote Command Permissions (rightList)
+
+Each remote command requires a corresponding right in the vehicle's
+`rightList`. The server enforces permissions; the client performs a soft
+check and logs a warning when a required right is missing.
+
+| Code | Name | Required by cmd_id | Description |
+|---|---|---|---|
+| 110 | `LOCK` | 110 | Lock / Unlock doors |
+| 120 | `FIND_CAR` | 120 | Find car (horn + lights) |
+| 130 | `TRUNK` | 130 | Trunk open/close |
+| 150 | `AUTOPARK` | — | Auto park / summon |
+| 160 | `SUNROOF` | — | Sunroof control |
+| 161 | `SUNSHADE` | 240 | Sunshade control |
+| 170 | `CLIMATE` | 170 (ac_switch) | Climate / AC on-off |
+| 171 | `QUICK_CLIMATE` | 170 (quick_cool/heat) | Quick cool / Quick heat |
+| 180 | `SEND_DESTINATION` | 180 | Send destination (navigation) |
+| 190 | `BATTERY_PREHEAT` | 160 | Battery preheating |
+| 192 | `UNLOCK_CHARGER` | 192 | Unlock charger connector |
+| 193 | `TOGGLE_CHARGE` | — | Start / stop charging |
+| 220 | `SENTRY_MODE` | — | Sentry mode |
+| 230 | `WINDOWS` | 230 | Windows |
+| 240 | `SKYLIGHT` | — | Skylight control |
+| 270 | `MUSIC` | — | Music control |
+| 280 | `SEAT_ADJUST` | — | Seat adjust |
+| 290 | `VIDEO` | — | Video |
+| 301 | `SEAT_HEAT` | — | Seat heating |
+| 320 | `STEERING_WHEEL_HEAT` | — | Steering wheel heating |
+| 340 | `CHARGE_LIMIT` | 190 | Charge limit |
+| 360 | `PREPARE_CAR` | — | Pre-conditioning (prepare car) |
+| 361 | `PREPARE_CAR_ALARM` | — | Pre-conditioning alarm |
+| 370 | `SEAT_VENTILATION` | — | Seat ventilation |
+| 380 | `FUEL_HEATING` | — | Fuel heating |
+| 460 | `WINDSHIELD_DEFROST` | 170 (defrost) | Windshield defrost / mirror heating |
+| 510 | `SPEED_LIMIT` | — | Speed limit |
+
+> **"—"** in the cmd_id column indicates the command is not yet implemented
+> in this library (the right may appear in `rightList` for certain models).
+
+### ModuleRight — Macro Permission Categories (moduleRights)
+
+| Code | Name | Description |
+|---|---|---|
+| 100 | `BASIC` | Basic authorisation (lock/unlock) |
+| 200 | `VEHICLE_CONTROL` | Vehicle control (climate, charge, quick control) |
+| 300 | `VEHICLE_POSITIONING` | Vehicle positioning (GPS) |
+| 400 | `MILEAGE_ENERGY` | Mileage & energy consumption |

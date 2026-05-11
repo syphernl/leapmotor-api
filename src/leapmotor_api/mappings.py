@@ -30,6 +30,7 @@ from .const import (
 )
 from .models import (
     BatteryPreheatValue,
+    CarType,
     ClimateCircle,
     ClimateMode,
     ClimateOperate,
@@ -119,7 +120,9 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
 # ---------------------------------------------------------------------------
 
 # The international backend reports carType=B10 in the vehicle list,
-# but the status endpoint is shared with C10.
+# but the status endpoint is shared with C10.  B11 also uses the C10 path.
+# Use ``CarType(car_type_str).status_path`` for runtime resolution.
 CAR_TYPE_PATH_MAP: dict[str, str] = {
-    "b10": "c10",
+    CarType.B10: CarType.C10,
+    CarType.B11: CarType.C10,
 }

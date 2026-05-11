@@ -95,6 +95,54 @@ class ChargeType(StrEnum):
     DC = "2"
 
 
+class CarType(StrEnum):
+    """Known Leapmotor vehicle model identifiers.
+
+    The API returns ``carType`` as a string (e.g. ``"T03"``, ``"C10"``).
+    Values are **lowercase** to match endpoint path segments.
+    Use :attr:`status_path` to get the correct status endpoint segment.
+    """
+
+    T03 = "t03"
+    S01 = "s01"
+    C01 = "c01"
+    C10 = "c10"
+    C11 = "c11"
+    C16 = "c16"
+    B10 = "b10"
+    B11 = "b11"
+    B05 = "b05"
+    B03X = "b03x"
+
+    @classmethod
+    def _missing_(cls, value: object) -> CarType | None:
+        if not isinstance(value, str):
+            return None
+        # Normalise to lowercase
+        lower = value.lower()
+        for member in cls:
+            if member.value == lower:
+                return member
+        member = str.__new__(cls, lower)
+        member._name_ = f"UNKNOWN_{lower.upper()}"
+        member._value_ = lower
+        return member
+
+    @property
+    def status_path(self) -> str:
+        """Endpoint path segment for the vehicle status API.
+
+        B10 and B11 share the C10 status endpoint.
+        """
+        return _CAR_TYPE_STATUS_PATH.get(self.value, self.value)
+
+
+_CAR_TYPE_STATUS_PATH: dict[str, str] = {
+    "b10": "c10",
+    "b11": "c10",
+}
+
+
 class ModuleRight(IntEnum):
     """Macro-category permission codes for vehicle sharing."""
 
@@ -208,29 +256,67 @@ _VEHICLE_RIGHT_DESCRIPTIONS: dict[int, str] = {
 
 
 class VehicleAbility(IntEnum):
-    """Hardware/firmware feature flag codes (abilities)."""
+    """Hardware/firmware feature flag codes (abilities).
+
+    These are CODE* constants from the international APK
+    (``LocalAbilityCode.java``).  The server returns a subset
+    of these codes in ``abilities`` depending on the vehicle model
+    and hardware/firmware configuration.
+    """
 
     BASE = 1
     STATUS_DATA = 2
     TRUNK = 3
+    AUTOPARK = 4
     GPS = 5
+    AC_ON = 6
     BATTERY_DETAIL = 7
+    AC_CYCLE = 8
+    AC_PRESET = 9
     LOCK_UNLOCK = 10
     FIND_CAR = 11
     WINDOWS_C10 = 12
+    CHARGE_RELATED_1 = 13
     SEAT_HEATING = 14
     STEERING_WHEEL = 15
+    BLE_KEY = 16
     CLIMATE_ADVANCED = 17
     WINDSHIELD_DEFROST = 18
+    REAR_HEAT = 19
     WINDOWS_T03_ALT = 20
+    FRONT_SEAT_HEAT = 21
+    REAR_SEAT_HEAT = 22
+    SCREEN_SAVER = 23
     TRUNK_SPECIAL = 24
+    CYCLIC_CHARGE = 25
+    CHARGE_REPEAT_WEEKLY = 26
+    CAR_TPMS = 27
+    WINDSHIELD_DEFROST_TRIGGER = 28
+    DRIVER_COPILOT = 29
     GPS_SHARING = 30
     MILEAGE_ENERGY = 31
+    CALENDAR_SYNC = 32
+    CODE33 = 33
     SPEED_LIMIT = 34
     CHARGE_LIMIT = 35
     WINDOWS_T03 = 36
+    AIR_CYCLE = 37
     PREPARE = 38
+    CODE39 = 39
+    FUEL_HEATING = 40
+    CODE41 = 41
+    DRIVER_SEAT_VENTILATION = 42
+    PASSENGER_SEAT_VENTILATION = 43
+    CODE44 = 44
+    MOBILE_CONTROL = 45
+    ON3_STRAIGHT_CALL = 46
+    CYCLIC_CHARGE_TRIGGER = 47
+    UNLOCK_CHARGE_GUN = 48
+    PARKING_PHOTO = 49
+    SENTINEL = 50
+    WEEKLY_CHARGE_REPEAT = 51
     NAVIGATION = 52
+    BLE_KEY_RESTART = 53
 
     @classmethod
     def _missing_(cls, value: object) -> VehicleAbility | None:
@@ -250,24 +336,56 @@ _VEHICLE_ABILITY_DESCRIPTIONS: dict[int, str] = {
     1: "Vehicle base / remote state",
     2: "Vehicle status data",
     3: "Trunk control",
+    4: "Auto park / summon",
     5: "GPS / positioning",
+    6: "AC on ability",
     7: "Detailed battery telemetry",
+    8: "AC recirculation cycle",
+    9: "AC preset / scheduling",
     10: "Remote lock/unlock",
     11: "Find car",
     12: "Windows (C10/B10)",
+    13: "Charge related (variant 1)",
     14: "Seat heating/ventilation",
     15: "Steering wheel heating",
+    16: "BLE digital key",
     17: "Advanced climate (quick cool/heat)",
     18: "Windshield defrost",
+    19: "Rear seat heating",
     20: "Windows (T03 alternate)",
+    21: "Front seat heating",
+    22: "Rear seat heating (ability)",
+    23: "Screen saver",
     24: "Trunk special (C10/B10)",
+    25: "Cyclic / timed charging",
+    26: "Charge repeat weekly",
+    27: "TPMS monitoring",
+    28: "Windshield defrost trigger",
+    29: "Driver / copilot distinction",
     30: "GPS sharing",
     31: "Mileage & energy data",
+    32: "Calendar sync",
+    33: "Ability 33",
     34: "Speed limit",
     35: "Charge limit",
     36: "Windows (T03)",
+    37: "Air recirculation toggle",
     38: "Pre-conditioning (C10/B10)",
+    39: "Ability 39",
+    40: "Fuel heating",
+    41: "Ability 41",
+    42: "Driver seat ventilation",
+    43: "Passenger seat ventilation",
+    44: "Ability 44",
+    45: "Mobile phone control",
+    46: "ON3 / straight call",
+    47: "Cyclic charge trigger",
+    48: "Unlock charging gun",
+    49: "Parking photo",
+    50: "Sentinel / dashcam mode",
+    51: "Weekly charge repeat trigger",
     52: "Navigation / send destination",
+    53: "BLE key restart",
 }
 
 

@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- Added `VehicleRight` enum members for all known international PEI permission codes: `AUTOPARK` (150), `TOGGLE_CHARGE` (193), `SKYLIGHT` (240), `MUSIC` (270), `SEAT_ADJUST` (280), `VIDEO` (290), `SEAT_HEAT` (301), `STEERING_WHEEL_HEAT` (320), `PREPARE_CAR` (360), `PREPARE_CAR_ALARM` (361), `SEAT_VENTILATION` (370), `FUEL_HEATING` (380) — these may appear in `rightList` for C10/B10/C16 models
+- Added `VehicleAbility` enum members for all known international CODE* ability codes (4–53): `AUTOPARK`, `AC_ON`, `AC_CYCLE`, `AC_PRESET`, `CHARGE_RELATED_1`, `BLE_KEY`, `REAR_HEAT`, `FRONT_SEAT_HEAT`, `REAR_SEAT_HEAT`, `SCREEN_SAVER`, `CYCLIC_CHARGE`, `CHARGE_REPEAT_WEEKLY`, `CAR_TPMS`, `WINDSHIELD_DEFROST_TRIGGER`, `DRIVER_COPILOT`, `CALENDAR_SYNC`, `AIR_CYCLE`, `FUEL_HEATING`, `DRIVER_SEAT_VENTILATION`, `PASSENGER_SEAT_VENTILATION`, `MOBILE_CONTROL`, `ON3_STRAIGHT_CALL`, `CYCLIC_CHARGE_TRIGGER`, `UNLOCK_CHARGE_GUN`, `PARKING_PHOTO`, `SENTINEL`, `WEEKLY_CHARGE_REPEAT`, `BLE_KEY_RESTART` — covers the complete constant set
+- Added permission reference table to `docs/api.md` mapping each `VehicleRight` to its corresponding remote command
 - Added `VehicleSecurityState` IntEnum for `vehicle_security_active` field (signal `1255`): `INACTIVE=0`, `ACTIVE_1=1`, `ACTIVE_2=2`, `ACTIVE_3=3`
 - Added `SecurityStatus.is_security_active` convenience property: `True` when anti-theft is active (values 1, 2, or 3)
 - Added `ClimateStatus.is_windshield_defrost_active` convenience property: `True` when windshield defrost is ON (APK: both values 1 and 2 mean active)
