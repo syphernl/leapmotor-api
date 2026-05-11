@@ -106,6 +106,14 @@ class AsyncLeapmotorApiClient:
         """Disable sentry mode (sentinel / dashcam)."""
         return await asyncio.to_thread(self._client.sentry_mode_off, vin)
 
+    async def start_charging(self, vin: str) -> dict[str, Any]:
+        """Start charging (cmd_id=193)."""
+        return await asyncio.to_thread(self._client.start_charging, vin)
+
+    async def stop_charging(self, vin: str) -> dict[str, Any]:
+        """Stop charging (cmd_id=193)."""
+        return await asyncio.to_thread(self._client.stop_charging, vin)
+
     async def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         kwargs: dict[str, str] = {}
         if value is not None:

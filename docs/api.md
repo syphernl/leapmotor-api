@@ -48,6 +48,7 @@ used by the `leapmotor-api` library.
   - [Send Destination (cmd_id=180)](#send-destination-cmd_id180)
   - [Set Charge Plan (cmd_id=190)](#set-charge-plan-cmd_id190)
   - [Unlock Charger (cmd_id=192)](#unlock-charger-cmd_id192)
+  - [Start / Stop Charging (cmd_id=193)](#start--stop-charging-cmd_id193)
   - [Windows (cmd_id=230)](#windows-cmd_id230)
   - [Sunshade (cmd_id=240)](#sunshade-cmd_id240)
 
@@ -578,6 +579,16 @@ updating only the SOC limit.
 | Unlock | `{"operation":"unlock"}` |
 
 Requires PIN. Unlocks the charging connector before unplugging.
+
+### Start / Stop Charging (cmd_id=193)
+
+| Action | cmd_content |
+|---|---|
+| Start | `{"value":"start"}` |
+| Stop | `{"value":"stop"}` |
+
+Requires PIN. Starts or stops charging when the connector is plugged in.
+Available on C10/B10 models.
 
 ### Windows (cmd_id=230)
 

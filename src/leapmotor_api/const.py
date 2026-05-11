@@ -43,5 +43,7 @@ REMOTE_CTL_SEND_DESTINATION = "send_destination"
 REMOTE_CTL_SENTRY_MODE = "sentry_mode"
 REMOTE_CTL_SENTRY_MODE_ON = "sentry_mode_on"
 REMOTE_CTL_SENTRY_MODE_OFF = "sentry_mode_off"
+REMOTE_CTL_CHARGE_START = "charge_start"
+REMOTE_CTL_CHARGE_STOP = "charge_stop"
 
 DEFAULT_TIMEOUT = 30

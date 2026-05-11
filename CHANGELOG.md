@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `REMOTE_CTL_SENTRY_MODE`, `REMOTE_CTL_SENTRY_MODE_ON`, `REMOTE_CTL_SENTRY_MODE_OFF` constants
 - Added `battery_preheat_off()` method to both `LeapmotorApiClient` and `AsyncLeapmotorApiClient`
 - Added `REMOTE_CTL_BATTERY_PREHEAT_ON` and `REMOTE_CTL_BATTERY_PREHEAT_OFF` constants (aliases for on/off battery preheat)
+- Added `start_charging()` and `stop_charging()` methods to both `LeapmotorApiClient` and `AsyncLeapmotorApiClient`
+- Added `REMOTE_CTL_CHARGE_START` and `REMOTE_CTL_CHARGE_STOP` constants
+- Added `ChargeToggleValue` enum (`START`, `STOP`) and `RemoteActionCtlToggleCharge` dataclass
 - Added permission reference table to `docs/api.md` mapping each `VehicleRight` to its corresponding remote command
 - Added `VehicleSecurityState` IntEnum for `vehicle_security_active` field (signal `1255`): `INACTIVE=0`, `ACTIVE_1=1`, `ACTIVE_2=2`, `ACTIVE_3=3`
 - Added `SecurityStatus.is_security_active` convenience property: `True` when anti-theft is active (values 1, 2, or 3)

@@ -1383,6 +1383,13 @@ class SentryModeValue(StrEnum):
     OFF = "0"
 
 
+class ChargeToggleValue(StrEnum):
+    """Values for start/stop charging command (cmd_id=193)."""
+
+    START = "start"
+    STOP = "stop"
+
+
 class SunshadeValue(StrEnum):
     """Convenience values for sunshade position (range: 0-10)."""
 
@@ -1516,6 +1523,21 @@ class RemoteActionCtlSentryMode(RemoteActionSpec):
 
     value: str = SentryModeValue.ON
     cmd_id: str = field(default="220", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps({"value": self.value}, separators=(",", ":"))
+
+
+@dataclass(slots=True)
+class RemoteActionCtlToggleCharge(RemoteActionSpec):
+    """Start/stop charging command (cmd_id=193).
+
+    Value: ``"start"`` or ``"stop"``.
+    """
+
+    value: str = ChargeToggleValue.START
+    cmd_id: str = field(default="193", init=False)
     cmd_content: str = field(default="", init=False)
 
     def __post_init__(self) -> None:

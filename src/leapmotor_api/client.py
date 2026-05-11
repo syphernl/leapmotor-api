@@ -28,6 +28,8 @@ from .const import (
     REMOTE_CTL_BATTERY_PREHEAT,
     REMOTE_CTL_BATTERY_PREHEAT_OFF,
     REMOTE_CTL_CHARGE_LIMIT,
+    REMOTE_CTL_CHARGE_START,
+    REMOTE_CTL_CHARGE_STOP,
     REMOTE_CTL_FIND_CAR,
     REMOTE_CTL_LOCK,
     REMOTE_CTL_QUICK_COOL,
@@ -469,6 +471,14 @@ class LeapmotorApiClient:
     def sentry_mode_off(self, vin: str) -> dict[str, Any]:
         """Disable sentry mode (sentinel / dashcam)."""
         return self._remote_control(vin=vin, action=REMOTE_CTL_SENTRY_MODE_OFF)
+
+    def start_charging(self, vin: str) -> dict[str, Any]:
+        """Start charging (cmd_id=193)."""
+        return self._remote_control(vin=vin, action=REMOTE_CTL_CHARGE_START)
+
+    def stop_charging(self, vin: str) -> dict[str, Any]:
+        """Stop charging (cmd_id=193)."""
+        return self._remote_control(vin=vin, action=REMOTE_CTL_CHARGE_STOP)
 
     def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         cmd_content = json.dumps({"value": value}, separators=(",", ":")) if value is not None else None

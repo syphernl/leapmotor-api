@@ -43,6 +43,7 @@ from leapmotor_api.models import (
     RemoteActionCtlFindCar,
     RemoteActionCtlLock,
     RemoteActionCtlSunshade,
+    RemoteActionCtlToggleCharge,
     RemoteActionCtlTrunk,
     RemoteActionCtlWindows,
     RemoteActionResult,
@@ -2051,3 +2052,15 @@ class TestMessageList:
     def test_missing_list_key(self) -> None:
         ml = MessageList.from_dict({"count": 0})
         assert ml.messages == []
+
+
+class TestRemoteActionCtlToggleCharge:
+    def test_start(self) -> None:
+        action = RemoteActionCtlToggleCharge(value="start")
+        assert action.cmd_id == "193"
+        assert action.cmd_content == '{"value":"start"}'
+
+    def test_stop(self) -> None:
+        action = RemoteActionCtlToggleCharge(value="stop")
+        assert action.cmd_id == "193"
+        assert action.cmd_content == '{"value":"stop"}'

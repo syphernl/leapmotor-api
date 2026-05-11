@@ -192,6 +192,8 @@ client.battery_preheat("WLM...")
 client.battery_preheat_off("WLM...")
 client.sentry_mode_on("WLM...")
 client.sentry_mode_off("WLM...")
+client.start_charging("WLM...")
+client.stop_charging("WLM...")
 client.set_charge_limit("WLM...", charge_limit_percent=80)
 client.unlock_charger("WLM...")
 ```

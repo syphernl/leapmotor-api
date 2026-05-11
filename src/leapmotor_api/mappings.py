@@ -12,6 +12,8 @@ from .const import (
     REMOTE_CTL_BATTERY_PREHEAT_OFF,
     REMOTE_CTL_BATTERY_PREHEAT_ON,
     REMOTE_CTL_CHARGE_LIMIT,
+    REMOTE_CTL_CHARGE_START,
+    REMOTE_CTL_CHARGE_STOP,
     REMOTE_CTL_FIND_CAR,
     REMOTE_CTL_LOCK,
     REMOTE_CTL_QUICK_COOL,
@@ -36,6 +38,7 @@ from .const import (
 from .models import (
     BatteryPreheatValue,
     CarType,
+    ChargeToggleValue,
     ClimateCircle,
     ClimateMode,
     ClimateOperate,
@@ -50,6 +53,7 @@ from .models import (
     RemoteActionCtlSendDestination,
     RemoteActionCtlSentryMode,
     RemoteActionCtlSunshade,
+    RemoteActionCtlToggleCharge,
     RemoteActionCtlTrunk,
     RemoteActionCtlUnlockCharger,
     RemoteActionCtlWindows,
@@ -135,6 +139,12 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
     ),
     REMOTE_CTL_SENTRY_MODE_OFF: RemoteActionCtlSentryMode(
         value=SentryModeValue.OFF, required_right=VehicleRight.SENTRY_MODE
+    ),
+    REMOTE_CTL_CHARGE_START: RemoteActionCtlToggleCharge(
+        value=ChargeToggleValue.START, required_right=VehicleRight.TOGGLE_CHARGE
+    ),
+    REMOTE_CTL_CHARGE_STOP: RemoteActionCtlToggleCharge(
+        value=ChargeToggleValue.STOP, required_right=VehicleRight.TOGGLE_CHARGE
     ),
 }
 
