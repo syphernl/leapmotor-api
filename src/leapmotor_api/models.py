@@ -1627,6 +1627,40 @@ class RemoteActionCtlSpeedLimit(RemoteActionSpec):
 
 
 @dataclass(slots=True)
+class RemoteActionCtlSeatHeat(RemoteActionSpec):
+    """Seat heat command (cmd_id=301).
+
+    Value: ``"position,level"`` — e.g. ``"1,3"`` for left-front seat at level 3.
+    Position: 1=left_front, 2=copilot, 3=driver, 4=right_front, 5=left_rear, 6=right_rear.
+    Level: 0 (off) to 3 (max).
+    """
+
+    value: str = "1,3"
+    cmd_id: str = field(default="301", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps({"value": self.value}, separators=(",", ":"))
+
+
+@dataclass(slots=True)
+class RemoteActionCtlSeatVentilation(RemoteActionSpec):
+    """Seat ventilation command (cmd_id=370).
+
+    Value: ``"position,level"`` — e.g. ``"1,3"`` for left-front seat at level 3.
+    Position: 1=left_front, 2=copilot, 3=driver, 4=right_front, 5=left_rear, 6=right_rear.
+    Level: 0 (off) to 3 (max).
+    """
+
+    value: str = "1,3"
+    cmd_id: str = field(default="370", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps({"value": self.value}, separators=(",", ":"))
+
+
+@dataclass(slots=True)
 class RemoteActionCtlWindows(RemoteActionSpec):
     """Windows open/close command (cmd_id=230). Value: 0 (closed) to 100 (fully open)."""
 

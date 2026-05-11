@@ -53,6 +53,7 @@ used by the `leapmotor-api` library.
   - [Fuel Heating (cmd_id=380)](#fuel-heating-cmd_id380)
   - [Rearview Mirror Heat (cmd_id=440)](#rearview-mirror-heat-cmd_id440)
   - [Speed Limit (cmd_id=510)](#speed-limit-cmd_id510)
+  - [Seat Heat (cmd_id=301)](#seat-heat-cmd_id301)
   - [Windows (cmd_id=230)](#windows-cmd_id230)
   - [Sunshade (cmd_id=240)](#sunshade-cmd_id240)
 
@@ -632,6 +633,16 @@ Available on C10/B10 models.
 | Set 120 km/h | `{"value":"120"}` |
 
 Requires PIN. Sets a maximum speed limit (km/h). International models only.
+
+### Seat Heat (cmd_id=301)
+
+| Action | cmd_content |
+|---|---|
+| Driver seat, level 3 | `{"value":"3,3"}` |
+| Left front, off | `{"value":"1,0"}` |
+
+Requires PIN. Sets seat heating level.
+Value format: `"position,level"` — position: 1=left_front, 2=copilot, 3=driver, 4=right_front, 5=left_rear, 6=right_rear; level: 0-3.
 
 ### Windows (cmd_id=230)
 

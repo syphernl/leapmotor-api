@@ -38,6 +38,8 @@ from .const import (
     REMOTE_CTL_QUICK_HEAT,
     REMOTE_CTL_REARVIEW_MIRROR_HEAT_OFF,
     REMOTE_CTL_REARVIEW_MIRROR_HEAT_ON,
+    REMOTE_CTL_SEAT_HEAT,
+    REMOTE_CTL_SEAT_VENTILATION,
     REMOTE_CTL_SEND_DESTINATION,
     REMOTE_CTL_SENTRY_MODE_OFF,
     REMOTE_CTL_SENTRY_MODE_ON,
@@ -515,6 +517,16 @@ class LeapmotorApiClient:
         """Set speed limit in km/h (cmd_id=510)."""
         cmd_content = json.dumps({"value": value}, separators=(",", ":"))
         return self._remote_control(vin=vin, action=REMOTE_CTL_SPEED_LIMIT, cmd_content=cmd_content)
+
+    def seat_heat(self, vin: str, *, position: int, level: int) -> dict[str, Any]:
+        """Set seat heating (cmd_id=301). Position: 1-6, level: 0-3."""
+        cmd_content = json.dumps({"value": f"{position},{level}"}, separators=(",", ":"))
+        return self._remote_control(vin=vin, action=REMOTE_CTL_SEAT_HEAT, cmd_content=cmd_content)
+
+    def seat_ventilation(self, vin: str, *, position: int, level: int) -> dict[str, Any]:
+        """Set seat ventilation (cmd_id=370). Position: 1-6, level: 0-3."""
+        cmd_content = json.dumps({"value": f"{position},{level}"}, separators=(",", ":"))
+        return self._remote_control(vin=vin, action=REMOTE_CTL_SEAT_VENTILATION, cmd_content=cmd_content)
 
     def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         cmd_content = json.dumps({"value": value}, separators=(",", ":")) if value is not None else None
