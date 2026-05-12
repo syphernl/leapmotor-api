@@ -1882,6 +1882,22 @@ class RemoteActionCtlSendDestination(RemoteActionSpec):
 
 
 @dataclass(slots=True)
+class RemoteActionCtlBleKeyRestart(RemoteActionSpec):
+    """BLE key restart command (cmd_id=430).
+
+    Value: ``"restart"``.
+    Restarts the BLE (Bluetooth Low Energy) digital key module.
+    """
+
+    value: str = "restart"
+    cmd_id: str = field(default="430", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps({"value": self.value}, separators=(",", ":"))
+
+
+@dataclass(slots=True)
 class RemoteActionCtlMusic(RemoteActionSpec):
     """Music control command (cmd_id=270).
 
