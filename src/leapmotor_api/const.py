@@ -70,5 +70,6 @@ REMOTE_CTL_ON3_ON = "on3_on"
 REMOTE_CTL_ON3_OFF = "on3_off"
 REMOTE_CTL_BLE_KEY_RESTART = "ble_key_restart"
 REMOTE_CTL_MUSIC = "music"
+REMOTE_CTL_VIDEO = "video"
 
 DEFAULT_TIMEOUT = 30

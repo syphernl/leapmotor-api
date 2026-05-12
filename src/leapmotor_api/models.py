@@ -1495,6 +1495,15 @@ class MusicOperation(StrEnum):
     PREVIOUS = "previous"
 
 
+class VideoOperation(StrEnum):
+    """Values for video control command (cmd_id=290)."""
+
+    PLAY = "play"
+    PAUSE = "pause"
+    NEXT = "next"
+    PREVIOUS = "previous"
+
+
 class ChargerOperation(StrEnum):
     """Values for charger unlock command."""
 
@@ -1906,6 +1915,21 @@ class RemoteActionCtlMusic(RemoteActionSpec):
 
     operation: str = "play"
     cmd_id: str = field(default="270", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps({"operation": self.operation}, separators=(",", ":"))
+
+
+@dataclass(slots=True)
+class RemoteActionCtlVideo(RemoteActionSpec):
+    """Video control command (cmd_id=290).
+
+    Operation: ``"play"``, ``"pause"``, ``"next"``, ``"previous"``.
+    """
+
+    operation: str = "play"
+    cmd_id: str = field(default="290", init=False)
     cmd_content: str = field(default="", init=False)
 
     def __post_init__(self) -> None:

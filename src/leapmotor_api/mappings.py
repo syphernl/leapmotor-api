@@ -55,6 +55,7 @@ from .const import (
     REMOTE_CTL_TRUNK_OPEN,
     REMOTE_CTL_UNLOCK,
     REMOTE_CTL_UNLOCK_CHARGER,
+    REMOTE_CTL_VIDEO,
     REMOTE_CTL_WINDOWS,
     REMOTE_CTL_WINDOWS_CLOSE,
     REMOTE_CTL_WINDOWS_OPEN,
@@ -98,6 +99,7 @@ from .models import (
     RemoteActionCtlToggleCharge,
     RemoteActionCtlTrunk,
     RemoteActionCtlUnlockCharger,
+    RemoteActionCtlVideo,
     RemoteActionCtlWindows,
     RemoteActionSpec,
     SentryModeValue,
@@ -239,6 +241,7 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
     REMOTE_CTL_ON3_OFF: RemoteActionCtlOn3(value=On3Value.OFF, required_right=VehicleRight.ON3),
     REMOTE_CTL_BLE_KEY_RESTART: RemoteActionCtlBleKeyRestart(required_right=VehicleRight.BLE_KEY_RESTART),
     REMOTE_CTL_MUSIC: RemoteActionCtlMusic(required_right=VehicleRight.MUSIC),
+    REMOTE_CTL_VIDEO: RemoteActionCtlVideo(required_right=VehicleRight.VIDEO),
 }
 
 # ---------------------------------------------------------------------------

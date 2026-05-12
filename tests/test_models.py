@@ -58,6 +58,7 @@ from leapmotor_api.models import (
     RemoteActionCtlSunshade,
     RemoteActionCtlToggleCharge,
     RemoteActionCtlTrunk,
+    RemoteActionCtlVideo,
     RemoteActionCtlWindows,
     RemoteActionResult,
     RemoteActionSpec,
@@ -2223,3 +2224,15 @@ class TestRemoteActionCtlMusic:
         action = RemoteActionCtlMusic(operation="next")
         assert action.cmd_id == "270"
         assert action.cmd_content == '{"operation":"next"}'
+
+
+class TestRemoteActionCtlVideo:
+    def test_play(self) -> None:
+        action = RemoteActionCtlVideo(operation="play")
+        assert action.cmd_id == "290"
+        assert action.cmd_content == '{"operation":"play"}'
+
+    def test_pause(self) -> None:
+        action = RemoteActionCtlVideo(operation="pause")
+        assert action.cmd_id == "290"
+        assert action.cmd_content == '{"operation":"pause"}'

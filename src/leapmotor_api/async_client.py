@@ -190,6 +190,10 @@ class AsyncLeapmotorApiClient:
         """Send music control command (cmd_id=270)."""
         return await asyncio.to_thread(self._client.music, vin, operation=operation)
 
+    async def video(self, vin: str, *, operation: str) -> dict[str, Any]:
+        """Send video control command (cmd_id=290)."""
+        return await asyncio.to_thread(self._client.video, vin, operation=operation)
+
     async def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         kwargs: dict[str, str] = {}
         if value is not None:

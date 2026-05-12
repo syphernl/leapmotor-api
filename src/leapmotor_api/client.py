@@ -63,6 +63,7 @@ from .const import (
     REMOTE_CTL_TRUNK_CLOSE,
     REMOTE_CTL_UNLOCK,
     REMOTE_CTL_UNLOCK_CHARGER,
+    REMOTE_CTL_VIDEO,
     REMOTE_CTL_WINDOWS,
     REMOTE_CTL_WINDOWS_CLOSE,
     REMOTE_CTL_WINDOWS_OPEN,
@@ -578,6 +579,11 @@ class LeapmotorApiClient:
         """Send music control command (cmd_id=270)."""
         cmd_content = json.dumps({"operation": operation}, separators=(",", ":"))
         return self._remote_control(vin=vin, action=REMOTE_CTL_MUSIC, cmd_content=cmd_content)
+
+    def video(self, vin: str, *, operation: str) -> dict[str, Any]:
+        """Send video control command (cmd_id=290)."""
+        cmd_content = json.dumps({"operation": operation}, separators=(",", ":"))
+        return self._remote_control(vin=vin, action=REMOTE_CTL_VIDEO, cmd_content=cmd_content)
 
     def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         cmd_content = json.dumps({"value": value}, separators=(",", ":")) if value is not None else None
