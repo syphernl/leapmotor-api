@@ -52,6 +52,7 @@ from leapmotor_api.models import (
     RemoteActionCtlLock,
     RemoteActionCtlMusic,
     RemoteActionCtlOn3,
+    RemoteActionCtlRearSeats,
     RemoteActionCtlRearviewMirrorHeat,
     RemoteActionCtlSeatHeat,
     RemoteActionCtlSeatVentilation,
@@ -2275,3 +2276,15 @@ class TestRemoteActionCtlFotaSchedule:
         action = RemoteActionCtlFotaSchedule(task_id=123, schedule_time="2026-05-13T10:00:00")
         assert action.cmd_id == "392"
         assert action.cmd_content == '{"taskId":123,"scheduleTime":"2026-05-13T10:00:00"}'
+
+
+class TestRemoteActionCtlRearSeats:
+    def test_default(self) -> None:
+        action = RemoteActionCtlRearSeats()
+        assert action.cmd_id == "470"
+        assert action.cmd_content == '{"seatInfo":""}'
+
+    def test_custom(self) -> None:
+        action = RemoteActionCtlRearSeats(seat_info="fold")
+        assert action.cmd_id == "470"
+        assert action.cmd_content == '{"seatInfo":"fold"}'

@@ -74,5 +74,6 @@ REMOTE_CTL_VIDEO = "video"
 REMOTE_CTL_FOTA_DOWNLOAD = "fota_download"
 REMOTE_CTL_FOTA_INSTALL = "fota_install"
 REMOTE_CTL_FOTA_SCHEDULE = "fota_schedule"
+REMOTE_CTL_REAR_SEATS = "rear_seats"
 
 DEFAULT_TIMEOUT = 30

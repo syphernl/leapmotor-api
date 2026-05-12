@@ -215,6 +215,7 @@ class VehicleRight(IntEnum):
     BLE_KEY_RESTART = 430
     REARVIEW_MIRROR_HEAT = 440
     WINDSHIELD_DEFROST = 460
+    REAR_SEATS = 470
     HEALTHY_CHARGING = 480
     SPEED_LIMIT = 510
 
@@ -262,6 +263,7 @@ _VEHICLE_RIGHT_DESCRIPTIONS: dict[int, str] = {
     391: "FOTA install",
     392: "FOTA install appointment / schedule",
     460: "Windshield defrost / mirror heating",
+    470: "Rear seats control",
     510: "Speed limit",
 }
 
@@ -1990,6 +1992,22 @@ class RemoteActionCtlFotaSchedule(RemoteActionSpec):
             {"taskId": self.task_id, "scheduleTime": self.schedule_time},
             separators=(",", ":"),
         )
+
+
+@dataclass(slots=True)
+class RemoteActionCtlRearSeats(RemoteActionSpec):
+    """Rear seats control command (cmd_id=470).
+
+    Controls 2nd/3rd row seat adjustments (C16 only).
+    The ``seat_info`` parameter is passed as a string value.
+    """
+
+    seat_info: str = ""
+    cmd_id: str = field(default="470", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps({"seatInfo": self.seat_info}, separators=(",", ":"))
 
 
 @dataclass(slots=True)

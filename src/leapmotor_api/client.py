@@ -47,6 +47,7 @@ from .const import (
     REMOTE_CTL_ON3_ON,
     REMOTE_CTL_QUICK_COOL,
     REMOTE_CTL_QUICK_HEAT,
+    REMOTE_CTL_REAR_SEATS,
     REMOTE_CTL_REARVIEW_MIRROR_HEAT_OFF,
     REMOTE_CTL_REARVIEW_MIRROR_HEAT_ON,
     REMOTE_CTL_SEAT_HEAT,
@@ -602,6 +603,11 @@ class LeapmotorApiClient:
         """Schedule FOTA install (cmd_id=392)."""
         cmd_content = json.dumps({"taskId": task_id, "scheduleTime": schedule_time}, separators=(",", ":"))
         return self._remote_control(vin=vin, action=REMOTE_CTL_FOTA_SCHEDULE, cmd_content=cmd_content)
+
+    def rear_seats(self, vin: str, *, seat_info: str) -> dict[str, Any]:
+        """Control rear seats (cmd_id=470). C16 only."""
+        cmd_content = json.dumps({"seatInfo": seat_info}, separators=(",", ":"))
+        return self._remote_control(vin=vin, action=REMOTE_CTL_REAR_SEATS, cmd_content=cmd_content)
 
     def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         cmd_content = json.dumps({"value": value}, separators=(",", ":")) if value is not None else None

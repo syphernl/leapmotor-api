@@ -779,6 +779,15 @@ Requires PIN. Triggers firmware-over-the-air installation for the given task ID.
 
 Requires PIN. Schedules a firmware-over-the-air installation for the given task.
 
+### Rear Seats (cmd_id=470)
+
+| Action | cmd_content |
+|---|---|
+| Control | `{"seatInfo":"<data>"}` |
+
+Requires PIN. Controls 2nd/3rd row seat adjustments.
+Available on C16 models only.
+
 ---
 
 ## Permission Reference

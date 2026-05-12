@@ -34,6 +34,7 @@ from .const import (
     REMOTE_CTL_ON3_ON,
     REMOTE_CTL_QUICK_COOL,
     REMOTE_CTL_QUICK_HEAT,
+    REMOTE_CTL_REAR_SEATS,
     REMOTE_CTL_REARVIEW_MIRROR_HEAT,
     REMOTE_CTL_REARVIEW_MIRROR_HEAT_OFF,
     REMOTE_CTL_REARVIEW_MIRROR_HEAT_ON,
@@ -93,6 +94,7 @@ from .models import (
     RemoteActionCtlLock,
     RemoteActionCtlMusic,
     RemoteActionCtlOn3,
+    RemoteActionCtlRearSeats,
     RemoteActionCtlRearviewMirrorHeat,
     RemoteActionCtlSeatHeat,
     RemoteActionCtlSeatVentilation,
@@ -251,6 +253,7 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
     REMOTE_CTL_FOTA_DOWNLOAD: RemoteActionCtlFotaDownload(required_right=VehicleRight.FOTA_DOWNLOAD),
     REMOTE_CTL_FOTA_INSTALL: RemoteActionCtlFotaInstall(required_right=VehicleRight.FOTA_INSTALL),
     REMOTE_CTL_FOTA_SCHEDULE: RemoteActionCtlFotaSchedule(required_right=VehicleRight.FOTA_INSTALL_APPOINTMENT),
+    REMOTE_CTL_REAR_SEATS: RemoteActionCtlRearSeats(required_right=VehicleRight.REAR_SEATS),
 }
 
 # ---------------------------------------------------------------------------
