@@ -208,6 +208,9 @@ class VehicleRight(IntEnum):
     PREPARE_CAR_ALARM = 361
     SEAT_VENTILATION = 370
     FUEL_HEATING = 380
+    FOTA_DOWNLOAD = 390
+    FOTA_INSTALL = 391
+    FOTA_INSTALL_APPOINTMENT = 392
     ON3 = 410
     BLE_KEY_RESTART = 430
     REARVIEW_MIRROR_HEAT = 440
@@ -255,6 +258,9 @@ _VEHICLE_RIGHT_DESCRIPTIONS: dict[int, str] = {
     361: "Pre-conditioning alarm",
     370: "Seat ventilation",
     380: "Fuel heating",
+    390: "FOTA download",
+    391: "FOTA install",
+    392: "FOTA install appointment / schedule",
     460: "Windshield defrost / mirror heating",
     510: "Speed limit",
 }
@@ -1934,6 +1940,36 @@ class RemoteActionCtlVideo(RemoteActionSpec):
 
     def __post_init__(self) -> None:
         self.cmd_content = json.dumps({"operation": self.operation}, separators=(",", ":"))
+
+
+@dataclass(slots=True)
+class RemoteActionCtlFotaDownload(RemoteActionSpec):
+    """FOTA download command (cmd_id=390).
+
+    Triggers firmware-over-the-air download for the given task ID.
+    """
+
+    task_id: int = 0
+    cmd_id: str = field(default="390", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps({"taskId": self.task_id}, separators=(",", ":"))
+
+
+@dataclass(slots=True)
+class RemoteActionCtlFotaInstall(RemoteActionSpec):
+    """FOTA install command (cmd_id=391).
+
+    Triggers firmware-over-the-air installation for the given task ID.
+    """
+
+    task_id: int = 0
+    cmd_id: str = field(default="391", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps({"taskId": self.task_id}, separators=(",", ":"))
 
 
 @dataclass(slots=True)

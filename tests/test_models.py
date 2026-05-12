@@ -43,6 +43,8 @@ from leapmotor_api.models import (
     RemoteActionCtlBleKeyRestart,
     RemoteActionCtlClimate,
     RemoteActionCtlFindCar,
+    RemoteActionCtlFotaDownload,
+    RemoteActionCtlFotaInstall,
     RemoteActionCtlFuelHeating,
     RemoteActionCtlHealthyCharging,
     RemoteActionCtlHotspot,
@@ -2236,3 +2238,27 @@ class TestRemoteActionCtlVideo:
         action = RemoteActionCtlVideo(operation="pause")
         assert action.cmd_id == "290"
         assert action.cmd_content == '{"operation":"pause"}'
+
+
+class TestRemoteActionCtlFotaDownload:
+    def test_default(self) -> None:
+        action = RemoteActionCtlFotaDownload()
+        assert action.cmd_id == "390"
+        assert action.cmd_content == '{"taskId":0}'
+
+    def test_custom_task_id(self) -> None:
+        action = RemoteActionCtlFotaDownload(task_id=12345)
+        assert action.cmd_id == "390"
+        assert action.cmd_content == '{"taskId":12345}'
+
+
+class TestRemoteActionCtlFotaInstall:
+    def test_default(self) -> None:
+        action = RemoteActionCtlFotaInstall()
+        assert action.cmd_id == "391"
+        assert action.cmd_content == '{"taskId":0}'
+
+    def test_custom_task_id(self) -> None:
+        action = RemoteActionCtlFotaInstall(task_id=67890)
+        assert action.cmd_id == "391"
+        assert action.cmd_content == '{"taskId":67890}'

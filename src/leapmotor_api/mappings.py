@@ -17,6 +17,8 @@ from .const import (
     REMOTE_CTL_CHARGE_START,
     REMOTE_CTL_CHARGE_STOP,
     REMOTE_CTL_FIND_CAR,
+    REMOTE_CTL_FOTA_DOWNLOAD,
+    REMOTE_CTL_FOTA_INSTALL,
     REMOTE_CTL_FUEL_HEATING,
     REMOTE_CTL_FUEL_HEATING_OFF,
     REMOTE_CTL_FUEL_HEATING_ON,
@@ -81,6 +83,8 @@ from .models import (
     RemoteActionCtlChargePlan,
     RemoteActionCtlClimate,
     RemoteActionCtlFindCar,
+    RemoteActionCtlFotaDownload,
+    RemoteActionCtlFotaInstall,
     RemoteActionCtlFuelHeating,
     RemoteActionCtlHealthyCharging,
     RemoteActionCtlHotspot,
@@ -242,6 +246,8 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
     REMOTE_CTL_BLE_KEY_RESTART: RemoteActionCtlBleKeyRestart(required_right=VehicleRight.BLE_KEY_RESTART),
     REMOTE_CTL_MUSIC: RemoteActionCtlMusic(required_right=VehicleRight.MUSIC),
     REMOTE_CTL_VIDEO: RemoteActionCtlVideo(required_right=VehicleRight.VIDEO),
+    REMOTE_CTL_FOTA_DOWNLOAD: RemoteActionCtlFotaDownload(required_right=VehicleRight.FOTA_DOWNLOAD),
+    REMOTE_CTL_FOTA_INSTALL: RemoteActionCtlFotaInstall(required_right=VehicleRight.FOTA_INSTALL),
 }
 
 # ---------------------------------------------------------------------------

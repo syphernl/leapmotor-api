@@ -71,5 +71,7 @@ REMOTE_CTL_ON3_OFF = "on3_off"
 REMOTE_CTL_BLE_KEY_RESTART = "ble_key_restart"
 REMOTE_CTL_MUSIC = "music"
 REMOTE_CTL_VIDEO = "video"
+REMOTE_CTL_FOTA_DOWNLOAD = "fota_download"
+REMOTE_CTL_FOTA_INSTALL = "fota_install"
 
 DEFAULT_TIMEOUT = 30

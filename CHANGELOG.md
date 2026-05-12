@@ -63,6 +63,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `video()` method to both `LeapmotorApiClient` and `AsyncLeapmotorApiClient`
 - Added `REMOTE_CTL_VIDEO` constant and `RemoteActionCtlVideo` dataclass (cmd_id=290)
 - Added `VideoOperation` enum (`PLAY`, `PAUSE`, `NEXT`, `PREVIOUS`)
+- Added `fota_download()` method to both `LeapmotorApiClient` and `AsyncLeapmotorApiClient`
+- Added `REMOTE_CTL_FOTA_DOWNLOAD` constant and `RemoteActionCtlFotaDownload` dataclass (cmd_id=390)
+- Added `VehicleRight.FOTA_DOWNLOAD = 390`
+- Added `fota_install()` method to both `LeapmotorApiClient` and `AsyncLeapmotorApiClient`
+- Added `REMOTE_CTL_FOTA_INSTALL` constant and `RemoteActionCtlFotaInstall` dataclass (cmd_id=391)
+- Added `VehicleRight.FOTA_INSTALL = 391`
 - Added permission reference table to `docs/api.md` mapping each `VehicleRight` to its corresponding remote command
 - Added `VehicleSecurityState` IntEnum for `vehicle_security_active` field (signal `1255`): `INACTIVE=0`, `ACTIVE_1=1`, `ACTIVE_2=2`, `ACTIVE_3=3`
 - Added `SecurityStatus.is_security_active` convenience property: `True` when anti-theft is active (values 1, 2, or 3)

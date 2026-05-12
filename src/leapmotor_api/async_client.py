@@ -194,6 +194,14 @@ class AsyncLeapmotorApiClient:
         """Send video control command (cmd_id=290)."""
         return await asyncio.to_thread(self._client.video, vin, operation=operation)
 
+    async def fota_download(self, vin: str, *, task_id: int) -> dict[str, Any]:
+        """Trigger FOTA download (cmd_id=390)."""
+        return await asyncio.to_thread(self._client.fota_download, vin, task_id=task_id)
+
+    async def fota_install(self, vin: str, *, task_id: int) -> dict[str, Any]:
+        """Trigger FOTA install (cmd_id=391)."""
+        return await asyncio.to_thread(self._client.fota_install, vin, task_id=task_id)
+
     async def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         kwargs: dict[str, str] = {}
         if value is not None:

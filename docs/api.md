@@ -755,6 +755,22 @@ Available on C10/C16 models.
 Requires PIN. Controls video playback on the vehicle's infotainment system.
 Available on C10/C16 models.
 
+### FOTA Download (cmd_id=390)
+
+| Action | cmd_content |
+|---|---|
+| Download task 123 | `{"taskId":123}` |
+
+Requires PIN. Triggers firmware-over-the-air download for the given task ID.
+
+### FOTA Install (cmd_id=391)
+
+| Action | cmd_content |
+|---|---|
+| Install task 123 | `{"taskId":123}` |
+
+Requires PIN. Triggers firmware-over-the-air installation for the given task ID.
+
 ---
 
 ## Permission Reference

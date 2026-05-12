@@ -33,6 +33,8 @@ from .const import (
     REMOTE_CTL_CHARGE_START,
     REMOTE_CTL_CHARGE_STOP,
     REMOTE_CTL_FIND_CAR,
+    REMOTE_CTL_FOTA_DOWNLOAD,
+    REMOTE_CTL_FOTA_INSTALL,
     REMOTE_CTL_FUEL_HEATING_OFF,
     REMOTE_CTL_FUEL_HEATING_ON,
     REMOTE_CTL_HEALTHY_CHARGING_OFF,
@@ -584,6 +586,16 @@ class LeapmotorApiClient:
         """Send video control command (cmd_id=290)."""
         cmd_content = json.dumps({"operation": operation}, separators=(",", ":"))
         return self._remote_control(vin=vin, action=REMOTE_CTL_VIDEO, cmd_content=cmd_content)
+
+    def fota_download(self, vin: str, *, task_id: int) -> dict[str, Any]:
+        """Trigger FOTA download (cmd_id=390)."""
+        cmd_content = json.dumps({"taskId": task_id}, separators=(",", ":"))
+        return self._remote_control(vin=vin, action=REMOTE_CTL_FOTA_DOWNLOAD, cmd_content=cmd_content)
+
+    def fota_install(self, vin: str, *, task_id: int) -> dict[str, Any]:
+        """Trigger FOTA install (cmd_id=391)."""
+        cmd_content = json.dumps({"taskId": task_id}, separators=(",", ":"))
+        return self._remote_control(vin=vin, action=REMOTE_CTL_FOTA_INSTALL, cmd_content=cmd_content)
 
     def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         cmd_content = json.dumps({"value": value}, separators=(",", ":")) if value is not None else None
