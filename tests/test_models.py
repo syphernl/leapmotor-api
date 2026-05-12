@@ -45,6 +45,7 @@ from leapmotor_api.models import (
     RemoteActionCtlFindCar,
     RemoteActionCtlFotaDownload,
     RemoteActionCtlFotaInstall,
+    RemoteActionCtlFotaSchedule,
     RemoteActionCtlFuelHeating,
     RemoteActionCtlHealthyCharging,
     RemoteActionCtlHotspot,
@@ -2262,3 +2263,15 @@ class TestRemoteActionCtlFotaInstall:
         action = RemoteActionCtlFotaInstall(task_id=67890)
         assert action.cmd_id == "391"
         assert action.cmd_content == '{"taskId":67890}'
+
+
+class TestRemoteActionCtlFotaSchedule:
+    def test_default(self) -> None:
+        action = RemoteActionCtlFotaSchedule()
+        assert action.cmd_id == "392"
+        assert action.cmd_content == '{"taskId":0,"scheduleTime":""}'
+
+    def test_custom(self) -> None:
+        action = RemoteActionCtlFotaSchedule(task_id=123, schedule_time="2026-05-13T10:00:00")
+        assert action.cmd_id == "392"
+        assert action.cmd_content == '{"taskId":123,"scheduleTime":"2026-05-13T10:00:00"}'

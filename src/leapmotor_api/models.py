@@ -1973,6 +1973,26 @@ class RemoteActionCtlFotaInstall(RemoteActionSpec):
 
 
 @dataclass(slots=True)
+class RemoteActionCtlFotaSchedule(RemoteActionSpec):
+    """FOTA scheduled install command (cmd_id=392).
+
+    Schedules a firmware-over-the-air installation.
+    The ``cmd_content`` is passed directly as a JSON string.
+    """
+
+    task_id: int = 0
+    schedule_time: str = ""
+    cmd_id: str = field(default="392", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps(
+            {"taskId": self.task_id, "scheduleTime": self.schedule_time},
+            separators=(",", ":"),
+        )
+
+
+@dataclass(slots=True)
 class RemoteActionResult:
     """Result of a remote-control action."""
 

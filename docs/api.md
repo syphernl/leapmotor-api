@@ -771,6 +771,14 @@ Requires PIN. Triggers firmware-over-the-air download for the given task ID.
 
 Requires PIN. Triggers firmware-over-the-air installation for the given task ID.
 
+### FOTA Schedule (cmd_id=392)
+
+| Action | cmd_content |
+|---|---|
+| Schedule task 123 | `{"taskId":123,"scheduleTime":"2026-05-13T10:00:00"}` |
+
+Requires PIN. Schedules a firmware-over-the-air installation for the given task.
+
 ---
 
 ## Permission Reference

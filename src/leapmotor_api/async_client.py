@@ -202,6 +202,10 @@ class AsyncLeapmotorApiClient:
         """Trigger FOTA install (cmd_id=391)."""
         return await asyncio.to_thread(self._client.fota_install, vin, task_id=task_id)
 
+    async def fota_schedule(self, vin: str, *, task_id: int, schedule_time: str) -> dict[str, Any]:
+        """Schedule FOTA install (cmd_id=392)."""
+        return await asyncio.to_thread(self._client.fota_schedule, vin, task_id=task_id, schedule_time=schedule_time)
+
     async def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         kwargs: dict[str, str] = {}
         if value is not None:

@@ -73,5 +73,6 @@ REMOTE_CTL_MUSIC = "music"
 REMOTE_CTL_VIDEO = "video"
 REMOTE_CTL_FOTA_DOWNLOAD = "fota_download"
 REMOTE_CTL_FOTA_INSTALL = "fota_install"
+REMOTE_CTL_FOTA_SCHEDULE = "fota_schedule"
 
 DEFAULT_TIMEOUT = 30
