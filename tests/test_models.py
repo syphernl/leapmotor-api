@@ -40,6 +40,7 @@ from leapmotor_api.models import (
     RecirculationMode,
     RemoteActionCtlAutopark,
     RemoteActionCtlBatteryPreheat,
+    RemoteActionCtlBleKeyRestart,
     RemoteActionCtlClimate,
     RemoteActionCtlFindCar,
     RemoteActionCtlFuelHeating,
@@ -2197,3 +2198,10 @@ class TestRemoteActionCtlSunroof:
         action = RemoteActionCtlSunroof(value="close")
         assert action.cmd_id == "300"
         assert action.cmd_content == '{"value":"close"}'
+
+
+class TestRemoteActionCtlBleKeyRestart:
+    def test_default(self) -> None:
+        action = RemoteActionCtlBleKeyRestart()
+        assert action.cmd_id == "430"
+        assert action.cmd_content == '{"value":"restart"}'

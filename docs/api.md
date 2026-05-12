@@ -722,6 +722,15 @@ Requires PIN. The `value` represents the opening percentage.
 | Close (0) | `{"value":"0"}` |
 | Partial | `{"value":"0"}`–`{"value":"10"}` |
 
+### BLE Key Restart (cmd_id=430)
+
+| Action | cmd_content |
+|---|---|
+| Restart | `{"value":"restart"}` |
+
+Requires PIN. Restarts the BLE (Bluetooth Low Energy) digital key module.
+Available on C10/B10 models.
+
 ---
 
 ## Permission Reference

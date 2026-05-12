@@ -28,6 +28,7 @@ from .const import (
     REMOTE_CTL_AUTOPARK,
     REMOTE_CTL_BATTERY_PREHEAT,
     REMOTE_CTL_BATTERY_PREHEAT_OFF,
+    REMOTE_CTL_BLE_KEY_RESTART,
     REMOTE_CTL_CHARGE_LIMIT,
     REMOTE_CTL_CHARGE_START,
     REMOTE_CTL_CHARGE_STOP,
@@ -567,6 +568,10 @@ class LeapmotorApiClient:
     def on3_off(self, vin: str) -> dict[str, Any]:
         """Disable ON3 mode (cmd_id=410)."""
         return self._remote_control(vin=vin, action=REMOTE_CTL_ON3_OFF)
+
+    def ble_key_restart(self, vin: str) -> dict[str, Any]:
+        """Restart BLE digital key module (cmd_id=430)."""
+        return self._remote_control(vin=vin, action=REMOTE_CTL_BLE_KEY_RESTART)
 
     def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         cmd_content = json.dumps({"value": value}, separators=(",", ":")) if value is not None else None

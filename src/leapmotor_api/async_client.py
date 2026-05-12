@@ -182,6 +182,10 @@ class AsyncLeapmotorApiClient:
         """Disable ON3 mode (cmd_id=410)."""
         return await asyncio.to_thread(self._client.on3_off, vin)
 
+    async def ble_key_restart(self, vin: str) -> dict[str, Any]:
+        """Restart BLE digital key module (cmd_id=430)."""
+        return await asyncio.to_thread(self._client.ble_key_restart, vin)
+
     async def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         kwargs: dict[str, str] = {}
         if value is not None:

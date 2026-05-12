@@ -68,5 +68,6 @@ REMOTE_CTL_HEALTHY_CHARGING_OFF = "healthy_charging_off"
 REMOTE_CTL_ON3 = "on3"
 REMOTE_CTL_ON3_ON = "on3_on"
 REMOTE_CTL_ON3_OFF = "on3_off"
+REMOTE_CTL_BLE_KEY_RESTART = "ble_key_restart"
 
 DEFAULT_TIMEOUT = 30

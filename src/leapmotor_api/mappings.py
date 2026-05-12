@@ -12,6 +12,7 @@ from .const import (
     REMOTE_CTL_BATTERY_PREHEAT,
     REMOTE_CTL_BATTERY_PREHEAT_OFF,
     REMOTE_CTL_BATTERY_PREHEAT_ON,
+    REMOTE_CTL_BLE_KEY_RESTART,
     REMOTE_CTL_CHARGE_LIMIT,
     REMOTE_CTL_CHARGE_START,
     REMOTE_CTL_CHARGE_STOP,
@@ -74,6 +75,7 @@ from .models import (
     RearviewMirrorHeatValue,
     RemoteActionCtlAutopark,
     RemoteActionCtlBatteryPreheat,
+    RemoteActionCtlBleKeyRestart,
     RemoteActionCtlChargePlan,
     RemoteActionCtlClimate,
     RemoteActionCtlFindCar,
@@ -233,6 +235,7 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
     REMOTE_CTL_ON3: RemoteActionCtlOn3(value=On3Value.ON, required_right=VehicleRight.ON3),
     REMOTE_CTL_ON3_ON: RemoteActionCtlOn3(value=On3Value.ON, required_right=VehicleRight.ON3),
     REMOTE_CTL_ON3_OFF: RemoteActionCtlOn3(value=On3Value.OFF, required_right=VehicleRight.ON3),
+    REMOTE_CTL_BLE_KEY_RESTART: RemoteActionCtlBleKeyRestart(required_right=VehicleRight.BLE_KEY_RESTART),
 }
 
 # ---------------------------------------------------------------------------
