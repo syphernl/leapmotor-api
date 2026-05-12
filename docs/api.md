@@ -797,14 +797,23 @@ Available on C16 models only.
 Requires PIN. Activates pre-conditioning (climate, seat heat, etc.).
 Available on C10/B10 models. The payload is a full JSON string with scheduling and climate parameters.
 
-### Prepare Car (cmd_id=360)
+### Seat Adjust (cmd_id=280)
 
 | Action | cmd_content |
 |---|---|
-| Pre-condition | Full JSON payload |
+| Adjust | Full JSON payload |
 
-Requires PIN. Activates pre-conditioning (climate, seat heat, etc.).
-Available on C10/B10 models. The payload is a full JSON string with scheduling and climate parameters.
+Requires PIN. Controls seat adjustment on C10/C16 models.
+The payload format is unknown; pass the full JSON payload string.
+
+### Piloted Parking (cmd_id=350)
+
+| Action | cmd_content |
+|---|---|
+| Park | Full JSON payload |
+
+Requires PIN. Activates piloted parking on C10/C16 models.
+The payload format is unknown; pass the full JSON payload string.
 
 ---
 

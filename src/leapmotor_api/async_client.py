@@ -214,6 +214,14 @@ class AsyncLeapmotorApiClient:
         """Activate pre-conditioning (cmd_id=360). C10/B10 only."""
         return await asyncio.to_thread(self._client.prepare_car, vin, params=params)
 
+    async def seat_adjust(self, vin: str, *, params: dict[str, Any]) -> dict[str, Any]:
+        """Seat adjust (cmd_id=280). C10/C16 only."""
+        return await asyncio.to_thread(self._client.seat_adjust, vin, params=params)
+
+    async def piloted_parking(self, vin: str, *, params: dict[str, Any]) -> dict[str, Any]:
+        """Piloted parking (cmd_id=350). C10/C16 only."""
+        return await asyncio.to_thread(self._client.piloted_parking, vin, params=params)
+
     async def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         kwargs: dict[str, str] = {}
         if value is not None:

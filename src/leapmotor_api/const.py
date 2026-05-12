@@ -76,5 +76,7 @@ REMOTE_CTL_FOTA_INSTALL = "fota_install"
 REMOTE_CTL_FOTA_SCHEDULE = "fota_schedule"
 REMOTE_CTL_REAR_SEATS = "rear_seats"
 REMOTE_CTL_PREPARE_CAR = "prepare_car"
+REMOTE_CTL_SEAT_ADJUST = "seat_adjust"
+REMOTE_CTL_PILOTED_PARKING = "piloted_parking"
 
 DEFAULT_TIMEOUT = 30

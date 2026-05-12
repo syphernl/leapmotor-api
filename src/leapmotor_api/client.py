@@ -45,12 +45,14 @@ from .const import (
     REMOTE_CTL_MUSIC,
     REMOTE_CTL_ON3_OFF,
     REMOTE_CTL_ON3_ON,
+    REMOTE_CTL_PILOTED_PARKING,
     REMOTE_CTL_PREPARE_CAR,
     REMOTE_CTL_QUICK_COOL,
     REMOTE_CTL_QUICK_HEAT,
     REMOTE_CTL_REAR_SEATS,
     REMOTE_CTL_REARVIEW_MIRROR_HEAT_OFF,
     REMOTE_CTL_REARVIEW_MIRROR_HEAT_ON,
+    REMOTE_CTL_SEAT_ADJUST,
     REMOTE_CTL_SEAT_HEAT,
     REMOTE_CTL_SEAT_VENTILATION,
     REMOTE_CTL_SEND_DESTINATION,
@@ -614,6 +616,16 @@ class LeapmotorApiClient:
         """Activate pre-conditioning (cmd_id=360). C10/B10 only."""
         cmd_content = json.dumps(params, separators=(",", ":"))
         return self._remote_control(vin=vin, action=REMOTE_CTL_PREPARE_CAR, cmd_content=cmd_content)
+
+    def seat_adjust(self, vin: str, *, params: dict[str, Any]) -> dict[str, Any]:
+        """Seat adjust (cmd_id=280). C10/C16 only."""
+        cmd_content = json.dumps(params, separators=(",", ":"))
+        return self._remote_control(vin=vin, action=REMOTE_CTL_SEAT_ADJUST, cmd_content=cmd_content)
+
+    def piloted_parking(self, vin: str, *, params: dict[str, Any]) -> dict[str, Any]:
+        """Piloted parking (cmd_id=350). C10/C16 only."""
+        cmd_content = json.dumps(params, separators=(",", ":"))
+        return self._remote_control(vin=vin, action=REMOTE_CTL_PILOTED_PARKING, cmd_content=cmd_content)
 
     def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         cmd_content = json.dumps({"value": value}, separators=(",", ":")) if value is not None else None

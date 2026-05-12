@@ -52,9 +52,11 @@ from leapmotor_api.models import (
     RemoteActionCtlLock,
     RemoteActionCtlMusic,
     RemoteActionCtlOn3,
+    RemoteActionCtlPilotedParking,
     RemoteActionCtlPrepareCar,
     RemoteActionCtlRearSeats,
     RemoteActionCtlRearviewMirrorHeat,
+    RemoteActionCtlSeatAdjust,
     RemoteActionCtlSeatHeat,
     RemoteActionCtlSeatVentilation,
     RemoteActionCtlSpeedLimit,
@@ -2300,3 +2302,27 @@ class TestRemoteActionCtlPrepareCar:
         action = RemoteActionCtlPrepareCar(cmd_content='{"temperature":"24"}')
         assert action.cmd_id == "360"
         assert action.cmd_content == '{"temperature":"24"}'
+
+
+class TestRemoteActionCtlSeatAdjust:
+    def test_default(self) -> None:
+        action = RemoteActionCtlSeatAdjust()
+        assert action.cmd_id == "280"
+        assert action.cmd_content == ""
+
+    def test_custom_content(self) -> None:
+        action = RemoteActionCtlSeatAdjust(cmd_content='{"position":"driver"}')
+        assert action.cmd_id == "280"
+        assert action.cmd_content == '{"position":"driver"}'
+
+
+class TestRemoteActionCtlPilotedParking:
+    def test_default(self) -> None:
+        action = RemoteActionCtlPilotedParking()
+        assert action.cmd_id == "350"
+        assert action.cmd_content == ""
+
+    def test_custom_content(self) -> None:
+        action = RemoteActionCtlPilotedParking(cmd_content='{"action":"start"}')
+        assert action.cmd_id == "350"
+        assert action.cmd_content == '{"action":"start"}'

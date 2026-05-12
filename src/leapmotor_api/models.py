@@ -204,6 +204,7 @@ class VehicleRight(IntEnum):
     SEAT_HEAT = 301
     STEERING_WHEEL_HEAT = 320
     CHARGE_LIMIT = 340
+    PILOTED_PARKING = 350
     PREPARE_CAR = 360
     PREPARE_CAR_ALARM = 361
     SEAT_VENTILATION = 370
@@ -255,6 +256,7 @@ _VEHICLE_RIGHT_DESCRIPTIONS: dict[int, str] = {
     301: "Seat heating",
     320: "Steering wheel heating",
     340: "Charge limit",
+    350: "Piloted parking / summon",
     360: "Pre-conditioning (prepare car)",
     361: "Pre-conditioning alarm",
     370: "Seat ventilation",
@@ -262,6 +264,8 @@ _VEHICLE_RIGHT_DESCRIPTIONS: dict[int, str] = {
     390: "FOTA download",
     391: "FOTA install",
     392: "FOTA install appointment / schedule",
+    410: "ON3 mode",
+    430: "BLE key restart",
     460: "Windshield defrost / mirror heating",
     470: "Rear seats control",
     510: "Speed limit",
@@ -2019,6 +2023,30 @@ class RemoteActionCtlPrepareCar(RemoteActionSpec):
     """
 
     cmd_id: str = field(default="360", init=False)
+    cmd_content: str = ""
+
+
+@dataclass(slots=True)
+class RemoteActionCtlSeatAdjust(RemoteActionSpec):
+    """Seat adjust command (cmd_id=280).
+
+    Available on C10/C16 models.
+    The ``cmd_content`` is the full JSON payload string.
+    """
+
+    cmd_id: str = field(default="280", init=False)
+    cmd_content: str = ""
+
+
+@dataclass(slots=True)
+class RemoteActionCtlPilotedParking(RemoteActionSpec):
+    """Piloted parking command (cmd_id=350).
+
+    Available on C10/C16 models.
+    The ``cmd_content`` is the full JSON payload string.
+    """
+
+    cmd_id: str = field(default="350", init=False)
     cmd_content: str = ""
 
 
