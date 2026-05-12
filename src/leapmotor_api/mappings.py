@@ -25,6 +25,7 @@ from .const import (
     REMOTE_CTL_HEALTHY_CHARGING_ON,
     REMOTE_CTL_HOTSPOT,
     REMOTE_CTL_LOCK,
+    REMOTE_CTL_MUSIC,
     REMOTE_CTL_ON3,
     REMOTE_CTL_ON3_OFF,
     REMOTE_CTL_ON3_ON,
@@ -83,6 +84,7 @@ from .models import (
     RemoteActionCtlHealthyCharging,
     RemoteActionCtlHotspot,
     RemoteActionCtlLock,
+    RemoteActionCtlMusic,
     RemoteActionCtlOn3,
     RemoteActionCtlRearviewMirrorHeat,
     RemoteActionCtlSeatHeat,
@@ -236,6 +238,7 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
     REMOTE_CTL_ON3_ON: RemoteActionCtlOn3(value=On3Value.ON, required_right=VehicleRight.ON3),
     REMOTE_CTL_ON3_OFF: RemoteActionCtlOn3(value=On3Value.OFF, required_right=VehicleRight.ON3),
     REMOTE_CTL_BLE_KEY_RESTART: RemoteActionCtlBleKeyRestart(required_right=VehicleRight.BLE_KEY_RESTART),
+    REMOTE_CTL_MUSIC: RemoteActionCtlMusic(required_right=VehicleRight.MUSIC),
 }
 
 # ---------------------------------------------------------------------------

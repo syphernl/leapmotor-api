@@ -39,6 +39,7 @@ from .const import (
     REMOTE_CTL_HEALTHY_CHARGING_ON,
     REMOTE_CTL_HOTSPOT,
     REMOTE_CTL_LOCK,
+    REMOTE_CTL_MUSIC,
     REMOTE_CTL_ON3_OFF,
     REMOTE_CTL_ON3_ON,
     REMOTE_CTL_QUICK_COOL,
@@ -572,6 +573,11 @@ class LeapmotorApiClient:
     def ble_key_restart(self, vin: str) -> dict[str, Any]:
         """Restart BLE digital key module (cmd_id=430)."""
         return self._remote_control(vin=vin, action=REMOTE_CTL_BLE_KEY_RESTART)
+
+    def music(self, vin: str, *, operation: str) -> dict[str, Any]:
+        """Send music control command (cmd_id=270)."""
+        cmd_content = json.dumps({"operation": operation}, separators=(",", ":"))
+        return self._remote_control(vin=vin, action=REMOTE_CTL_MUSIC, cmd_content=cmd_content)
 
     def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         cmd_content = json.dumps({"value": value}, separators=(",", ":")) if value is not None else None

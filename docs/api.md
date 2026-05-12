@@ -731,6 +731,18 @@ Requires PIN. The `value` represents the opening percentage.
 Requires PIN. Restarts the BLE (Bluetooth Low Energy) digital key module.
 Available on C10/B10 models.
 
+### Music (cmd_id=270)
+
+| Action | cmd_content |
+|---|---|
+| Play | `{"operation":"play"}` |
+| Pause | `{"operation":"pause"}` |
+| Next | `{"operation":"next"}` |
+| Previous | `{"operation":"previous"}` |
+
+Requires PIN. Controls music playback on the vehicle's infotainment system.
+Available on C10/C16 models.
+
 ---
 
 ## Permission Reference

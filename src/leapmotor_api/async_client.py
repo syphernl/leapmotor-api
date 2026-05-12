@@ -186,6 +186,10 @@ class AsyncLeapmotorApiClient:
         """Restart BLE digital key module (cmd_id=430)."""
         return await asyncio.to_thread(self._client.ble_key_restart, vin)
 
+    async def music(self, vin: str, *, operation: str) -> dict[str, Any]:
+        """Send music control command (cmd_id=270)."""
+        return await asyncio.to_thread(self._client.music, vin, operation=operation)
+
     async def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         kwargs: dict[str, str] = {}
         if value is not None:

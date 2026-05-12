@@ -1486,6 +1486,15 @@ class ClimateWindshield(StrEnum):
     DEFROST = "2"
 
 
+class MusicOperation(StrEnum):
+    """Values for music control command (cmd_id=270)."""
+
+    PLAY = "play"
+    PAUSE = "pause"
+    NEXT = "next"
+    PREVIOUS = "previous"
+
+
 class ChargerOperation(StrEnum):
     """Values for charger unlock command."""
 
@@ -1870,6 +1879,21 @@ class RemoteActionCtlSendDestination(RemoteActionSpec):
             ensure_ascii=False,
             separators=(",", ":"),
         )
+
+
+@dataclass(slots=True)
+class RemoteActionCtlMusic(RemoteActionSpec):
+    """Music control command (cmd_id=270).
+
+    Operation: ``"play"``, ``"pause"``, ``"next"``, ``"previous"``.
+    """
+
+    operation: str = "play"
+    cmd_id: str = field(default="270", init=False)
+    cmd_content: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps({"operation": self.operation}, separators=(",", ":"))
 
 
 @dataclass(slots=True)

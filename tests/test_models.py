@@ -47,6 +47,7 @@ from leapmotor_api.models import (
     RemoteActionCtlHealthyCharging,
     RemoteActionCtlHotspot,
     RemoteActionCtlLock,
+    RemoteActionCtlMusic,
     RemoteActionCtlOn3,
     RemoteActionCtlRearviewMirrorHeat,
     RemoteActionCtlSeatHeat,
@@ -2205,3 +2206,20 @@ class TestRemoteActionCtlBleKeyRestart:
         action = RemoteActionCtlBleKeyRestart()
         assert action.cmd_id == "430"
         assert action.cmd_content == '{"value":"restart"}'
+
+
+class TestRemoteActionCtlMusic:
+    def test_play(self) -> None:
+        action = RemoteActionCtlMusic(operation="play")
+        assert action.cmd_id == "270"
+        assert action.cmd_content == '{"operation":"play"}'
+
+    def test_pause(self) -> None:
+        action = RemoteActionCtlMusic(operation="pause")
+        assert action.cmd_id == "270"
+        assert action.cmd_content == '{"operation":"pause"}'
+
+    def test_next(self) -> None:
+        action = RemoteActionCtlMusic(operation="next")
+        assert action.cmd_id == "270"
+        assert action.cmd_content == '{"operation":"next"}'
