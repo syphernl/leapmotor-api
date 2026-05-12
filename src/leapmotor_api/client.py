@@ -45,6 +45,7 @@ from .const import (
     REMOTE_CTL_MUSIC,
     REMOTE_CTL_ON3_OFF,
     REMOTE_CTL_ON3_ON,
+    REMOTE_CTL_PREPARE_CAR,
     REMOTE_CTL_QUICK_COOL,
     REMOTE_CTL_QUICK_HEAT,
     REMOTE_CTL_REAR_SEATS,
@@ -608,6 +609,11 @@ class LeapmotorApiClient:
         """Control rear seats (cmd_id=470). C16 only."""
         cmd_content = json.dumps({"seatInfo": seat_info}, separators=(",", ":"))
         return self._remote_control(vin=vin, action=REMOTE_CTL_REAR_SEATS, cmd_content=cmd_content)
+
+    def prepare_car(self, vin: str, *, params: dict[str, Any]) -> dict[str, Any]:
+        """Activate pre-conditioning (cmd_id=360). C10/B10 only."""
+        cmd_content = json.dumps(params, separators=(",", ":"))
+        return self._remote_control(vin=vin, action=REMOTE_CTL_PREPARE_CAR, cmd_content=cmd_content)
 
     def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         cmd_content = json.dumps({"value": value}, separators=(",", ":")) if value is not None else None

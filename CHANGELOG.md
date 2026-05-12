@@ -75,6 +75,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `rear_seats()` method to both `LeapmotorApiClient` and `AsyncLeapmotorApiClient`
 - Added `REMOTE_CTL_REAR_SEATS` constant and `RemoteActionCtlRearSeats` dataclass (cmd_id=470)
 - Added `VehicleRight.REAR_SEATS = 470`
+- Added `prepare_car()` method to both `LeapmotorApiClient` and `AsyncLeapmotorApiClient`
+- Added `REMOTE_CTL_PREPARE_CAR` constant and `RemoteActionCtlPrepareCar` dataclass (cmd_id=360)
+- Added `prepare_car()` method to both `LeapmotorApiClient` and `AsyncLeapmotorApiClient`
+- Added `REMOTE_CTL_PREPARE_CAR` constant and `RemoteActionCtlPrepareCar` dataclass (cmd_id=360)
 - Added permission reference table to `docs/api.md` mapping each `VehicleRight` to its corresponding remote command
 - Added `VehicleSecurityState` IntEnum for `vehicle_security_active` field (signal `1255`): `INACTIVE=0`, `ACTIVE_1=1`, `ACTIVE_2=2`, `ACTIVE_3=3`
 - Added `SecurityStatus.is_security_active` convenience property: `True` when anti-theft is active (values 1, 2, or 3)

@@ -210,6 +210,10 @@ class AsyncLeapmotorApiClient:
         """Control rear seats (cmd_id=470). C16 only."""
         return await asyncio.to_thread(self._client.rear_seats, vin, seat_info=seat_info)
 
+    async def prepare_car(self, vin: str, *, params: dict[str, Any]) -> dict[str, Any]:
+        """Activate pre-conditioning (cmd_id=360). C10/B10 only."""
+        return await asyncio.to_thread(self._client.prepare_car, vin, params=params)
+
     async def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
         kwargs: dict[str, str] = {}
         if value is not None:

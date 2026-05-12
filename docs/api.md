@@ -788,6 +788,24 @@ Requires PIN. Schedules a firmware-over-the-air installation for the given task.
 Requires PIN. Controls 2nd/3rd row seat adjustments.
 Available on C16 models only.
 
+### Prepare Car (cmd_id=360)
+
+| Action | cmd_content |
+|---|---|
+| Pre-condition | Full JSON payload |
+
+Requires PIN. Activates pre-conditioning (climate, seat heat, etc.).
+Available on C10/B10 models. The payload is a full JSON string with scheduling and climate parameters.
+
+### Prepare Car (cmd_id=360)
+
+| Action | cmd_content |
+|---|---|
+| Pre-condition | Full JSON payload |
+
+Requires PIN. Activates pre-conditioning (climate, seat heat, etc.).
+Available on C10/B10 models. The payload is a full JSON string with scheduling and climate parameters.
+
 ---
 
 ## Permission Reference

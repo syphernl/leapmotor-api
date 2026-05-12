@@ -52,6 +52,7 @@ from leapmotor_api.models import (
     RemoteActionCtlLock,
     RemoteActionCtlMusic,
     RemoteActionCtlOn3,
+    RemoteActionCtlPrepareCar,
     RemoteActionCtlRearSeats,
     RemoteActionCtlRearviewMirrorHeat,
     RemoteActionCtlSeatHeat,
@@ -2287,4 +2288,15 @@ class TestRemoteActionCtlRearSeats:
     def test_custom(self) -> None:
         action = RemoteActionCtlRearSeats(seat_info="fold")
         assert action.cmd_id == "470"
-        assert action.cmd_content == '{"seatInfo":"fold"}'
+
+
+class TestRemoteActionCtlPrepareCar:
+    def test_default(self) -> None:
+        action = RemoteActionCtlPrepareCar()
+        assert action.cmd_id == "360"
+        assert action.cmd_content == ""
+
+    def test_custom_content(self) -> None:
+        action = RemoteActionCtlPrepareCar(cmd_content='{"temperature":"24"}')
+        assert action.cmd_id == "360"
+        assert action.cmd_content == '{"temperature":"24"}'

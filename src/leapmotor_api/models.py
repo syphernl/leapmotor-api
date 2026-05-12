@@ -2011,6 +2011,18 @@ class RemoteActionCtlRearSeats(RemoteActionSpec):
 
 
 @dataclass(slots=True)
+class RemoteActionCtlPrepareCar(RemoteActionSpec):
+    """Prepare car / pre-conditioning command (cmd_id=360).
+
+    Activates pre-conditioning (climate, seat heat, etc.) on C10/B10 models.
+    The ``cmd_content`` is the full JSON payload string.
+    """
+
+    cmd_id: str = field(default="360", init=False)
+    cmd_content: str = ""
+
+
+@dataclass(slots=True)
 class RemoteActionResult:
     """Result of a remote-control action."""
 
