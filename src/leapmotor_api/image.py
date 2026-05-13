@@ -91,12 +91,12 @@ def _build_layer_list(status: VehicleStatus | None) -> list[str]:
         layers.append("carpic_leftbehind_window_close.png")
 
     # --- Charging ---
-    if is_plugged:
-        layers.append("carpic_charge_open.png")
-        layers.append("carpic_charge1.png")  # plugged but not yet charging
-    elif is_charging:
+    if is_charging:
         layers.append("carpic_charge_open.png")
         layers.append("carpic_charge2.png")  # static frame for still image
+    elif is_plugged:
+        layers.append("carpic_charge_open.png")
+        layers.append("carpic_charge1.png")  # plugged but not yet charging
 
     return layers
 
