@@ -14,7 +14,14 @@ if TYPE_CHECKING:
     from datetime import date
 
     from .client import LeapmotorApiClient
-    from .models import ChargeDailyDetailPage, MessageList, Vehicle, VehicleStatus
+    from .models import (
+        ChargeDailyDetailPage,
+        ConsumptionLastWeekBreakdown,
+        ConsumptionWeeklyRank,
+        MessageList,
+        Vehicle,
+        VehicleStatus,
+    )
 
 
 class AsyncLeapmotorApiClient:
@@ -293,6 +300,14 @@ class AsyncLeapmotorApiClient:
 
     async def get_unread_message_count(self) -> int:
         return await asyncio.to_thread(self._client.get_unread_message_count)
+
+    async def get_consumption_weekly_rank(self, vehicle: Vehicle) -> ConsumptionWeeklyRank:
+        """Fetch six-week energy consumption and ranking data."""
+        return await asyncio.to_thread(self._client.get_consumption_weekly_rank, vehicle)
+
+    async def get_consumption_last_week_breakdown(self, vehicle: Vehicle) -> ConsumptionLastWeekBreakdown:
+        """Fetch last-week energy split by driving, A/C, and other."""
+        return await asyncio.to_thread(self._client.get_consumption_last_week_breakdown, vehicle)
 
     async def get_charging_daily_detail(
         self,
