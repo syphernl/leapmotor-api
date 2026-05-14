@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-05-14
+
+### Fixed
+- Added missing `get_consumption_weekly_rank()` and `get_consumption_last_week_breakdown()` methods to `AsyncLeapmotorApiClient`
+
 ## [0.2.0] - 2026-05-14
 
 ### Added
