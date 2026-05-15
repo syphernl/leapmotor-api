@@ -1837,6 +1837,25 @@ class RemoteActionCtlClimate(RemoteActionSpec):
 
 
 @dataclass(slots=True)
+class RemoteActionCtlClimateSchedule(RemoteActionSpec):
+    """Climate schedule command (cmd_id=171).
+
+    Sends one or more scheduled climate activations to the vehicle.
+    The ``controls`` list contains individual schedule entries.
+    """
+
+    cmd_id: str = field(default="171", init=False)
+    cmd_content: str = field(default="", init=False)
+    controls: list[dict[str, Any]] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps(
+            {"controls": self.controls},
+            separators=(",", ":"),
+        )
+
+
+@dataclass(slots=True)
 class RemoteActionCtlChargePlan(RemoteActionSpec):
     """Charge plan / schedule command (cmd_id=190)."""
 

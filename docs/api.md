@@ -573,6 +573,50 @@ All climate profiles use `cmd_id=170`. The `cmd_content` is a JSON with:
 
 Requires PIN.
 
+### Climate Schedule (cmd_id=171)
+
+Schedules one or more climate activations. The `cmd_content` wraps a `controls` array:
+
+```json
+{
+  "controls": [
+    {
+      "mode": "cold",
+      "on": "1",
+      "operate": "manual",
+      "set_id": "uuid-string",
+      "start_time": "07:30",
+      "temperature": "22",
+      "update_time": "1747309200000",
+      "windlevel": "4",
+      "days": [1, 2, 3, 4, 5],
+      "circle": "in",
+      "position": "all",
+      "wshld": "0"
+    }
+  ]
+}
+```
+
+| Field | Values | Description |
+|---|---|---|
+| `mode` | `cold`, `hot`, `wind` | Climate mode |
+| `on` | `"1"`, `"0"` | Schedule enabled/disabled |
+| `operate` | `manual`, `auto` | Operation mode |
+| `set_id` | UUID string | Unique schedule identifier |
+| `start_time` | `"HH:mm"` | Activation time |
+| `temperature` | `"18"` – `"32"` | Target temperature (°C) |
+| `update_time` | epoch ms string | Last modification timestamp |
+| `windlevel` | `"1"` – `"7"` | Fan level |
+| `days` | `int[]` | Days of week (0=Sun..6=Sat), empty=once |
+| `circle` | `in`, `out` | Air recirculation |
+| `position` | `all` | Air distribution position |
+| `wshld` | `"0"`, `"1"` | 0=Off, 1=Windshield defrost on |
+
+Multiple schedules can be sent in a single `controls` array.
+
+Requires PIN.
+
 ### Send Destination (cmd_id=180)
 
 | Field | Description |

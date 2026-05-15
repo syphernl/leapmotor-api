@@ -26,6 +26,7 @@ from .const import (
     KNOWN_ACCOUNT_P12_PASSWORDS,
     REMOTE_CTL_AC_OFF,
     REMOTE_CTL_AC_ON,
+    REMOTE_CTL_AC_SCHEDULE,
     REMOTE_CTL_AC_SWITCH,
     REMOTE_CTL_AUTOPARK,
     REMOTE_CTL_BATTERY_PREHEAT,
@@ -109,6 +110,7 @@ from .models import (
     ConsumptionWeeklyRank,
     MessageList,
     RemoteActionCtlChargePlan,
+    RemoteActionCtlClimateSchedule,
     RemoteActionCtlSendDestination,
     Vehicle,
     VehicleStatus,
@@ -664,6 +666,37 @@ class LeapmotorApiClient:
     def windshield_defrost(self, vin: str, *, params: dict[str, str] | None = None) -> dict[str, Any]:
         cmd_content = json.dumps(params, separators=(",", ":")) if params is not None else None
         return self._remote_control(vin=vin, action=REMOTE_CTL_WINDSHIELD_DEFROST, cmd_content=cmd_content)
+
+    def set_climate_schedule(
+        self,
+        vin: str,
+        *,
+        controls: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """Set climate schedule (cmd_id=171).
+
+        Args:
+            vin: Vehicle identification number.
+            controls: List of schedule entries. Each entry is a dict with:
+                - mode: "cold", "hot", or "wind"
+                - on: "1" (enabled) or "0" (disabled)
+                - operate: "manual" or "auto"
+                - set_id: UUID string identifying the schedule
+                - start_time: "HH:mm" format
+                - temperature: "18"–"32"
+                - update_time: epoch milliseconds as string
+                - windlevel: "1"–"7"
+                - days: list of ints (0=Sun, 1=Mon...6=Sat), empty=once
+                - circle: "in" or "out"
+                - position: "all"
+                - wshld: "0" or "1"
+        """
+        schedule_spec = RemoteActionCtlClimateSchedule(controls=controls)
+        return self._remote_control(
+            vin=vin,
+            action=REMOTE_CTL_AC_SCHEDULE,
+            cmd_content=schedule_spec.cmd_content,
+        )
 
     def set_charge_limit(self, vin: str, charge_limit_percent: int) -> dict[str, Any]:
         """Set the charge limit while preserving the current charging plan values."""

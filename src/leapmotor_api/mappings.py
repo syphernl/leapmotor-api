@@ -9,6 +9,7 @@ from __future__ import annotations
 from .const import (
     REMOTE_CTL_AC_OFF,
     REMOTE_CTL_AC_ON,
+    REMOTE_CTL_AC_SCHEDULE,
     REMOTE_CTL_AC_SWITCH,
     REMOTE_CTL_AUTOPARK,
     REMOTE_CTL_BATTERY_PREHEAT,
@@ -90,6 +91,7 @@ from .models import (
     RemoteActionCtlBleKeyRestart,
     RemoteActionCtlChargePlan,
     RemoteActionCtlClimate,
+    RemoteActionCtlClimateSchedule,
     RemoteActionCtlFindCar,
     RemoteActionCtlFotaDownload,
     RemoteActionCtlFotaInstall,
@@ -213,6 +215,9 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
         windlevel=7,
         wshld=ClimateWindshield.ON,
         required_right=VehicleRight.WINDSHIELD_DEFROST,
+    ),
+    REMOTE_CTL_AC_SCHEDULE: RemoteActionCtlClimateSchedule(
+        required_right=VehicleRight.QUICK_CLIMATE,
     ),
     REMOTE_CTL_CHARGE_LIMIT: RemoteActionCtlChargePlan(required_right=VehicleRight.CHARGE_LIMIT),
     REMOTE_CTL_CHARGE_SCHEDULE: RemoteActionCtlChargePlan(required_right=VehicleRight.CHARGE_LIMIT),

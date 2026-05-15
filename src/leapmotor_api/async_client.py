@@ -280,6 +280,14 @@ class AsyncLeapmotorApiClient:
             kwargs["params"] = params
         return await asyncio.to_thread(self._client.windshield_defrost, vin, **kwargs)
 
+    async def set_climate_schedule(
+        self,
+        vin: str,
+        *,
+        controls: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        return await asyncio.to_thread(self._client.set_climate_schedule, vin, controls=controls)
+
     async def set_charge_limit(self, vin: str, charge_limit_percent: int) -> dict[str, Any]:
         return await asyncio.to_thread(self._client.set_charge_limit, vin, charge_limit_percent)
 

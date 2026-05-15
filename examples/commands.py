@@ -61,6 +61,18 @@ COMMANDS: dict[str, dict[str, object]] = {
         ],
     },
     "ac-off": {"help": "Turn AC off", "args": []},
+    "ac-schedule": {
+        "help": "Set climate schedule (start_time, temp, mode, wind, days)",
+        "args": [
+            {"name": "start_time", "type": str, "help": "Start time HH:mm (e.g. 07:30)"},
+            {"name": "--temp", "type": str, "help": "Temperature (e.g. 22)", "default": "26"},
+            {"name": "--mode", "type": str, "help": "Mode: cold, hot, wind", "default": "wind"},
+            {"name": "--wind", "type": str, "help": "Wind level 1-7 (e.g. 3)", "default": "3"},
+            {"name": "--days", "type": str, "help": "Days: 0-6 comma-sep (0=Sun), empty=once", "default": ""},
+            {"name": "--circle", "type": str, "help": "Circulation: in, out", "default": "out"},
+            {"name": "--off", "action": "store_true", "help": "Disable the schedule", "default": False},
+        ],
+    },
     "quick-cool": {"help": "Quick cooling", "args": []},
     "quick-heat": {"help": "Quick heating", "args": []},
     "defrost": {"help": "Windshield defrost", "args": []},
@@ -254,6 +266,26 @@ def execute_command(client: LeapmotorApiClient, vin: str, args: argparse.Namespa
         result = client.ac_on(vin, params=params or None)
     elif cmd == "ac-off":
         result = client.ac_off(vin)
+    elif cmd == "ac-schedule":
+        import time
+        import uuid
+
+        days_list = [int(d) for d in args.days.split(",") if d.strip()] if args.days else []
+        control = {
+            "mode": args.mode,
+            "on": "0" if args.off else "1",
+            "operate": "manual",
+            "set_id": str(uuid.uuid4()),
+            "start_time": args.start_time,
+            "temperature": args.temp,
+            "update_time": str(int(time.time() * 1000)),
+            "windlevel": args.wind,
+            "days": days_list,
+            "circle": args.circle,
+            "position": "all",
+            "wshld": "0",
+        }
+        result = client.set_climate_schedule(vin, controls=[control])
     elif cmd == "quick-cool":
         result = client.quick_cool(vin)
     elif cmd == "quick-heat":
