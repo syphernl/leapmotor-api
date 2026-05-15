@@ -596,8 +596,12 @@ Does **not** require PIN. Uses the flow without `operatePassword`.
 | `recharge` | Recharge flag |
 | `starttime` | Schedule start time |
 
-Requires PIN. The command preserves the current charging schedule,
-updating only the SOC limit.
+Requires PIN.
+
+**Library methods:**
+
+- `set_charge_limit(vin, charge_limit_percent)` — updates only the SOC limit, preserving the current schedule values.
+- `set_charge_schedule(vin, enabled, soc_limit, start_time, end_time, cycles, circulation, recharge)` — sets all schedule fields at once.
 
 ### Unlock Charger (cmd_id=192)
 

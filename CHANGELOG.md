@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [0.2.1] - 2026-05-14
 
+### Added
+- Added `set_charge_schedule()` method to both `LeapmotorApiClient` and `AsyncLeapmotorApiClient` for setting the full charging schedule (enabled, soc_limit, start_time, end_time, cycles, circulation, recharge)
+- Added `REMOTE_CTL_CHARGE_SCHEDULE` constant
+
 ### Fixed
 - Added missing `get_consumption_weekly_rank()` and `get_consumption_last_week_breakdown()` methods to `AsyncLeapmotorApiClient`
 

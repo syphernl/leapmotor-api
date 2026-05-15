@@ -274,6 +274,30 @@ class AsyncLeapmotorApiClient:
     async def set_charge_limit(self, vin: str, charge_limit_percent: int) -> dict[str, Any]:
         return await asyncio.to_thread(self._client.set_charge_limit, vin, charge_limit_percent)
 
+    async def set_charge_schedule(
+        self,
+        vin: str,
+        *,
+        enabled: bool,
+        soc_limit: int = 80,
+        start_time: str,
+        end_time: str,
+        cycles: str,
+        circulation: int = 0,
+        recharge: int = 0,
+    ) -> dict[str, Any]:
+        return await asyncio.to_thread(
+            self._client.set_charge_schedule,
+            vin,
+            enabled=enabled,
+            soc_limit=soc_limit,
+            start_time=start_time,
+            end_time=end_time,
+            cycles=cycles,
+            circulation=circulation,
+            recharge=recharge,
+        )
+
     async def send_destination(
         self,
         vin: str,

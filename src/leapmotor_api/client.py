@@ -30,6 +30,7 @@ from .const import (
     REMOTE_CTL_BATTERY_PREHEAT_OFF,
     REMOTE_CTL_BLE_KEY_RESTART,
     REMOTE_CTL_CHARGE_LIMIT,
+    REMOTE_CTL_CHARGE_SCHEDULE,
     REMOTE_CTL_CHARGE_START,
     REMOTE_CTL_CHARGE_STOP,
     REMOTE_CTL_FIND_CAR,
@@ -676,6 +677,45 @@ class LeapmotorApiClient:
         return self._remote_control(
             vin=vin,
             action=REMOTE_CTL_CHARGE_LIMIT,
+            cmd_content=charge_spec.cmd_content,
+        )
+
+    def set_charge_schedule(
+        self,
+        vin: str,
+        *,
+        enabled: bool,
+        soc_limit: int = 80,
+        start_time: str,
+        end_time: str,
+        cycles: str,
+        circulation: int = 0,
+        recharge: int = 0,
+    ) -> dict[str, Any]:
+        """Set the full charging schedule.
+
+        Args:
+            vin: Vehicle identification number.
+            enabled: Whether the schedule is active.
+            soc_limit: Target SOC percentage (default 80).
+            start_time: Schedule start time (e.g. "23:00").
+            end_time: Schedule end time (e.g. "07:00").
+            cycles: Days of the week (e.g. "1,2,3,4,5,6,7").
+            circulation: Repeat mode (0=once, 1=repeat).
+            recharge: Auto-recharge flag (0=off, 1=on).
+        """
+        charge_spec = RemoteActionCtlChargePlan(
+            charge_enable=1 if enabled else 0,
+            chargesoc=soc_limit,
+            circulation=circulation,
+            cycles=cycles,
+            endtime=end_time,
+            recharge=recharge,
+            starttime=start_time,
+        )
+        return self._remote_control(
+            vin=vin,
+            action=REMOTE_CTL_CHARGE_SCHEDULE,
             cmd_content=charge_spec.cmd_content,
         )
 

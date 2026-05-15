@@ -222,6 +222,15 @@ client.seat_ventilation("WLM...", position=3, level=2)
 client.open_sunroof("WLM...")
 client.close_sunroof("WLM...")
 client.set_charge_limit("WLM...", charge_limit_percent=80)
+client.set_charge_schedule(
+    "WLM...",
+    enabled=True,
+    soc_limit=80,
+    start_time="23:00",
+    end_time="07:00",
+    cycles="1,2,3,4,5,6,7",
+    circulation=1,
+)
 client.unlock_charger("WLM...")
 ```
 
