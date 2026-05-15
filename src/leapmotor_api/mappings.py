@@ -7,6 +7,8 @@ between ``const`` and ``models``.
 from __future__ import annotations
 
 from .const import (
+    REMOTE_CTL_AC_OFF,
+    REMOTE_CTL_AC_ON,
     REMOTE_CTL_AC_SWITCH,
     REMOTE_CTL_AUTOPARK,
     REMOTE_CTL_BATTERY_PREHEAT,
@@ -154,12 +156,32 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
     REMOTE_CTL_WINDOWS_CLOSE: RemoteActionCtlWindows(value=WindowsValue.CLOSE, required_right=VehicleRight.WINDOWS),
     REMOTE_CTL_AC_SWITCH: RemoteActionCtlClimate(
         circle=ClimateCircle.OUT,
-        mode=ClimateMode.NO_HOT_COLD,
+        mode=ClimateMode.WIND,
         operate=ClimateOperate.MANUAL,
         position=ClimatePosition.ALL,
-        temperature="24",
-        windlevel=4,
-        wshld=ClimateWindshield.NORMAL,
+        temperature="26",
+        windlevel=3,
+        wshld=ClimateWindshield.OFF,
+        required_right=VehicleRight.CLIMATE,
+    ),
+    REMOTE_CTL_AC_ON: RemoteActionCtlClimate(
+        circle=ClimateCircle.OUT,
+        mode=ClimateMode.WIND,
+        operate=ClimateOperate.MANUAL,
+        position=ClimatePosition.ALL,
+        temperature="26",
+        windlevel=3,
+        wshld=ClimateWindshield.OFF,
+        required_right=VehicleRight.CLIMATE,
+    ),
+    REMOTE_CTL_AC_OFF: RemoteActionCtlClimate(
+        circle=ClimateCircle.OUT,
+        mode=ClimateMode.WIND,
+        operate=ClimateOperate.CLOSE,
+        position=ClimatePosition.ALL,
+        temperature="26",
+        windlevel=3,
+        wshld=ClimateWindshield.OFF,
         required_right=VehicleRight.CLIMATE,
     ),
     REMOTE_CTL_QUICK_COOL: RemoteActionCtlClimate(
@@ -169,7 +191,7 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
         position=ClimatePosition.ALL,
         temperature="18",
         windlevel=7,
-        wshld=ClimateWindshield.NORMAL,
+        wshld=ClimateWindshield.OFF,
         required_right=VehicleRight.QUICK_CLIMATE,
     ),
     REMOTE_CTL_QUICK_HEAT: RemoteActionCtlClimate(
@@ -179,7 +201,7 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
         position=ClimatePosition.ALL,
         temperature="32",
         windlevel=7,
-        wshld=ClimateWindshield.NORMAL,
+        wshld=ClimateWindshield.OFF,
         required_right=VehicleRight.QUICK_CLIMATE,
     ),
     REMOTE_CTL_WINDSHIELD_DEFROST: RemoteActionCtlClimate(
@@ -189,7 +211,7 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
         position=ClimatePosition.ALL,
         temperature="32",
         windlevel=7,
-        wshld=ClimateWindshield.DEFROST,
+        wshld=ClimateWindshield.ON,
         required_right=VehicleRight.WINDSHIELD_DEFROST,
     ),
     REMOTE_CTL_CHARGE_LIMIT: RemoteActionCtlChargePlan(required_right=VehicleRight.CHARGE_LIMIT),

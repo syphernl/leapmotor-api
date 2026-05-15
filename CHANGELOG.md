@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Added `ac_on()` and `ac_off()` methods to both `LeapmotorApiClient` and `AsyncLeapmotorApiClient` for explicit climate on/off control
+- Added `REMOTE_CTL_AC_ON` and `REMOTE_CTL_AC_OFF` constants
+- Added `ClimateOperate.CLOSE` value (`"close"`) — required to turn off the climate system
+
+### Changed
+- **BREAKING:** `ClimateMode.NO_HOT_COLD` renamed to `ClimateMode.WIND` (value changed from `"nohotcold"` to `"wind"` to match decompiled APK)
+- **BREAKING:** `ClimateWindshield.NORMAL`/`DEFROST` renamed to `ClimateWindshield.OFF`/`ON` (values changed from `"1"`/`"2"` to `"0"`/`"1"` to match decompiled APK)
+- Changed `RemoteActionCtlClimate` default `temperature` from `"24"` to `"26"` (APK default)
+- Changed `RemoteActionCtlClimate` default `windlevel` from `4` to `3` (APK default)
+- Updated all climate action specs in `REMOTE_ACTION_SPECS` to use corrected enum values
+- `examples/commands.py` `ac-on` now uses `ac_on()` instead of `ac_switch()`, added `ac-off` command
+
 ## [0.2.1] - 2026-05-14
 
 ### Added

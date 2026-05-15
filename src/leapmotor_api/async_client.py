@@ -253,6 +253,15 @@ class AsyncLeapmotorApiClient:
             kwargs["params"] = params
         return await asyncio.to_thread(self._client.ac_switch, vin, **kwargs)
 
+    async def ac_on(self, vin: str, *, params: dict[str, str] | None = None) -> dict[str, Any]:
+        kwargs: dict[str, Any] = {}
+        if params is not None:
+            kwargs["params"] = params
+        return await asyncio.to_thread(self._client.ac_on, vin, **kwargs)
+
+    async def ac_off(self, vin: str) -> dict[str, Any]:
+        return await asyncio.to_thread(self._client.ac_off, vin)
+
     async def quick_cool(self, vin: str, *, params: dict[str, str] | None = None) -> dict[str, Any]:
         kwargs: dict[str, Any] = {}
         if params is not None:

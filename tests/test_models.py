@@ -1903,12 +1903,12 @@ class TestRemoteActionCtlClimate:
 
         content = json.loads(action.cmd_content)
         assert content["circle"] == "out"
-        assert content["mode"] == "nohotcold"
+        assert content["mode"] == "wind"
         assert content["operate"] == "manual"
         assert content["position"] == "all"
-        assert content["temperature"] == "24"
-        assert content["windlevel"] == "4"
-        assert content["wshld"] == "1"
+        assert content["temperature"] == "26"
+        assert content["windlevel"] == "3"
+        assert content["wshld"] == "0"
 
     def test_custom_values(self) -> None:
         action = RemoteActionCtlClimate(
@@ -1917,7 +1917,7 @@ class TestRemoteActionCtlClimate:
             operate="auto",
             temperature="20",
             windlevel=6,
-            wshld="2",
+            wshld="1",
         )
         import json
 
@@ -1927,7 +1927,7 @@ class TestRemoteActionCtlClimate:
         assert content["operate"] == "auto"
         assert content["temperature"] == "20"
         assert content["windlevel"] == "6"
-        assert content["wshld"] == "2"
+        assert content["wshld"] == "1"
 
 
 # ---------------------------------------------------------------------------
@@ -1943,18 +1943,19 @@ class TestEnumValues:
     def test_climate_mode(self) -> None:
         assert ClimateMode.COLD == "cold"
         assert ClimateMode.HOT == "hot"
-        assert ClimateMode.NO_HOT_COLD == "nohotcold"
+        assert ClimateMode.WIND == "wind"
 
     def test_climate_operate(self) -> None:
         assert ClimateOperate.MANUAL == "manual"
         assert ClimateOperate.AUTO == "auto"
+        assert ClimateOperate.CLOSE == "close"
 
     def test_climate_position(self) -> None:
         assert ClimatePosition.ALL == "all"
 
     def test_climate_windshield(self) -> None:
-        assert ClimateWindshield.NORMAL == "1"
-        assert ClimateWindshield.DEFROST == "2"
+        assert ClimateWindshield.OFF == "0"
+        assert ClimateWindshield.ON == "1"
 
     def test_hvac_direction(self) -> None:
         assert HvacDirection.WIND == 0

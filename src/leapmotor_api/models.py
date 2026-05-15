@@ -1475,7 +1475,7 @@ class ClimateMode(StrEnum):
 
     COLD = "cold"
     HOT = "hot"
-    NO_HOT_COLD = "nohotcold"
+    WIND = "wind"
 
 
 class ClimateOperate(StrEnum):
@@ -1483,6 +1483,7 @@ class ClimateOperate(StrEnum):
 
     MANUAL = "manual"
     AUTO = "auto"
+    CLOSE = "close"
 
 
 class ClimatePosition(StrEnum):
@@ -1494,8 +1495,8 @@ class ClimatePosition(StrEnum):
 class ClimateWindshield(StrEnum):
     """Windshield defrost setting."""
 
-    NORMAL = "1"
-    DEFROST = "2"
+    OFF = "0"
+    ON = "1"
 
 
 class MusicOperation(StrEnum):
@@ -1807,12 +1808,12 @@ class RemoteActionCtlClimate(RemoteActionSpec):
     """Climate / AC command (cmd_id=170)."""
 
     circle: str = ClimateCircle.OUT
-    mode: str = ClimateMode.NO_HOT_COLD
+    mode: str = ClimateMode.WIND
     operate: str = ClimateOperate.MANUAL
     position: str = ClimatePosition.ALL
-    temperature: str = "24"
-    windlevel: int = 4
-    wshld: str = ClimateWindshield.NORMAL
+    temperature: str = "26"
+    windlevel: int = 3
+    wshld: str = ClimateWindshield.OFF
     cmd_id: str = field(default="170", init=False)
     cmd_content: str = field(default="", init=False)
 

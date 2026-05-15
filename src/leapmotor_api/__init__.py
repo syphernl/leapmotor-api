@@ -8,6 +8,8 @@ from .client import LeapmotorApiClient
 from .const import (
     DEFAULT_BASE_URL,
     DEFAULT_LANGUAGE,
+    REMOTE_CTL_AC_OFF,
+    REMOTE_CTL_AC_ON,
     REMOTE_CTL_AC_SWITCH,
     REMOTE_CTL_AUTOPARK,
     REMOTE_CTL_BATTERY_PREHEAT,
@@ -221,6 +223,8 @@ __all__ = [
     "On3Value",
     "RearviewMirrorHeatValue",
     "REMOTE_ACTION_SPECS",
+    "REMOTE_CTL_AC_OFF",
+    "REMOTE_CTL_AC_ON",
     "REMOTE_CTL_AC_SWITCH",
     "REMOTE_CTL_BATTERY_PREHEAT",
     "REMOTE_CTL_BATTERY_PREHEAT_OFF",

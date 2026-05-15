@@ -554,21 +554,22 @@ All climate profiles use `cmd_id=170`. The `cmd_content` is a JSON with:
 | Field | Values | Description |
 |---|---|---|
 | `circle` | `in`, `out` | Air recirculation |
-| `mode` | `cold`, `hot`, `nohotcold` | Climate mode |
-| `operate` | `manual`, `auto` | Operation mode |
+| `mode` | `cold`, `hot`, `wind` | Climate mode |
+| `operate` | `manual`, `auto`, `close` | Operation mode (`close` = turn off) |
 | `position` | `all` | Air distribution position |
 | `temperature` | `"18"` – `"32"` | Target temperature (°C) |
 | `windlevel` | `"1"` – `"7"` | Fan level |
-| `wshld` | `1`, `2` | 1=Normal, 2=Windshield defrost |
+| `wshld` | `0`, `1` | 0=Off, 1=Windshield defrost on |
 
 **Predefined profiles:**
 
-| Action | circle | mode | temp | wind | wshld |
-|---|---|---|---|---|---|
-| AC Switch (off) | `out` | `nohotcold` | 24 | 4 | 1 |
-| Quick Cool | `in` | `cold` | 18 | 7 | 1 |
-| Quick Heat | `in` | `hot` | 32 | 7 | 1 |
-| Windshield Defrost | `in` | `hot` | 32 | 7 | 2 |
+| Action | operate | circle | mode | temp | wind | wshld |
+|---|---|---|---|---|---|---|
+| AC On (default) | `manual` | `out` | `wind` | 26 | 3 | 0 |
+| AC Off | `close` | `out` | `wind` | 26 | 3 | 0 |
+| Quick Cool | `manual` | `in` | `cold` | 18 | 7 | 0 |
+| Quick Heat | `manual` | `in` | `hot` | 32 | 7 | 0 |
+| Windshield Defrost | `manual` | `in` | `hot` | 32 | 7 | 1 |
 
 Requires PIN.
 

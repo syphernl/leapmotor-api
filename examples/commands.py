@@ -44,10 +44,11 @@ COMMANDS: dict[str, dict[str, object]] = {
         "help": "Turn AC on (optional params: temp, mode, wind)",
         "args": [
             {"name": "--temp", "type": str, "help": "Temperature (e.g. 22)", "default": None},
-            {"name": "--mode", "type": str, "help": "Mode: cold, hot, nohotcold", "default": None},
+            {"name": "--mode", "type": str, "help": "Mode: cold, hot, wind", "default": None},
             {"name": "--wind", "type": str, "help": "Wind level (e.g. 3)", "default": None},
         ],
     },
+    "ac-off": {"help": "Turn AC off", "args": []},
     "quick-cool": {"help": "Quick cooling", "args": []},
     "quick-heat": {"help": "Quick heating", "args": []},
     "defrost": {"help": "Windshield defrost", "args": []},
@@ -227,7 +228,9 @@ def execute_command(client: LeapmotorApiClient, vin: str, args: argparse.Namespa
             params["mode"] = args.mode
         if args.wind:
             params["windlevel"] = args.wind
-        result = client.ac_switch(vin, params=params or None)
+        result = client.ac_on(vin, params=params or None)
+    elif cmd == "ac-off":
+        result = client.ac_off(vin)
     elif cmd == "quick-cool":
         result = client.quick_cool(vin)
     elif cmd == "quick-heat":

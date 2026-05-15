@@ -24,6 +24,8 @@ from .const import (
     DEFAULT_POLICY_ID,
     DEFAULT_TIMEOUT,
     KNOWN_ACCOUNT_P12_PASSWORDS,
+    REMOTE_CTL_AC_OFF,
+    REMOTE_CTL_AC_ON,
     REMOTE_CTL_AC_SWITCH,
     REMOTE_CTL_AUTOPARK,
     REMOTE_CTL_BATTERY_PREHEAT,
@@ -643,6 +645,13 @@ class LeapmotorApiClient:
     def ac_switch(self, vin: str, *, params: dict[str, str] | None = None) -> dict[str, Any]:
         cmd_content = json.dumps(params, separators=(",", ":")) if params is not None else None
         return self._remote_control(vin=vin, action=REMOTE_CTL_AC_SWITCH, cmd_content=cmd_content)
+
+    def ac_on(self, vin: str, *, params: dict[str, str] | None = None) -> dict[str, Any]:
+        cmd_content = json.dumps(params, separators=(",", ":")) if params is not None else None
+        return self._remote_control(vin=vin, action=REMOTE_CTL_AC_ON, cmd_content=cmd_content)
+
+    def ac_off(self, vin: str) -> dict[str, Any]:
+        return self._remote_control(vin=vin, action=REMOTE_CTL_AC_OFF)
 
     def quick_cool(self, vin: str, *, params: dict[str, str] | None = None) -> dict[str, Any]:
         cmd_content = json.dumps(params, separators=(",", ":")) if params is not None else None

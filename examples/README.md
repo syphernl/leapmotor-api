@@ -126,6 +126,7 @@ python examples/commands.py battery-preheat-off
 ```bash
 python examples/commands.py ac-on                              # turn AC on with defaults
 python examples/commands.py ac-on --temp 22 --mode cold --wind 3
+python examples/commands.py ac-off                             # turn AC off
 python examples/commands.py quick-cool
 python examples/commands.py quick-heat
 python examples/commands.py defrost                            # windshield defrost
