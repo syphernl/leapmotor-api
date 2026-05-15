@@ -625,7 +625,7 @@ Retrieves active climate schedules from the server.
 
 ```
 POST /carownerservice/oversea/vehicle/v1/app/remote/ctl/getAppointment
-Body: vin={VIN}&cmdType=171
+Body: vin={VIN}&cmdId=171
 ```
 
 The response `data` field is a **JSON string** that must be double-parsed:
@@ -639,7 +639,7 @@ The response `data` field is a **JSON string** that must be double-parsed:
 
 Returns the same `controls` array structure used by cmd_id=171. Empty string or null `data` means no active schedules.
 
-This endpoint is shared with other schedule types (`cmdType=161` PTC heating, `cmdType=190` charge schedule, `cmdType=392` FOTA schedule).
+This endpoint is shared with other schedule types (`cmdId=161` PTC heating, `cmdId=190` charge schedule, `cmdId=392` FOTA schedule).
 
 Does not require PIN.
 

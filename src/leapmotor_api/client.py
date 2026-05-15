@@ -725,11 +725,11 @@ class LeapmotorApiClient:
             sign_key=self.sign_key,
             device_id=self.device_id,
             vin=vin,
-            body_params={"cmdType": "171"},
+            body_params={"cmdId": "171"},
             language=self.language,
         ).to_dict()
         headers.update(self._auth_headers())
-        data = f"vin={quote(vin, safe='')}&cmdType=171"
+        data = f"vin={quote(vin, safe='')}&cmdId=171"
         response = self._post(
             path="/carownerservice/oversea/vehicle/v1/app/remote/ctl/getAppointment",
             headers=headers,
