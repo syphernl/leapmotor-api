@@ -675,28 +675,90 @@ class LeapmotorApiClient:
     ) -> dict[str, Any]:
         """Set climate schedule (cmd_id=171).
 
+        Each invocation is a **full-state replacement**: the ``controls``
+        list must contain *all* active schedules.  Pass an empty list to
+        cancel every existing schedule.
+
         Args:
             vin: Vehicle identification number.
             controls: List of schedule entries. Each entry is a dict with:
                 - mode: "cold", "hot", or "wind"
                 - on: "1" (enabled) or "0" (disabled)
                 - operate: "manual" or "auto"
-                - set_id: UUID string identifying the schedule
-                - start_time: "HH:mm" format
+                - set_id: unique id (format: "air_set" + phoneId + epochMs)
+                - start_time: "yyyy-MM-dd HH:mm:00" in vehicle timezone
                 - temperature: "18"–"32"
                 - update_time: epoch milliseconds as string
                 - windlevel: "1"–"7"
                 - days: list of ints (0=Sun, 1=Mon...6=Sat), empty=once
-                - circle: "in" or "out"
+                - circle: "in", "out", or None (if unsupported)
                 - position: "all"
                 - wshld: "0" or "1"
         """
         schedule_spec = RemoteActionCtlClimateSchedule(controls=controls)
+        _LOGGER.info("Climate schedule cmd_content: %s", schedule_spec.cmd_content)
         return self._remote_control(
             vin=vin,
             action=REMOTE_CTL_AC_SCHEDULE,
             cmd_content=schedule_spec.cmd_content,
         )
+
+    def cancel_climate_schedule(self, vin: str) -> dict[str, Any]:
+        """Cancel all climate schedules (sends empty controls array)."""
+        return self.set_climate_schedule(vin, controls=[])
+
+    def get_climate_schedule(self, vin: str) -> list[dict[str, Any]]:
+        """Retrieve active climate schedules from the server.
+
+        Returns the ``controls`` list (may be empty if no schedules are set).
+        Each entry has the same structure used by :meth:`set_climate_schedule`.
+
+        The server responds with ``{result: 0, data: "<json-string>"}``
+        where *data* is a JSON-encoded ``TimingAirCondBean`` that must be
+        double-parsed.
+        """
+        self._ensure_token()
+        return self._retry_on_token_expiry(self._get_climate_schedule, vin)
+
+    def _get_climate_schedule(self, vin: str) -> list[dict[str, Any]]:
+        headers = build_signed_headers(
+            sign_key=self.sign_key,
+            device_id=self.device_id,
+            vin=vin,
+            body_params={"cmdType": "171"},
+            language=self.language,
+        ).to_dict()
+        headers.update(self._auth_headers())
+        data = f"vin={quote(vin, safe='')}&cmdType=171"
+        response = self._post(
+            path="/carownerservice/oversea/vehicle/v1/app/remote/ctl/getAppointment",
+            headers=headers,
+            data=data,
+            cert=self.account_cert,
+        )
+        try:
+            resp_body: dict[str, Any] = json.loads(response["body"])
+        except ValueError as exc:
+            raise LeapmotorApiError(f"getAppointment returned non-JSON: {response['body'][:200]}") from exc
+
+        result_code = resp_body.get("result", resp_body.get("code"))
+        if response["status_code"] != 200 or result_code != 0:
+            msg = resp_body.get("message") or response["body"][:200]
+            raise LeapmotorApiError(f"getAppointment failed: {msg}")
+
+        # data is a JSON *string* — double-parse
+        raw_data = resp_body.get("data")
+        if not raw_data:
+            return []
+        if isinstance(raw_data, str):
+            try:
+                parsed = json.loads(raw_data)
+            except ValueError:
+                return []
+        else:
+            parsed = raw_data
+        controls: list[dict[str, Any]] = parsed.get("controls", []) if isinstance(parsed, dict) else []
+        return controls
 
     def set_charge_limit(self, vin: str, charge_limit_percent: int) -> dict[str, Any]:
         """Set the charge limit while preserving the current charging plan values."""
@@ -1036,12 +1098,13 @@ class LeapmotorApiClient:
             data=body,
             cert=self.account_cert,
         )
-        _LOGGER.debug(
+        _LOGGER.info(
             "Leapmotor remote ctl response for %s: HTTP %s %s",
             action_label,
             response["status_code"],
             response["body"],
         )
+        _LOGGER.info("Leapmotor remote ctl request body for %s: %s", action_label, body)
         result = self._parse_api_body(response["status_code"], response["body"], f"remote {action_label}")
 
         # Step 3: Poll for result

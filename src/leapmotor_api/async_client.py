@@ -288,6 +288,12 @@ class AsyncLeapmotorApiClient:
     ) -> dict[str, Any]:
         return await asyncio.to_thread(self._client.set_climate_schedule, vin, controls=controls)
 
+    async def cancel_climate_schedule(self, vin: str) -> dict[str, Any]:
+        return await asyncio.to_thread(self._client.cancel_climate_schedule, vin)
+
+    async def get_climate_schedule(self, vin: str) -> list[dict[str, Any]]:
+        return await asyncio.to_thread(self._client.get_climate_schedule, vin)
+
     async def set_charge_limit(self, vin: str, charge_limit_percent: int) -> dict[str, Any]:
         return await asyncio.to_thread(self._client.set_charge_limit, vin, charge_limit_percent)
 

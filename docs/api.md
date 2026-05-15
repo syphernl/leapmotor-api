@@ -575,7 +575,9 @@ Requires PIN.
 
 ### Climate Schedule (cmd_id=171)
 
-Schedules one or more climate activations. The `cmd_content` wraps a `controls` array:
+Schedules one or more climate activations. The `cmd_content` wraps a `controls` array.
+
+Each invocation is a **full-state replacement**: the array must contain *all* active schedules. An empty array (`{"controls": []}`) cancels every existing schedule.
 
 ```json
 {
@@ -583,11 +585,11 @@ Schedules one or more climate activations. The `cmd_content` wraps a `controls` 
     {
       "mode": "cold",
       "on": "1",
-      "operate": "manual",
-      "set_id": "uuid-string",
-      "start_time": "07:30",
+      "operate": "auto",
+      "set_id": "air_set3a4b5c6d1747382400000",
+      "start_time": "2026-05-16 07:30:00",
       "temperature": "22",
-      "update_time": "1747309200000",
+      "update_time": "1747382400000",
       "windlevel": "4",
       "days": [1, 2, 3, 4, 5],
       "circle": "in",
@@ -602,20 +604,44 @@ Schedules one or more climate activations. The `cmd_content` wraps a `controls` 
 |---|---|---|
 | `mode` | `cold`, `hot`, `wind` | Climate mode |
 | `on` | `"1"`, `"0"` | Schedule enabled/disabled |
-| `operate` | `manual`, `auto` | Operation mode |
-| `set_id` | UUID string | Unique schedule identifier |
-| `start_time` | `"HH:mm"` | Activation time |
+| `operate` | `manual`, `auto` | Operation mode (no `close` in scheduler) |
+| `set_id` | string | Unique id (`"air_set"` + phoneId + epochMs) |
+| `start_time` | `"yyyy-MM-dd HH:mm:00"` | Activation time in vehicle timezone |
 | `temperature` | `"18"` – `"32"` | Target temperature (°C) |
 | `update_time` | epoch ms string | Last modification timestamp |
 | `windlevel` | `"1"` – `"7"` | Fan level |
 | `days` | `int[]` | Days of week (0=Sun..6=Sat), empty=once |
-| `circle` | `in`, `out` | Air recirculation |
+| `circle` | `in`, `out`, null | Air recirculation (null if unsupported) |
 | `position` | `all` | Air distribution position |
 | `wshld` | `"0"`, `"1"` | 0=Off, 1=Windshield defrost on |
 
 Multiple schedules can be sent in a single `controls` array.
 
 Requires PIN.
+
+### Get Climate Schedule (getAppointment)
+
+Retrieves active climate schedules from the server.
+
+```
+POST /carownerservice/oversea/vehicle/v1/app/remote/ctl/getAppointment
+Body: vin={VIN}&cmdType=171
+```
+
+The response `data` field is a **JSON string** that must be double-parsed:
+
+```json
+{
+  "result": 0,
+  "data": "{\"controls\":[{...}]}"
+}
+```
+
+Returns the same `controls` array structure used by cmd_id=171. Empty string or null `data` means no active schedules.
+
+This endpoint is shared with other schedule types (`cmdType=161` PTC heating, `cmdType=190` charge schedule, `cmdType=392` FOTA schedule).
+
+Does not require PIN.
 
 ### Send Destination (cmd_id=180)
 

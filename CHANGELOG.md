@@ -12,8 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `REMOTE_CTL_AC_ON` and `REMOTE_CTL_AC_OFF` constants
 - Added `ClimateOperate.CLOSE` value (`"close"`) — required to turn off the climate system
 - Added `set_climate_schedule()` method to both `LeapmotorApiClient` and `AsyncLeapmotorApiClient` for scheduled climate activation (cmd_id=171)
+- Added `cancel_climate_schedule()` convenience method to both clients (sends empty controls array)
 - Added `REMOTE_CTL_AC_SCHEDULE` constant
-- Added `RemoteActionCtlClimateSchedule` dataclass (cmd_id=171) with `controls` list payload
+- Added `RemoteActionCtlClimateSchedule` dataclass (cmd_id=171) — full-state replacement semantics: the controls array must contain all active schedules
+- Added `get_climate_schedule()` method to both `LeapmotorApiClient` and `AsyncLeapmotorApiClient` — retrieves active climate schedules from the server via the `getAppointment` endpoint (cmdType=171)
 
 ### Changed
 - **BREAKING:** `ClimateMode.NO_HOT_COLD` renamed to `ClimateMode.WIND` (value changed from `"nohotcold"` to `"wind"` to match decompiled APK)

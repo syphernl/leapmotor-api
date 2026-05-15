@@ -64,7 +64,11 @@ COMMANDS: dict[str, dict[str, object]] = {
     "ac-schedule": {
         "help": "Set climate schedule (start_time, temp, mode, wind, days)",
         "args": [
-            {"name": "start_time", "type": str, "help": "Start time HH:mm (e.g. 07:30)"},
+            {
+                "name": "start_time",
+                "type": str,
+                "help": "Start time 'yyyy-MM-dd HH:mm:00' (e.g. '2026-05-16 07:30:00')",
+            },
             {"name": "--temp", "type": str, "help": "Temperature (e.g. 22)", "default": "26"},
             {"name": "--mode", "type": str, "help": "Mode: cold, hot, wind", "default": "wind"},
             {"name": "--wind", "type": str, "help": "Wind level 1-7 (e.g. 3)", "default": "3"},
@@ -76,6 +80,8 @@ COMMANDS: dict[str, dict[str, object]] = {
     "quick-cool": {"help": "Quick cooling", "args": []},
     "quick-heat": {"help": "Quick heating", "args": []},
     "defrost": {"help": "Windshield defrost", "args": []},
+    "ac-schedule-cancel": {"help": "Cancel all climate schedules", "args": []},
+    "ac-schedule-list": {"help": "List active climate schedules", "args": []},
     # Sentry
     "sentry-on": {"help": "Enable sentry mode", "args": []},
     "sentry-off": {"help": "Disable sentry mode", "args": []},
@@ -268,17 +274,18 @@ def execute_command(client: LeapmotorApiClient, vin: str, args: argparse.Namespa
         result = client.ac_off(vin)
     elif cmd == "ac-schedule":
         import time
-        import uuid
 
+        device_id = "example"
+        now_ms = str(int(time.time() * 1000))
         days_list = [int(d) for d in args.days.split(",") if d.strip()] if args.days else []
         control = {
             "mode": args.mode,
             "on": "0" if args.off else "1",
             "operate": "manual",
-            "set_id": str(uuid.uuid4()),
+            "set_id": f"air_set{device_id}{now_ms}",
             "start_time": args.start_time,
             "temperature": args.temp,
-            "update_time": str(int(time.time() * 1000)),
+            "update_time": now_ms,
             "windlevel": args.wind,
             "days": days_list,
             "circle": args.circle,
@@ -292,6 +299,18 @@ def execute_command(client: LeapmotorApiClient, vin: str, args: argparse.Namespa
         result = client.quick_heat(vin)
     elif cmd == "defrost":
         result = client.windshield_defrost(vin)
+    elif cmd == "ac-schedule-cancel":
+        result = client.cancel_climate_schedule(vin)
+    elif cmd == "ac-schedule-list":
+        import json as _json
+
+        schedules = client.get_climate_schedule(vin)
+        if not schedules:
+            print("No active climate schedules.")
+        else:
+            print(f"{len(schedules)} schedule(s):")
+            print(_json.dumps(schedules, indent=2))
+        return
 
     # Sentry
     elif cmd == "sentry-on":

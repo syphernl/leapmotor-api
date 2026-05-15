@@ -1842,6 +1842,12 @@ class RemoteActionCtlClimateSchedule(RemoteActionSpec):
 
     Sends one or more scheduled climate activations to the vehicle.
     The ``controls`` list contains individual schedule entries.
+
+    .. note::
+
+       Each invocation is a **full-state replacement**: the ``controls``
+       array must contain *all* active schedules.  An empty list cancels
+       every existing schedule.
     """
 
     cmd_id: str = field(default="171", init=False)

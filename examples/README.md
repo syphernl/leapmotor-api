@@ -132,9 +132,10 @@ python examples/commands.py ac-off                             # turn AC off
 python examples/commands.py quick-cool
 python examples/commands.py quick-heat
 python examples/commands.py defrost                            # windshield defrost
-python examples/commands.py ac-schedule 07:30 --temp 22 --mode cold --days 1,2,3,4,5
-python examples/commands.py ac-schedule 06:00 --temp 28 --mode hot  # once
-python examples/commands.py ac-schedule 07:30 --off            # disable schedule
+python examples/commands.py ac-schedule '2026-05-16 07:30:00' --temp 22 --mode cold --days 1,2,3,4,5
+python examples/commands.py ac-schedule '2026-05-17 06:00:00' --temp 28 --mode hot  # once
+python examples/commands.py ac-schedule-cancel                 # cancel all schedules
+python examples/commands.py ac-schedule-list                   # list active schedules
 ```
 
 #### Sentry mode
