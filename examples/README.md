@@ -110,6 +110,8 @@ python examples/commands.py autopark
 python examples/commands.py start-charging
 python examples/commands.py stop-charging
 python examples/commands.py charge-limit 80            # SOC limit in percent
+python examples/commands.py charge-schedule 23:00 07:00 1,2,3,4,5,6,7  # start end cycles
+python examples/commands.py charge-schedule 23:00 07:00 1,2,3,4,5,6,7 --enable 1 --soc 80 --circulation 1
 python examples/commands.py healthy-charging-on
 python examples/commands.py healthy-charging-off
 ```

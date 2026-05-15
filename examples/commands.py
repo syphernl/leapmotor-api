@@ -34,6 +34,18 @@ COMMANDS: dict[str, dict[str, object]] = {
         "help": "Set charge limit (percent)",
         "args": [{"name": "value", "type": int, "help": "SOC limit (e.g. 80)"}],
     },
+    "charge-schedule": {
+        "help": "Set charging schedule",
+        "args": [
+            {"name": "--enable", "type": int, "help": "Enable schedule (1=on, 0=off)", "default": 1},
+            {"name": "--soc", "type": int, "help": "SOC limit (e.g. 80)", "default": 80},
+            {"name": "start", "type": str, "help": "Start time (e.g. 23:00)"},
+            {"name": "end", "type": str, "help": "End time (e.g. 07:00)"},
+            {"name": "cycles", "type": str, "help": "Days (e.g. 1,2,3,4,5,6,7)"},
+            {"name": "--circulation", "type": int, "help": "Repeat mode (0=once, 1=repeat)", "default": 0},
+            {"name": "--recharge", "type": int, "help": "Auto-recharge (0=off, 1=on)", "default": 0},
+        ],
+    },
     "healthy-charging-on": {"help": "Enable healthy charging mode", "args": []},
     "healthy-charging-off": {"help": "Disable healthy charging mode", "args": []},
     # Battery
@@ -208,6 +220,17 @@ def execute_command(client: LeapmotorApiClient, vin: str, args: argparse.Namespa
         result = client.stop_charging(vin)
     elif cmd == "charge-limit":
         result = client.set_charge_limit(vin, args.value)
+    elif cmd == "charge-schedule":
+        result = client.set_charge_schedule(
+            vin,
+            enabled=bool(args.enable),
+            soc_limit=args.soc,
+            start_time=args.start,
+            end_time=args.end,
+            cycles=args.cycles,
+            circulation=args.circulation,
+            recharge=args.recharge,
+        )
     elif cmd == "healthy-charging-on":
         result = client.healthy_charging_on(vin)
     elif cmd == "healthy-charging-off":
