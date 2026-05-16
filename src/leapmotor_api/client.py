@@ -807,10 +807,11 @@ class LeapmotorApiClient:
             return None
         if isinstance(raw_data, str):
             try:
-                return json.loads(raw_data)
+                result: dict[str, Any] = json.loads(raw_data)
+                return result
             except ValueError:
                 return None
-        return raw_data
+        return dict(raw_data)
 
     def set_charge_limit(self, vin: str, charge_limit_percent: int) -> dict[str, Any]:
         """Set the charge limit while preserving the current charging plan values."""
