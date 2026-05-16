@@ -708,28 +708,79 @@ class LeapmotorApiClient:
         return self.set_climate_schedule(vin, controls=[])
 
     def get_climate_schedule(self, vin: str) -> list[dict[str, Any]]:
-        """Retrieve active climate schedules from the server.
+        """Retrieve active climate schedules (cmdId=171).
 
         Returns the ``controls`` list (may be empty if no schedules are set).
         Each entry has the same structure used by :meth:`set_climate_schedule`.
+        """
+        return self._get_appointment(vin, cmd_id="171")
 
-        The server responds with ``{result: 0, data: "<json-string>"}``
-        where *data* is a JSON-encoded ``TimingAirCondBean`` that must be
-        double-parsed.
+    def get_ptc_heating_schedule(self, vin: str) -> list[dict[str, Any]]:
+        """Retrieve active PTC battery heating schedules (cmdId=161).
+
+        Returns the ``controls`` list. Each entry contains:
+        on, set_id, start_time, update_time, days.
+        """
+        return self._get_appointment(vin, cmd_id="161")
+
+    def get_charge_schedule(self, vin: str) -> dict[str, Any]:
+        """Retrieve the charge schedule (cmdId=190).
+
+        Unlike other schedule types, the charge schedule is a flat object
+        (not wrapped in a ``controls`` array). Returns the parsed dict
+        or an empty dict if no schedule is set.
         """
         self._ensure_token()
-        return self._retry_on_token_expiry(self._get_climate_schedule, vin)
+        return self._retry_on_token_expiry(self._get_charge_appointment, vin)
 
-    def _get_climate_schedule(self, vin: str) -> list[dict[str, Any]]:
+    def get_prepare_car_schedule(self, vin: str) -> list[dict[str, Any]]:
+        """Retrieve active prepare-car schedules (cmdId=361).
+
+        Returns the ``controls`` list. Each entry contains:
+        name, desc, enable, set_id, start_time, update_time, days, datacontent.
+        """
+        return self._get_appointment(vin, cmd_id="361")
+
+    def get_fota_schedule(self, vin: str) -> list[dict[str, Any]]:
+        """Retrieve active FOTA install schedules (cmdId=392).
+
+        Returns the ``controls`` list. Each entry contains: pid, start_time.
+        """
+        return self._get_appointment(vin, cmd_id="392")
+
+    # ------------------------------------------------------------------
+    # Private — getAppointment
+    # ------------------------------------------------------------------
+
+    def _get_appointment(self, vin: str, *, cmd_id: str) -> list[dict[str, Any]]:
+        """Generic retrieval for schedule types that use ``controls`` array wrapper."""
+        self._ensure_token()
+        return self._retry_on_token_expiry(self._get_appointment_raw, vin, cmd_id)
+
+    def _get_appointment_raw(self, vin: str, cmd_id: str) -> list[dict[str, Any]]:
+        parsed = self._fetch_appointment(vin, cmd_id)
+        if not parsed:
+            return []
+        controls: list[dict[str, Any]] = parsed.get("controls", []) if isinstance(parsed, dict) else []
+        return controls
+
+    def _get_charge_appointment(self, vin: str) -> dict[str, Any]:
+        parsed = self._fetch_appointment(vin, "190")
+        if not parsed or not isinstance(parsed, dict):
+            return {}
+        return parsed
+
+    def _fetch_appointment(self, vin: str, cmd_id: str) -> dict[str, Any] | None:
+        """Call getAppointment and double-parse the response data string."""
         headers = build_signed_headers(
             sign_key=self.sign_key,
             device_id=self.device_id,
             vin=vin,
-            body_params={"cmdId": "171"},
+            body_params={"cmdId": cmd_id},
             language=self.language,
         ).to_dict()
         headers.update(self._auth_headers())
-        data = f"vin={quote(vin, safe='')}&cmdId=171"
+        data = f"vin={quote(vin, safe='')}&cmdId={quote(cmd_id, safe='')}"
         response = self._post(
             path="/carownerservice/oversea/vehicle/v1/app/remote/ctl/getAppointment",
             headers=headers,
@@ -744,21 +795,22 @@ class LeapmotorApiClient:
         result_code = resp_body.get("result", resp_body.get("code"))
         if response["status_code"] != 200 or result_code != 0:
             msg = resp_body.get("message") or response["body"][:200]
-            raise LeapmotorApiError(f"getAppointment failed: {msg}")
+            # "No such permission" means the vehicle doesn't support this schedule type
+            if "permission" in (msg or "").lower():
+                _LOGGER.debug("getAppointment(cmdId=%s): vehicle lacks permission", cmd_id)
+                return None
+            raise LeapmotorApiError(f"getAppointment(cmdId={cmd_id}) failed: {msg}")
 
         # data is a JSON *string* — double-parse
         raw_data = resp_body.get("data")
         if not raw_data:
-            return []
+            return None
         if isinstance(raw_data, str):
             try:
-                parsed = json.loads(raw_data)
+                return json.loads(raw_data)
             except ValueError:
-                return []
-        else:
-            parsed = raw_data
-        controls: list[dict[str, Any]] = parsed.get("controls", []) if isinstance(parsed, dict) else []
-        return controls
+                return None
+        return raw_data
 
     def set_charge_limit(self, vin: str, charge_limit_percent: int) -> dict[str, Any]:
         """Set the charge limit while preserving the current charging plan values."""

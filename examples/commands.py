@@ -82,6 +82,10 @@ COMMANDS: dict[str, dict[str, object]] = {
     "defrost": {"help": "Windshield defrost", "args": []},
     "ac-schedule-cancel": {"help": "Cancel all climate schedules", "args": []},
     "ac-schedule-list": {"help": "List active climate schedules", "args": []},
+    "ptc-schedule-list": {"help": "List active PTC battery heating schedules", "args": []},
+    "charge-schedule-list": {"help": "Show charge schedule", "args": []},
+    "prepare-car-schedule-list": {"help": "List active prepare-car schedules", "args": []},
+    "fota-schedule-list": {"help": "List active FOTA install schedules", "args": []},
     # Sentry
     "sentry-on": {"help": "Enable sentry mode", "args": []},
     "sentry-off": {"help": "Disable sentry mode", "args": []},
@@ -308,7 +312,47 @@ def execute_command(client: LeapmotorApiClient, vin: str, args: argparse.Namespa
         if not schedules:
             print("No active climate schedules.")
         else:
-            print(f"{len(schedules)} schedule(s):")
+            print(f"{len(schedules)} climate schedule(s):")
+            print(_json.dumps(schedules, indent=2))
+        return
+    elif cmd == "ptc-schedule-list":
+        import json as _json
+
+        schedules = client.get_ptc_heating_schedule(vin)
+        if not schedules:
+            print("No active PTC heating schedules.")
+        else:
+            print(f"{len(schedules)} PTC schedule(s):")
+            print(_json.dumps(schedules, indent=2))
+        return
+    elif cmd == "charge-schedule-list":
+        import json as _json
+
+        schedule = client.get_charge_schedule(vin)
+        if not schedule:
+            print("No charge schedule set.")
+        else:
+            print("Charge schedule:")
+            print(_json.dumps(schedule, indent=2))
+        return
+    elif cmd == "prepare-car-schedule-list":
+        import json as _json
+
+        schedules = client.get_prepare_car_schedule(vin)
+        if not schedules:
+            print("No active prepare-car schedules.")
+        else:
+            print(f"{len(schedules)} prepare-car schedule(s):")
+            print(_json.dumps(schedules, indent=2))
+        return
+    elif cmd == "fota-schedule-list":
+        import json as _json
+
+        schedules = client.get_fota_schedule(vin)
+        if not schedules:
+            print("No active FOTA schedules.")
+        else:
+            print(f"{len(schedules)} FOTA schedule(s):")
             print(_json.dumps(schedules, indent=2))
         return
 

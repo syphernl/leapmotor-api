@@ -15,7 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `cancel_climate_schedule()` convenience method to both clients (sends empty controls array)
 - Added `REMOTE_CTL_AC_SCHEDULE` constant
 - Added `RemoteActionCtlClimateSchedule` dataclass (cmd_id=171) — full-state replacement semantics: the controls array must contain all active schedules
-- Added `get_climate_schedule()` method to both `LeapmotorApiClient` and `AsyncLeapmotorApiClient` — retrieves active climate schedules from the server via the `getAppointment` endpoint (cmdType=171)
+- Added `get_climate_schedule()` method to both `LeapmotorApiClient` and `AsyncLeapmotorApiClient` — retrieves active climate schedules from the server via the `getAppointment` endpoint (cmdId=171)
+- Added `get_ptc_heating_schedule()` method — retrieves PTC battery heating schedules (cmdId=161)
+- Added `get_charge_schedule()` method — retrieves the charge schedule as a flat dict (cmdId=190)
+- Added `get_prepare_car_schedule()` method — retrieves prepare-car pre-conditioning schedules (cmdId=361)
+- Added `get_fota_schedule()` method — retrieves FOTA install schedules (cmdId=392)
+- All `getAppointment` methods gracefully return empty results when the vehicle lacks permission for a given schedule type
 
 ### Changed
 - **BREAKING:** `ClimateMode.NO_HOT_COLD` renamed to `ClimateMode.WIND` (value changed from `"nohotcold"` to `"wind"` to match decompiled APK)
