@@ -619,13 +619,13 @@ Multiple schedules can be sent in a single `controls` array.
 
 Requires PIN.
 
-### Get Climate Schedule (getAppointment)
+### Get Schedule (getAppointment)
 
-Retrieves active climate schedules from the server.
+Generic endpoint to retrieve active schedules from the server.
 
 ```
 POST /carownerservice/oversea/vehicle/v1/app/remote/ctl/getAppointment
-Body: vin={VIN}&cmdId=171
+Body: vin={VIN}&cmdId={CMD_ID}
 ```
 
 The response `data` field is a **JSON string** that must be double-parsed:
@@ -633,15 +633,50 @@ The response `data` field is a **JSON string** that must be double-parsed:
 ```json
 {
   "result": 0,
-  "data": "{\"controls\":[{...}]}"
+  "data": "{...}"
 }
 ```
 
-Returns the same `controls` array structure used by cmd_id=171. Empty string or null `data` means no active schedules.
-
-This endpoint is shared with other schedule types (`cmdId=161` PTC heating, `cmdId=190` charge schedule, `cmdId=392` FOTA schedule).
+Empty string or null `data` means no active schedules.
+Server returns "No such permission" if the vehicle doesn't support the requested schedule type.
 
 Does not require PIN.
+
+#### Supported cmdId values
+
+| cmdId | Name | Wrapper | Python method |
+|-------|------|---------|---------------|
+| `161` | PTC battery heating | `{"controls": [...]}` | `get_ptc_heating_schedule()` |
+| `171` | Climate AC | `{"controls": [...]}` | `get_climate_schedule()` |
+| `190` | Charge schedule | flat object (no controls) | `get_charge_schedule()` |
+| `361` | Prepare car | `{"controls": [...]}` | `get_prepare_car_schedule()` |
+| `392` | FOTA install | `{"controls": [...]}` | `get_fota_schedule()` |
+
+#### cmdId=161 — PTC Heating
+
+Each entry: `on`, `set_id`, `start_time`, `update_time`, `days`.
+
+#### cmdId=171 — Climate
+
+Same `controls` structure used by cmd_id=171 (see above).
+
+#### cmdId=190 — Charge Schedule
+
+Returns a flat object (NOT wrapped in `controls`):
+
+```json
+{"chargeEnable": 0, "chargesoc": 100, "circulation": 0, "starttime": "20:16"}
+```
+
+Also available in vehicle status (`config.$3`).
+
+#### cmdId=361 — Prepare Car
+
+Each entry: `name`, `desc`, `enable`, `set_id`, `start_time`, `update_time`, `days`, `datacontent` (sub-commands for climate, navigation, seats, etc.).
+
+#### cmdId=392 — FOTA Install
+
+Each entry: `pid` (package ID), `start_time`.
 
 ### Send Destination (cmd_id=180)
 
