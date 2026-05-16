@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-05-16
+
 ### Added
 - Added `ac_on()` and `ac_off()` methods to both `LeapmotorApiClient` and `AsyncLeapmotorApiClient` for explicit climate on/off control
 - Added `REMOTE_CTL_AC_ON` and `REMOTE_CTL_AC_OFF` constants
@@ -21,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added `get_prepare_car_schedule()` method — retrieves prepare-car pre-conditioning schedules (cmdId=361)
 - Added `get_fota_schedule()` method — retrieves FOTA install schedules (cmdId=392)
 - All `getAppointment` methods gracefully return empty results when the vehicle lacks permission for a given schedule type
+- Added `set_charge_schedule()` method to both `LeapmotorApiClient` and `AsyncLeapmotorApiClient` for setting the full charging schedule (enabled, soc_limit, start_time, end_time, cycles, circulation, recharge)
+- Added `REMOTE_CTL_CHARGE_SCHEDULE` constant
 
 ### Changed
 - **BREAKING:** `ClimateMode.NO_HOT_COLD` renamed to `ClimateMode.WIND` (value changed from `"nohotcold"` to `"wind"` to match decompiled APK)
@@ -29,12 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Changed `RemoteActionCtlClimate` default `windlevel` from `4` to `3` (APK default)
 - Updated all climate action specs in `REMOTE_ACTION_SPECS` to use corrected enum values
 - `examples/commands.py` `ac-on` now uses `ac_on()` instead of `ac_switch()`, added `ac-off` command
-
-## [0.2.1] - 2026-05-14
-
-### Added
-- Added `set_charge_schedule()` method to both `LeapmotorApiClient` and `AsyncLeapmotorApiClient` for setting the full charging schedule (enabled, soc_limit, start_time, end_time, cycles, circulation, recharge)
-- Added `REMOTE_CTL_CHARGE_SCHEDULE` constant
 
 ### Fixed
 - Added missing `get_consumption_weekly_rank()` and `get_consumption_last_week_breakdown()` methods to `AsyncLeapmotorApiClient`
