@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-05-28
+
+### Fixed
+- Fixed `set_charge_limit()` failing on vehicles (e.g. T03) where `status.battery.charge_plan` is empty — now fetches the current schedule via `get_charge_schedule(vin)` instead of relying on vehicle status, with sensible defaults when no schedule exists
+
 ## [0.3.0] - 2026-05-16
 
 ### Added
