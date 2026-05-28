@@ -815,22 +815,32 @@ class LeapmotorApiClient:
 
     def set_charge_limit(self, vin: str, charge_limit_percent: int) -> dict[str, Any]:
         """Set the charge limit while preserving the current charging plan values."""
-        vehicle = self._find_vehicle_by_vin(vin)
-        status = self.get_vehicle_status(vehicle)
-        plan = status.battery.charge_plan
+        # Use the dedicated schedule API instead of vehicle status,
+        # which may not include charge plan fields on some models (e.g. T03).
+        schedule = self.get_charge_schedule(vin)
 
-        if not plan.start or not plan.end or not plan.cycles:
-            raise LeapmotorApiError("Current charging plan is incomplete, cannot safely update charge limit.")
+        if schedule and schedule.get("cycles"):
+            charge_spec = RemoteActionCtlChargePlan(
+                charge_enable=schedule.get("chargeEnable", 0),
+                chargesoc=int(charge_limit_percent),
+                circulation=schedule.get("circulation", 0),
+                cycles=schedule["cycles"],
+                endtime=schedule.get("endtime", "08:00"),
+                recharge=schedule.get("recharge", 0),
+                starttime=schedule.get("starttime", "00:00"),
+            )
+        else:
+            # No existing schedule — use defaults with schedule disabled
+            charge_spec = RemoteActionCtlChargePlan(
+                charge_enable=0,
+                chargesoc=int(charge_limit_percent),
+                circulation=0,
+                cycles="1,2,3,4,5,6,7",
+                endtime="08:00",
+                recharge=0,
+                starttime="00:00",
+            )
 
-        charge_spec = RemoteActionCtlChargePlan(
-            charge_enable=1 if plan.enabled else 0,
-            chargesoc=int(charge_limit_percent),
-            circulation=plan.circulation or 0,
-            cycles=plan.cycles,
-            endtime=plan.end,
-            recharge=plan.recharge or 0,
-            starttime=plan.start,
-        )
         return self._remote_control(
             vin=vin,
             action=REMOTE_CTL_CHARGE_LIMIT,
