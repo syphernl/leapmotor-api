@@ -157,12 +157,12 @@ class AsyncLeapmotorApiClient:
         """Set speed limit in km/h (cmd_id=510)."""
         return await asyncio.to_thread(self._client.set_speed_limit, vin, value=value)
 
-    async def seat_heat(self, vin: str, *, position: int, level: int) -> dict[str, Any]:
-        """Set seat heating (cmd_id=301). Position: 1-6, level: 0-3."""
+    async def seat_heat(self, vin: str, *, position: str, level: int) -> dict[str, Any]:
+        """Set seat heating (cmd_id=301). Position: "driver" or "copilot", level: 0-3."""
         return await asyncio.to_thread(self._client.seat_heat, vin, position=position, level=level)
 
-    async def seat_ventilation(self, vin: str, *, position: int, level: int) -> dict[str, Any]:
-        """Set seat ventilation (cmd_id=370). Position: 1-6, level: 0-3."""
+    async def seat_ventilation(self, vin: str, *, position: str, level: int) -> dict[str, Any]:
+        """Set seat ventilation (cmd_id=370). Position: "driver" or "copilot", level: 0-3."""
         return await asyncio.to_thread(self._client.seat_ventilation, vin, position=position, level=level)
 
     async def open_sunroof(self, vin: str) -> dict[str, Any]:

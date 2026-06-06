@@ -1408,10 +1408,14 @@ class ChargeToggleValue(StrEnum):
 
 
 class SteeringWheelHeatValue(StrEnum):
-    """Values for steering wheel heat command (cmd_id=320)."""
+    """Values for steering wheel heat command (cmd_id=320).
 
-    ON = "on"
-    OFF = "off"
+    Sent under the ``level`` key. Values come from live C10 captures of the
+    international app: ``"2"`` enables heating, ``"1"`` disables it.
+    """
+
+    ON = "2"
+    OFF = "1"
 
 
 class FuelHeatingValue(StrEnum):
@@ -1436,10 +1440,14 @@ class On3Value(StrEnum):
 
 
 class RearviewMirrorHeatValue(StrEnum):
-    """Values for rearview mirror heat command (cmd_id=440)."""
+    """Values for rearview mirror heat command (cmd_id=440).
 
-    ON = "on"
-    OFF = "off"
+    Values come from live C10 captures of the international app: ``"2"`` enables
+    heating, ``"1"`` disables it.
+    """
+
+    ON = "2"
+    OFF = "1"
 
 
 class SunroofValue(StrEnum):
@@ -1484,6 +1492,7 @@ class ClimateOperate(StrEnum):
     MANUAL = "manual"
     AUTO = "auto"
     CLOSE = "close"
+    OFF = "off"
 
 
 class ClimatePosition(StrEnum):
@@ -1650,7 +1659,7 @@ class RemoteActionCtlToggleCharge(RemoteActionSpec):
 class RemoteActionCtlSteeringWheelHeat(RemoteActionSpec):
     """Steering wheel heat command (cmd_id=320).
 
-    Value: ``"on"`` or ``"off"``.
+    Value: ``"2"`` (on) or ``"1"`` (off), sent under the ``level`` key.
     """
 
     value: str = SteeringWheelHeatValue.ON
@@ -1658,7 +1667,7 @@ class RemoteActionCtlSteeringWheelHeat(RemoteActionSpec):
     cmd_content: str = field(default="", init=False)
 
     def __post_init__(self) -> None:
-        self.cmd_content = json.dumps({"value": self.value}, separators=(",", ":"))
+        self.cmd_content = json.dumps({"level": self.value}, separators=(",", ":"))
 
 
 @dataclass(slots=True)
@@ -1712,7 +1721,7 @@ class RemoteActionCtlOn3(RemoteActionSpec):
 class RemoteActionCtlRearviewMirrorHeat(RemoteActionSpec):
     """Rearview mirror heat command (cmd_id=440).
 
-    Value: ``"on"`` or ``"off"``.
+    Value: ``"2"`` (on) or ``"1"`` (off).
     """
 
     value: str = RearviewMirrorHeatValue.ON
@@ -1738,38 +1747,54 @@ class RemoteActionCtlSpeedLimit(RemoteActionSpec):
         self.cmd_content = json.dumps({"value": self.value}, separators=(",", ":"))
 
 
+_SEAT_COMFORT_POSITIONS = frozenset({"driver", "copilot"})
+
+
+def build_seat_comfort_payload(position: str, level: int) -> str:
+    """Build the seat heating/ventilation payload (cmd_id 301/370).
+
+    The international app sends ``{"position": ..., "level": ...}`` rather than the
+    older ``"position,level"`` string. ``position`` is ``"driver"`` or
+    ``"copilot"``; ``level`` is 0 (off) to 3 (max). Payload verified against a
+    live C10 (passenger ventilation level 2).
+    """
+    if position not in _SEAT_COMFORT_POSITIONS:
+        raise ValueError(f"Unsupported seat position: {position!r}")
+    if isinstance(level, bool) or not isinstance(level, int) or not 0 <= level <= 3:
+        raise ValueError(f"Seat comfort level must be an integer from 0 to 3: {level!r}")
+    return json.dumps({"position": position, "level": str(level)}, separators=(",", ":"))
+
+
 @dataclass(slots=True)
 class RemoteActionCtlSeatHeat(RemoteActionSpec):
     """Seat heat command (cmd_id=301).
 
-    Value: ``"position,level"`` — e.g. ``"1,3"`` for left-front seat at level 3.
-    Position: 1=left_front, 2=copilot, 3=driver, 4=right_front, 5=left_rear, 6=right_rear.
-    Level: 0 (off) to 3 (max).
+    ``position`` is ``"driver"`` or ``"copilot"``; ``level`` is 0 (off) to 3 (max).
     """
 
-    value: str = "1,3"
+    position: str = "driver"
+    level: int = 3
     cmd_id: str = field(default="301", init=False)
     cmd_content: str = field(default="", init=False)
 
     def __post_init__(self) -> None:
-        self.cmd_content = json.dumps({"value": self.value}, separators=(",", ":"))
+        self.cmd_content = build_seat_comfort_payload(self.position, self.level)
 
 
 @dataclass(slots=True)
 class RemoteActionCtlSeatVentilation(RemoteActionSpec):
     """Seat ventilation command (cmd_id=370).
 
-    Value: ``"position,level"`` — e.g. ``"1,3"`` for left-front seat at level 3.
-    Position: 1=left_front, 2=copilot, 3=driver, 4=right_front, 5=left_rear, 6=right_rear.
-    Level: 0 (off) to 3 (max).
+    ``position`` is ``"driver"`` or ``"copilot"``; ``level`` is 0 (off) to 3 (max).
     """
 
-    value: str = "1,3"
+    position: str = "driver"
+    level: int = 3
     cmd_id: str = field(default="370", init=False)
     cmd_content: str = field(default="", init=False)
 
     def __post_init__(self) -> None:
-        self.cmd_content = json.dumps({"value": self.value}, separators=(",", ":"))
+        self.cmd_content = build_seat_comfort_payload(self.position, self.level)
 
 
 @dataclass(slots=True)
@@ -1814,12 +1839,18 @@ class RemoteActionCtlClimate(RemoteActionSpec):
     temperature: str = "26"
     windlevel: int = 3
     wshld: str = ClimateWindshield.OFF
+    operate_only: bool = False
     cmd_id: str = field(default="170", init=False)
     cmd_content: str = field(default="", init=False)
 
     _WINDLEVEL_RANGE: range = field(default=range(1, 8), init=False, repr=False)
 
     def __post_init__(self) -> None:
+        if self.operate_only:
+            # Turning the system fully off only needs the operate field; the full
+            # payload with operate="close" was incomplete (kerniger/leapmotor-ha#42).
+            self.cmd_content = json.dumps({"operate": self.operate}, separators=(",", ":"))
+            return
         if self.windlevel not in self._WINDLEVEL_RANGE:
             raise ValueError(f"windlevel must be 1-7, got {self.windlevel!r}")
         self.cmd_content = json.dumps(

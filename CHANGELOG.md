@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-06-06
+
+Corrects comfort-control payloads against live C10 captures of the international
+app (ported from kerniger/leapmotor-ha v0.6.11).
+
+### Fixed
+- `ac_off()` now sends `{"operate":"off"}` instead of the full climate payload with `operate="close"`, which left the system running (kerniger/leapmotor-ha#42)
+- Steering wheel heat now sends `{"level":"2"}` / `{"level":"1"}` (on/off) instead of `{"value":"on"}` / `{"value":"off"}`
+- Rearview mirror heat now sends `{"value":"2"}` / `{"value":"1"}` (on/off) instead of `{"value":"on"}` / `{"value":"off"}`
+- Seat heating and ventilation now send `{"position":...,"level":...}` instead of the `"position,level"` string the vehicle ignored
+
+### Changed (breaking)
+- `seat_heat()` / `seat_ventilation()`: `position` is now `"driver"` or `"copilot"` (was an int 1-6); `level` stays 0-3 and is validated
+- `SteeringWheelHeatValue.ON/OFF` are now `"2"`/`"1"` (were `"on"`/`"off"`)
+- `RearviewMirrorHeatValue.ON/OFF` are now `"2"`/`"1"` (were `"on"`/`"off"`)
+
+### Added
+- `build_seat_comfort_payload(position, level)` helper, exported from the package
+- `ClimateOperate.OFF` value (`"off"`)
+- `operate_only` flag on `RemoteActionCtlClimate` for the minimal off payload
+
 ## [0.3.1] - 2026-05-28
 
 ### Fixed

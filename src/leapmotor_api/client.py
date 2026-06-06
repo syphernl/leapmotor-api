@@ -114,6 +114,7 @@ from .models import (
     RemoteActionCtlSendDestination,
     Vehicle,
     VehicleStatus,
+    build_seat_comfort_payload,
 )
 from .utils import previous_week_window_seconds
 
@@ -549,14 +550,14 @@ class LeapmotorApiClient:
         cmd_content = json.dumps({"value": value}, separators=(",", ":"))
         return self._remote_control(vin=vin, action=REMOTE_CTL_SPEED_LIMIT, cmd_content=cmd_content)
 
-    def seat_heat(self, vin: str, *, position: int, level: int) -> dict[str, Any]:
-        """Set seat heating (cmd_id=301). Position: 1-6, level: 0-3."""
-        cmd_content = json.dumps({"value": f"{position},{level}"}, separators=(",", ":"))
+    def seat_heat(self, vin: str, *, position: str, level: int) -> dict[str, Any]:
+        """Set seat heating (cmd_id=301). Position: "driver" or "copilot", level: 0-3."""
+        cmd_content = build_seat_comfort_payload(position, level)
         return self._remote_control(vin=vin, action=REMOTE_CTL_SEAT_HEAT, cmd_content=cmd_content)
 
-    def seat_ventilation(self, vin: str, *, position: int, level: int) -> dict[str, Any]:
-        """Set seat ventilation (cmd_id=370). Position: 1-6, level: 0-3."""
-        cmd_content = json.dumps({"value": f"{position},{level}"}, separators=(",", ":"))
+    def seat_ventilation(self, vin: str, *, position: str, level: int) -> dict[str, Any]:
+        """Set seat ventilation (cmd_id=370). Position: "driver" or "copilot", level: 0-3."""
+        cmd_content = build_seat_comfort_payload(position, level)
         return self._remote_control(vin=vin, action=REMOTE_CTL_SEAT_VENTILATION, cmd_content=cmd_content)
 
     def open_sunroof(self, vin: str) -> dict[str, Any]:

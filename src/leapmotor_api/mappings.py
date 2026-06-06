@@ -177,13 +177,8 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
         required_right=VehicleRight.CLIMATE,
     ),
     REMOTE_CTL_AC_OFF: RemoteActionCtlClimate(
-        circle=ClimateCircle.OUT,
-        mode=ClimateMode.WIND,
-        operate=ClimateOperate.CLOSE,
-        position=ClimatePosition.ALL,
-        temperature="26",
-        windlevel=3,
-        wshld=ClimateWindshield.OFF,
+        operate=ClimateOperate.OFF,
+        operate_only=True,
         required_right=VehicleRight.CLIMATE,
     ),
     REMOTE_CTL_QUICK_COOL: RemoteActionCtlClimate(

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-__version__ = "0.3.1"
+__version__ = "0.4.0"
 
 from .client import LeapmotorApiClient
 from .const import (
@@ -173,6 +173,7 @@ from .models import (
     WindowStatus,
     WindowsValue,
     WindshieldDefrostState,
+    build_seat_comfort_payload,
 )
 
 __all__ = [
@@ -343,4 +344,5 @@ __all__ = [
     "WindowStatus",
     "WindowsValue",
     "WindshieldDefrostState",
+    "build_seat_comfort_payload",
 ]

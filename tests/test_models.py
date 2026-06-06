@@ -1929,6 +1929,11 @@ class TestRemoteActionCtlClimate:
         assert content["windlevel"] == "6"
         assert content["wshld"] == "1"
 
+    def test_operate_only(self) -> None:
+        action = RemoteActionCtlClimate(operate="off", operate_only=True)
+        assert action.cmd_id == "170"
+        assert action.cmd_content == '{"operate":"off"}'
+
 
 # ---------------------------------------------------------------------------
 # StrEnum value classes
@@ -1949,6 +1954,7 @@ class TestEnumValues:
         assert ClimateOperate.MANUAL == "manual"
         assert ClimateOperate.AUTO == "auto"
         assert ClimateOperate.CLOSE == "close"
+        assert ClimateOperate.OFF == "off"
 
     def test_climate_position(self) -> None:
         assert ClimatePosition.ALL == "all"
@@ -2104,14 +2110,14 @@ class TestRemoteActionCtlToggleCharge:
 
 class TestRemoteActionCtlSteeringWheelHeat:
     def test_on(self) -> None:
-        action = RemoteActionCtlSteeringWheelHeat(value="on")
+        action = RemoteActionCtlSteeringWheelHeat(value="2")
         assert action.cmd_id == "320"
-        assert action.cmd_content == '{"value":"on"}'
+        assert action.cmd_content == '{"level":"2"}'
 
     def test_off(self) -> None:
-        action = RemoteActionCtlSteeringWheelHeat(value="off")
+        action = RemoteActionCtlSteeringWheelHeat(value="1")
         assert action.cmd_id == "320"
-        assert action.cmd_content == '{"value":"off"}'
+        assert action.cmd_content == '{"level":"1"}'
 
 
 class TestRemoteActionCtlFuelHeating:
@@ -2152,14 +2158,14 @@ class TestRemoteActionCtlOn3:
 
 class TestRemoteActionCtlRearviewMirrorHeat:
     def test_on(self) -> None:
-        action = RemoteActionCtlRearviewMirrorHeat(value="on")
+        action = RemoteActionCtlRearviewMirrorHeat(value="2")
         assert action.cmd_id == "440"
-        assert action.cmd_content == '{"value":"on"}'
+        assert action.cmd_content == '{"value":"2"}'
 
     def test_off(self) -> None:
-        action = RemoteActionCtlRearviewMirrorHeat(value="off")
+        action = RemoteActionCtlRearviewMirrorHeat(value="1")
         assert action.cmd_id == "440"
-        assert action.cmd_content == '{"value":"off"}'
+        assert action.cmd_content == '{"value":"1"}'
 
 
 class TestRemoteActionCtlSpeedLimit:
@@ -2178,24 +2184,32 @@ class TestRemoteActionCtlSeatHeat:
     def test_default(self) -> None:
         action = RemoteActionCtlSeatHeat()
         assert action.cmd_id == "301"
-        assert action.cmd_content == '{"value":"1,3"}'
+        assert action.cmd_content == '{"position":"driver","level":"3"}'
 
     def test_custom(self) -> None:
-        action = RemoteActionCtlSeatHeat(value="3,2")
+        action = RemoteActionCtlSeatHeat(position="copilot", level=2)
         assert action.cmd_id == "301"
-        assert action.cmd_content == '{"value":"3,2"}'
+        assert action.cmd_content == '{"position":"copilot","level":"2"}'
+
+    def test_invalid_position(self) -> None:
+        with pytest.raises(ValueError, match="Unsupported seat position"):
+            RemoteActionCtlSeatHeat(position="rear", level=1)
+
+    def test_invalid_level(self) -> None:
+        with pytest.raises(ValueError, match="0 to 3"):
+            RemoteActionCtlSeatHeat(position="driver", level=4)
 
 
 class TestRemoteActionCtlSeatVentilation:
     def test_default(self) -> None:
         action = RemoteActionCtlSeatVentilation()
         assert action.cmd_id == "370"
-        assert action.cmd_content == '{"value":"1,3"}'
+        assert action.cmd_content == '{"position":"driver","level":"3"}'
 
     def test_custom(self) -> None:
-        action = RemoteActionCtlSeatVentilation(value="2,1")
+        action = RemoteActionCtlSeatVentilation(position="copilot", level=1)
         assert action.cmd_id == "370"
-        assert action.cmd_content == '{"value":"2,1"}'
+        assert action.cmd_content == '{"position":"copilot","level":"1"}'
 
 
 class TestRemoteActionCtlSunroof:
