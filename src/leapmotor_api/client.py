@@ -114,9 +114,8 @@ from .models import (
     RemoteActionCtlSendDestination,
     Vehicle,
     VehicleStatus,
-    build_seat_comfort_payload,
 )
-from .utils import previous_week_window_seconds
+from .utils import build_seat_comfort_payload, previous_week_window_seconds
 
 if TYPE_CHECKING:
     from collections.abc import Callable

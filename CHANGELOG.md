@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-## [0.4.0] - 2026-06-06
-
 Corrects comfort-control payloads against live C10 captures of the international
 app (ported from kerniger/leapmotor-ha v0.6.11).
 
